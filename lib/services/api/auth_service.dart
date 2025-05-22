@@ -10,7 +10,7 @@ class AuthService{
     try{
           print("Mobile Number: $mobile");
     final response = await http.post(
-      Uri.parse('https://carrentalbackent.onrender.com/api/users/login'),
+      Uri.parse('https://carrentalbackent.onrender.com/api/staff/login'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'mobile':mobile}),
     );

@@ -1,6 +1,7 @@
 
 import 'package:car_rental_staff_app/controllers/user_controller.dart';
 import 'package:car_rental_staff_app/providers/auth_provider.dart';
+import 'package:car_rental_staff_app/providers/booking_provider.dart';
 import 'package:car_rental_staff_app/views/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ void main() {
     providers: [
       ChangeNotifierProvider(create: (_) => AuthProvider()),
       ChangeNotifierProvider(create: (_) => UserController()),
+      ChangeNotifierProvider(create: (_) => BookingProvider())
     ],
     child: const MyApp(),
   ));

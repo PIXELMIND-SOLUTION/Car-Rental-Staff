@@ -1,25 +1,31 @@
+
 import 'package:car_rental_staff_app/models/booking_model.dart';
 import 'package:car_rental_staff_app/views/booking_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class RecentBookingCard extends StatelessWidget {
+  final Booking booking;
 
-  const RecentBookingCard({super.key});
+  const RecentBookingCard({super.key, required this.booking});
 
   @override
   Widget build(BuildContext context) {
-    // final startDateTime =
-    //     DateFormat('dd/MM/yy, hh:mm a').format(booking.rentalStartDate);
-    // final endDateTime =
-    //     DateFormat('dd/MM/yy, hh:mm a').format(booking.rentalEndDate);
+    final String startDateTime = booking.rentalStartDate;
+    final String endDateTime = booking.rentalEndDate;
+    final String carName = booking.car.carName;
+    final String carModel = booking.car.model;
+    final String carImage = booking.car.carImage.isEmpty
+        ? booking.car.carImage[0]
+        : 'assets/car.png'; // fallback to your asset
+
     return GestureDetector(
-      onTap: (){
-        Navigator.push(context, MaterialPageRoute(builder: (context)=>BookingScreen()));
+      onTap: () {
+        Navigator.push(context, MaterialPageRoute(builder: (context) => BookingScreen()));
       },
       child: Container(
         height: 142,
-        width: 343,
+        width: 353,
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
@@ -56,14 +62,14 @@ class RecentBookingCard extends StatelessWidget {
                               TextSpan(
                                 children: [
                                   TextSpan(
-                                    text: 'Hyundai',
+                                    text: carName,
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   TextSpan(
-                                    text: 'Verna',
+                                    text: ' $carModel',
                                     style: const TextStyle(
                                       fontSize: 16,
                                       fontWeight: FontWeight.w400,
@@ -103,7 +109,7 @@ class RecentBookingCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            "ID: 1234",
+                            "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
                             style: const TextStyle(
                                 fontSize: 12,
                                 color: Colors.red,
@@ -116,7 +122,9 @@ class RecentBookingCard extends StatelessWidget {
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(8),
                               image: DecorationImage(
-                                image: AssetImage('assets/car.png'),
+                                image: booking.car.carImage.isEmpty
+                                    ? NetworkImage(carImage)
+                                    : const AssetImage('assets/car.png') as ImageProvider,
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -125,10 +133,10 @@ class RecentBookingCard extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Text("Collect Date & time : 26/9/23 , 10:00AM",
+                  Text("Collect Date & time : $startDateTime",
                       style: TextStyle(fontSize: 9, color: Colors.grey.shade800)),
                   const SizedBox(height: 4),
-                  Text("Return Date & time : 27/9/23 , 10:00AM",
+                  Text("Return Date & time : $endDateTime",
                       style: TextStyle(fontSize: 9, color: Colors.grey.shade800)),
                 ],
               ),
@@ -138,15 +146,15 @@ class RecentBookingCard extends StatelessWidget {
                 child: Container(
                   padding:
                       const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF071952),
-                    borderRadius: BorderRadius.only(
+                  decoration: BoxDecoration(
+                    color: _getStatusColor(booking.paymentStatus),
+                    borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(10),
                       bottomRight: Radius.circular(10),
                     ),
                   ),
                   child: Text(
-                    'Paid',
+                    booking.paymentStatus.toUpperCase(),
                     style: const TextStyle(
                         fontSize: 14,
                         color: Colors.white,
@@ -159,5 +167,19 @@ class RecentBookingCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status.toLowerCase()) {
+      case 'paid':
+        return Colors.green;
+      case 'pending':
+        return Color(0XFF051840);
+      case 'failed':
+      case 'cancelled':
+        return Colors.red;
+      default:
+        return const Color(0xFF071952);
+    }
   }
 }
