@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 
 
 class UserService {
-  final String baseUrl = 'https://carrentalbackent.onrender.com/api';
+  final String baseUrl = 'http://194.164.148.244:4062/api';
 
   Future<List<UserModel>> fetchUser(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/users/get-user/$id'));
@@ -23,7 +23,8 @@ class UserService {
   }
 
 Future<Map<String, dynamic>> updateProfileImage(File imageFile, String userId) async {
-  final apiUrl = '$baseUrl/users/edit-profile/$userId';
+  print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkggggggggggggggggggggggggggggggg');
+  final apiUrl = '$baseUrl/staff/update-profile/$userId';
 
   final dio = Dio();
 
@@ -46,6 +47,8 @@ Future<Map<String, dynamic>> updateProfileImage(File imageFile, String userId) a
       "Content-Type": "multipart/form-data",
     }),
   );
+
+  print('ssssssssssssssssssssssssssssssssssssssssssssssss${response.statusCode}');
 
   if (response.statusCode == 200) {
     return response.data;

@@ -1,8 +1,2487 @@
+
+
+
+
+
+
+// import 'package:car_rental_staff_app/models/single_booking_model.dart';
+// import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
+// import 'package:car_rental_staff_app/views/return_upload_screen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
+
+// class CarPickupDetailsScreen extends StatefulWidget {
+//   final String? bookingId;
+//   const CarPickupDetailsScreen({Key? key, this.bookingId}) : super(key: key);
+
+//   @override
+//   State<CarPickupDetailsScreen> createState() => _CarPickupDetailsScreenState();
+// }
+
+// class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
+//   bool isPickupExpanded = true;
+//   bool isReturnExpanded = false;
+//   bool isProceedEnabled = false;
+//   bool isAmountPaid = false;
+  
+//   // Form controllers
+//   final TextEditingController nameController = TextEditingController();
+//   final TextEditingController mobileController = TextEditingController();
+//   final TextEditingController altMobileController = TextEditingController();
+//   final TextEditingController emailController = TextEditingController();
+  
+//   // Date and time variables
+//   DateTime? returnDate;
+//   TimeOfDay? returnTime;
+//   DateTime? delayDate;
+//   TimeOfDay? delayTime;
+  
+//   int delayAmount = 0;
+//   bool hasDelay = false;
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Fetch booking data when screen initializes
+//     if (widget.bookingId != null) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         context
+//             .read<SingleBookingProvider>()
+//             .fetchSingleBooking(widget.bookingId!);
+//       });
+//     }
+//   }
+
+//   void _calculateDelayAmount() {
+//     if (returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+//       final returnDateTime = DateTime(
+//         returnDate!.year,
+//         returnDate!.month,
+//         returnDate!.day,
+//         returnTime!.hour,
+//         returnTime!.minute,
+//       );
+      
+//       final delayDateTime = DateTime(
+//         delayDate!.year,
+//         delayDate!.month,
+//         delayDate!.day,
+//         delayTime!.hour,
+//         delayTime!.minute,
+//       );
+      
+//       if (delayDateTime.isAfter(returnDateTime)) {
+//         final difference = delayDateTime.difference(returnDateTime);
+//         final hoursDifference = difference.inHours;
+//         setState(() {
+//           delayAmount = hoursDifference * 100;
+//           hasDelay = true;
+//           isProceedEnabled = false;
+//           isAmountPaid = false;
+//         });
+//       } else {
+//         setState(() {
+//           delayAmount = 0;
+//           hasDelay = false;
+//           isProceedEnabled = true;
+//         });
+//       }
+//     } else {
+//       setState(() {
+//         delayAmount = 0;
+//         hasDelay = false;
+//         isProceedEnabled = true;
+//       });
+//     }
+//   }
+
+//   Future<void> _selectDate(BuildContext context, bool isReturn) async {
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: DateTime.now(),
+//       firstDate: DateTime.now(),
+//       lastDate: DateTime.now().add(const Duration(days: 365)),
+//     );
+    
+//     if (picked != null) {
+//       setState(() {
+//         if (isReturn) {
+//           returnDate = picked;
+//         } else {
+//           delayDate = picked;
+//         }
+//       });
+//       _calculateDelayAmount();
+//     }
+//   }
+
+//   Future<void> _selectTime(BuildContext context, bool isReturn) async {
+//     final TimeOfDay? picked = await showTimePicker(
+//       context: context,
+//       initialTime: TimeOfDay.now(),
+//     );
+    
+//     if (picked != null) {
+//       setState(() {
+//         if (isReturn) {
+//           returnTime = picked;
+//         } else {
+//           delayTime = picked;
+//         }
+//       });
+//       _calculateDelayAmount();
+//     }
+//   }
+
+//   void _showPaymentAlert() {
+//     showDialog(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return AlertDialog(
+//           title: const Text('Payment Confirmation'),
+//           content: Text('Please confirm payment of ₹$delayAmount for delay charges.'),
+//           actions: [
+//             TextButton(
+//               onPressed: () {
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text('Cancel'),
+//             ),
+//             TextButton(
+//               onPressed: () {
+//                 setState(() {
+//                   isAmountPaid = true;
+//                   isProceedEnabled = true;
+//                 });
+//                 Navigator.of(context).pop();
+//               },
+//               child: const Text('OK'),
+//             ),
+//           ],
+//         );
+//       },
+//     );
+//   }
+
+//   Future<void> _submitReturnData() async {
+//     if (widget.bookingId == null) return;
+    
+//     try {
+//       final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
+      
+//       // Calculate delay time and days
+//       int delayTimeHours = 0;
+//       int delayDays = 0;
+      
+//       if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+//         final returnDateTime = DateTime(
+//           returnDate!.year,
+//           returnDate!.month,
+//           returnDate!.day,
+//           returnTime!.hour,
+//           returnTime!.minute,
+//         );
+        
+//         final delayDateTime = DateTime(
+//           delayDate!.year,
+//           delayDate!.month,
+//           delayDate!.day,
+//           delayTime!.hour,
+//           delayTime!.minute,
+//         );
+        
+//         final difference = delayDateTime.difference(returnDateTime);
+//         delayTimeHours = difference.inHours;
+//         delayDays = difference.inDays;
+//       }
+      
+//       final requestBody = {
+//         "name": nameController.text,
+//         "email": emailController.text,
+//         "mobile": mobileController.text,
+//         "alternativeMobile": altMobileController.text,
+//         "returnTime": returnTime != null ? returnTime!.format(context) : "",
+//         "returnDate": returnDate != null ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}" : "",
+//         "delayTime": delayTimeHours,
+//         "delayDay": delayDays
+//       };
+      
+//       final response = await http.post(
+//         Uri.parse(url),
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: json.encode(requestBody),
+//       );
+      
+//       if (response.statusCode == 200) {
+//         // Success - navigate to next screen
+//         // Navigator.push(
+//         //   context,
+//         //   MaterialPageRoute(
+//         //     builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+//         //   ),
+//         // );
+
+//                 Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+//           ),
+//         );
+//       } else {
+//         // Error handling
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Error: ${response.statusCode}')),
+//         );
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Network Error: $e')),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+
+//     return Scaffold(
+//       body: Consumer<SingleBookingProvider>(
+//         builder: (context, bookingProvider, child) {
+//           // Show loading indicator
+//           if (bookingProvider.isLoading) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           // Show error message
+//           if (bookingProvider.error != null) {
+//             return Center(
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   Text(
+//                     'Error: ${bookingProvider.error}',
+//                     style: const TextStyle(color: Colors.red),
+//                   ),
+//                   ElevatedButton(
+//                     onPressed: () {
+//                       if (widget.bookingId != null) {
+//                         bookingProvider.fetchSingleBooking(widget.bookingId!);
+//                       }
+//                     },
+//                     child: const Text('Retry'),
+//                   ),
+//                 ],
+//               ),
+//             );
+//           }
+
+//           final booking = bookingProvider.currentBooking;
+
+//           return SingleChildScrollView(
+//             child: Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const SizedBox(height: 50),
+//                   Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Row(
+//                       children: [
+//                         Container(
+//                           decoration: BoxDecoration(
+//                             color: Colors.grey.shade200,
+//                             shape: BoxShape.circle,
+//                           ),
+//                           child: IconButton(
+//                             icon: Icon(
+//                               Icons.arrow_back,
+//                               color: Colors.black,
+//                               size: screenWidth * 0.06,
+//                             ),
+//                             onPressed: () {
+//                               Navigator.pop(context);
+//                             },
+//                           ),
+//                         ),
+//                         SizedBox(width: screenWidth * 0.25),
+//                         Text(
+//                           "ID: ${booking?.id != null ? booking!.id.substring(booking!.id.length - 4) : (widget.bookingId != null ? widget.bookingId!.substring(widget.bookingId!.length - 4) : '----')}",
+//                           style: TextStyle(
+//                             color: const Color.fromARGB(255, 255, 0, 0),
+//                             fontSize: screenWidth * 0.045,
+//                             fontWeight: FontWeight.w800,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(height: 30),
+//                   _buildCarDetailsCard(booking, screenWidth),
+//                   const SizedBox(height: 30),
+
+//                   // Pickup Section (Collapsible)
+//                   _buildCollapsibleSection(
+//                     title: 'Pickup details',
+//                     isExpanded: isPickupExpanded,
+//                     onTap: () {
+//                       setState(() {
+//                         isPickupExpanded = !isPickupExpanded;
+//                       });
+//                     },
+//                     child: isPickupExpanded
+//                         ? Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const SizedBox(height: 25),
+//                               const Text(
+//                                 'Pickup Details',
+//                                 style: TextStyle(
+//                                     fontSize: 18, fontWeight: FontWeight.bold),
+//                               ),
+//                               _buildDisplayField(
+//                                   icon: Icons.person_outline,
+//                                   label: 'Name',
+//                                   value:
+//                                       booking?.car?.model ?? 'Not Available'),
+
+//                               // Mobile Number field
+//                               _buildDisplayField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Mobile Number',
+//                                 value:
+//                                     booking?.userId?.mobile ?? 'Not Available',
+//                               ),
+
+//                               // Alternate Mobile Number field
+//                               _buildDisplayField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Mobile Number',
+//                                 value:
+//                                     booking?.userId?.mobile ?? 'Not Available',
+//                               ),
+
+//                               // Email field
+//                               _buildDisplayField(
+//                                   icon: Icons.email_outlined,
+//                                   label: 'Email',
+//                                   value: booking?.userId?.email ??
+//                                       'Not Available'),
+
+//                               // Pickup time and date
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.access_time_outlined,
+//                                       label: 'Pickup time',
+//                                       value: booking?.from ?? 'Not set',
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.calendar_today_outlined,
+//                                       label: 'Pickup date',
+//                                       value:
+//                                           booking?.rentalStartDate ?? 'Not set',
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                               const Divider(height: 20, thickness: 1),
+//                               _buildSecurityDepositSection(),
+//                             ],
+//                           )
+//                         : const SizedBox(),
+//                   ),
+
+//                   const SizedBox(height: 30),
+
+//                   // Return Section (Collapsible)
+//                   _buildCollapsibleSection(
+//                     title: 'Return Details',
+//                     isExpanded: isReturnExpanded,
+//                     onTap: () {
+//                       setState(() {
+//                         isReturnExpanded = !isReturnExpanded;
+//                       });
+//                     },
+//                     child: isReturnExpanded
+//                         ? Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const SizedBox(height: 25),
+//                               const Text(
+//                                 'Return Details',
+//                                 style: TextStyle(
+//                                     fontSize: 18, fontWeight: FontWeight.bold),
+//                               ),
+//                               // Name field
+//                               _buildInputField(
+//                                 icon: Icons.person_outline,
+//                                 label: 'Name',
+//                                 controller: nameController,
+//                               ),
+
+//                               // Mobile Number field
+//                               _buildInputField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Mobile Number',
+//                                 controller: mobileController,
+//                               ),
+
+//                               // Alternate Mobile Number field
+//                               _buildInputField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Alternate Mobile Number',
+//                                 controller: altMobileController,
+//                               ),
+
+//                               // Email field
+//                               _buildInputField(
+//                                 icon: Icons.email_outlined,
+//                                 label: 'Email',
+//                                 controller: emailController,
+//                               ),
+
+//                               // Return time and date
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.access_time_outlined,
+//                                       label: 'Return time',
+//                                       value: returnTime?.format(context) ?? 'Select time',
+//                                       onTap: () => _selectTime(context, true),
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.calendar_today_outlined,
+//                                       label: 'Return date',
+//                                       value: returnDate != null 
+//                                           ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
+//                                           : 'Select date',
+//                                       onTap: () => _selectDate(context, true),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+
+//                               // Delay information
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.timelapse_outlined,
+//                                       label: 'Delay time',
+//                                       value: delayTime?.format(context) ?? 'Select time',
+//                                       onTap: () => _selectTime(context, false),
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.date_range_outlined,
+//                                       label: 'Delay date',
+//                                       value: delayDate != null 
+//                                           ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
+//                                           : 'Select date',
+//                                       onTap: () => _selectDate(context, false),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ],
+//                           )
+//                         : const SizedBox(),
+//                   ),
+
+//                   const SizedBox(height: 20),
+                  
+//                   // Show amount section only if there's delay
+//                   if (hasDelay) _buildDelayAmountButton(),
+                  
+//                   const SizedBox(height: 130),
+//                   _buildButtons()
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildDateTimeField({
+//     required IconData icon,
+//     required String label,
+//     required String value,
+//     required VoidCallback onTap,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+//       decoration: const BoxDecoration(
+//         border: Border(
+//             bottom: BorderSide(color: Color.fromARGB(255, 162, 162, 162))),
+//       ),
+//       child: InkWell(
+//         onTap: onTap,
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 12),
+//           child: Row(
+//             children: [
+//               Icon(icon, color: Colors.grey.shade600, size: 20),
+//               const SizedBox(width: 12),
+//               Expanded(
+//                 child: Text(
+//                   value,
+//                   style: TextStyle(
+//                     color: value.contains('Select') ? Colors.grey.shade500 : Colors.black87,
+//                     fontSize: 16,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildDelayAmountButton() {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Container(
+//         width: double.infinity,
+//         height: 50,
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             colors: isAmountPaid 
+//                 ? [Colors.green.shade600, Colors.green.shade800]
+//                 : [
+//                     const Color(0xFF1E0AFE),
+//                     const Color(0xFF120698),
+//                   ],
+//             begin: Alignment.centerLeft,
+//             end: Alignment.centerRight,
+//           ),
+//           borderRadius: BorderRadius.circular(8),
+//         ),
+//         child: InkWell(
+//           onTap: isAmountPaid ? null : _showPaymentAlert,
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.spaceAround,
+//             children: [
+//               Text(
+//                 isAmountPaid 
+//                     ? '₹ $delayAmount/- Paid'
+//                     : '₹ $delayAmount/- Pay to continue',
+//                 style: const TextStyle(
+//                   color: Colors.white,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//               const SizedBox(width: 8),
+//               Icon(
+//                 isAmountPaid ? Icons.check : Icons.payment,
+//                 color: Colors.white,
+//                 size: 18,
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
+//     return Card(
+//       elevation: 1,
+//       color: const Color(0XFFFFFFFF),
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(12),
+//         side: BorderSide(color: Colors.grey.shade200),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 Text(
+//                   booking?.car?.vehicleNumber ?? 'TS 05 TD 4544',
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.red.shade700,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   booking?.car?.carName ?? 'Hyundai Verna',
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+
+//             // Automatic & Seaters Row
+//             Row(
+//               children: [
+//                 const Icon(Icons.settings, size: 16, color: Colors.grey),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   booking?.car?.type ?? 'Automatic',
+//                   style: const TextStyle(
+//                     color: Colors.grey,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 16),
+//                 Row(
+//                   children: [
+//                     const Icon(Icons.airline_seat_recline_normal,
+//                         size: 16, color: Colors.grey),
+//                     const SizedBox(width: 4),
+//                     Text(
+//                       '${booking?.car?.seats ?? 5} Seaters',
+//                       style: const TextStyle(
+//                         color: Colors.grey,
+//                         fontSize: 13,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+
+//             // Date & Time Row
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 const Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   '${booking?.rentalEndDate ?? 5}',
+//                   style: const TextStyle(
+//                     color: Colors.black87,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 16),
+//                 const Icon(Icons.access_time, size: 16, color: Colors.blue),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   '${booking?.to ?? 5}',
+//                   style: const TextStyle(
+//                     color: Colors.black87,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildDocumentCard({
+//     required String title,
+//   }) {
+//     return Container(
+//       height: 206,
+//       decoration: BoxDecoration(
+//         borderRadius: BorderRadius.circular(12),
+//         image: const DecorationImage(
+//           image: AssetImage('assets/adhar.png'),
+//           fit: BoxFit.cover,
+//         ),
+//       ),
+//       child: Stack(
+//         children: [
+//           // Gradient overlay at bottom
+//           Positioned(
+//             bottom: 0,
+//             left: 0,
+//             right: 0,
+//             height: 60,
+//             child: Container(
+//               decoration: const BoxDecoration(
+//                 borderRadius:
+//                     BorderRadius.vertical(bottom: Radius.circular(12)),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildCollapsibleSection({
+//     required String title,
+//     required bool isExpanded,
+//     required VoidCallback onTap,
+//     required Widget child,
+//   }) {
+//     return Column(
+//       children: [
+//         const SizedBox(height: 20),
+//         InkWell(
+//           onTap: onTap,
+//           child: Container(
+//             padding:
+//                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+//             decoration: BoxDecoration(
+//               color: Colors.white,
+//               borderRadius: BorderRadius.circular(8),
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(0.1),
+//                   spreadRadius: 1,
+//                   blurRadius: 6,
+//                   offset: const Offset(0, 2), // subtle downward shadow
+//                 ),
+//               ],
+//             ),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   title,
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 Icon(
+//                   isExpanded
+//                       ? Icons.keyboard_arrow_up
+//                       : Icons.keyboard_arrow_down,
+//                   color: Colors.black54,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         child,
+//       ],
+//     );
+//   }
+
+//   Widget _buildDisplayField({
+//     required IconData icon,
+//     required String label,
+//     required String value,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16),
+//       decoration: BoxDecoration(
+//         border: Border(
+//           bottom: BorderSide(color: const Color.fromARGB(255, 162, 162, 162)),
+//         ),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.symmetric(vertical: 12),
+//         child: Row(
+//           children: [
+//             Icon(icon, color: Colors.grey.shade600, size: 20),
+//             const SizedBox(width: 12),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text(
+//                     value,
+//                     style: const TextStyle(
+//                       color: Colors.black87,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.w400,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildInputField({
+//     required IconData icon,
+//     required String label,
+//     TextEditingController? controller,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+//       decoration: const BoxDecoration(
+//         border: Border(
+//             bottom: BorderSide(color: Color.fromARGB(255, 162, 162, 162))),
+//       ),
+//       child: Row(
+//         children: [
+//           Icon(icon, color: Colors.grey.shade600, size: 20),
+//           const SizedBox(width: 12),
+//           Expanded(
+//             child: TextField(
+//               controller: controller,
+//               decoration: InputDecoration(
+//                 hintText: label,
+//                 hintStyle: TextStyle(color: Colors.grey.shade500),
+//                 border: InputBorder.none,
+//                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
+//               ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+
+//   Widget _buildSecurityDepositSection() {
+//   return Consumer<SingleBookingProvider>(
+//     builder: (context, bookingProvider, child) {
+//       final booking = bookingProvider.currentBooking;
+      
+//       // Get deposit proof images from booking data
+//       final depositProof = booking?.depositeProof ?? [];
+
+//       print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
+      
+//       // Create a list of security deposit images
+//       List<Map<String, String>> securityImages = [];
+      
+//       // Add deposit proof images (front and back of security deposit item)
+//       for (var proof in depositProof) {
+//         String title = 'Security Deposit';
+//         if (proof.label == 'depositeFront') {
+//           title = 'Security Deposit - Front';
+//         } else if (proof.label == 'depositeBack') {
+//           title = 'Security Deposit - Back';
+//         }
+        
+//         securityImages.add({
+//           'title': title,
+//           'url': proof.url ?? '',
+//         });
+//       }
+      
+//       // If no deposit images available, show placeholders for front and back
+//       if (securityImages.isEmpty) {
+//         securityImages = [
+//           {'title': 'Security Deposit - Front', 'url': ''},
+//           {'title': 'Security Deposit - Back', 'url': ''},
+//         ];
+//       }
+      
+//       return Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             const Text(
+//               'Security Deposit',
+//               style: TextStyle(
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             GridView.builder(
+//               shrinkWrap: true,
+//               physics: const NeverScrollableScrollPhysics(),
+//               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                 crossAxisCount: 2,
+//                 childAspectRatio: 1.5,
+//                 crossAxisSpacing: 10,
+//                 mainAxisSpacing: 10,
+//               ),
+//               itemCount: securityImages.length,
+//               itemBuilder: (context, index) {
+//                 final imageData = securityImages[index];
+//                 return _buildSecurityDocumentCard(
+//                   title: imageData['title']!,
+//                   imageUrl: imageData['url']!,
+//                 );
+//               },
+//             ),
+//           ],
+//         ),
+//       );
+//     },
+//   );
+// }
+
+// Widget _buildSecurityDocumentCard({
+//   required String title,
+//   required String imageUrl,
+// }) {
+//   return Container(
+//     height: 206,
+//     decoration: BoxDecoration(
+//       borderRadius: BorderRadius.circular(12),
+//       color: Colors.grey.shade200,
+//     ),
+//     child: Stack(
+//       children: [
+//         // Main image
+//         if (imageUrl.isNotEmpty)
+//           ClipRRect(
+//             borderRadius: BorderRadius.circular(12),
+//             child: Image.network(
+//               imageUrl,
+//               fit: BoxFit.cover,
+//               width: double.infinity,
+//               height: double.infinity,
+//               loadingBuilder: (context, child, loadingProgress) {
+//                 if (loadingProgress == null) return child;
+//                 return Center(
+//                   child: CircularProgressIndicator(
+//                     value: loadingProgress.expectedTotalBytes != null
+//                         ? loadingProgress.cumulativeBytesLoaded /
+//                             loadingProgress.expectedTotalBytes!
+//                         : null,
+//                   ),
+//                 );
+//               },
+//               errorBuilder: (context, error, stackTrace) => Container(
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(12),
+//                   color: Colors.grey.shade300,
+//                 ),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Icon(
+//                       Icons.image_not_supported,
+//                       size: 40,
+//                       color: Colors.grey.shade600,
+//                     ),
+//                     const SizedBox(height: 8),
+//                     Text(
+//                       'Image not available',
+//                       style: TextStyle(
+//                         color: Colors.grey.shade600,
+//                         fontSize: 12,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           )
+//         else
+//           // Placeholder when no image URL
+//           Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               color: Colors.grey.shade300,
+//             ),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(
+//                   Icons.security,
+//                   size: 40,
+//                   color: Colors.grey.shade600,
+//                 ),
+//                 const SizedBox(height: 8),
+//                 Text(
+//                   'Security Deposit',
+//                   style: TextStyle(
+//                     color: Colors.grey.shade600,
+//                     fontSize: 12,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                   textAlign: TextAlign.center,
+//                 ),
+//               ],
+//             ),
+//           ),
+        
+//         // Title overlay at bottom
+//         Positioned(
+//           bottom: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+//             decoration: BoxDecoration(
+//               borderRadius: const BorderRadius.vertical(
+//                 bottom: Radius.circular(12),
+//               ),
+//               gradient: LinearGradient(
+//                 begin: Alignment.topCenter,
+//                 end: Alignment.bottomCenter,
+//                 colors: [
+//                   Colors.transparent,
+//                   Colors.black.withOpacity(0.7),
+//                 ],
+//               ),
+//             ),
+//             child: Text(
+//               title,
+//               style: const TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 12,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//               textAlign: TextAlign.center,
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+//   Widget _buildButtons() {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Container(
+//         width: double.infinity,
+//         height: 50,
+//         decoration: BoxDecoration(
+//           gradient: LinearGradient(
+//             colors: isProceedEnabled
+//                 ? [
+//                     const Color(0xFF1E0AFE),
+//                     const Color(0xFF120698),
+//                   ]
+//                 : [
+//                     Colors.grey.shade400,
+//                     Colors.grey.shade600,
+//                   ],
+//             begin: Alignment.centerLeft,
+//             end: Alignment.centerRight,
+//           ),
+//           borderRadius: BorderRadius.circular(8),
+//         ),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceAround,
+//           children: [
+//             TextButton(
+//               onPressed: isProceedEnabled ? _submitReturnData : null,
+//               child: const Text(
+//                 'Proceed',
+//                 style: TextStyle(
+//                   color: Colors.white,
+//                   fontWeight: FontWeight.bold,
+//                 ),
+//               ),
+//             )
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import 'package:car_rental_staff_app/models/single_booking_model.dart';
+// import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
+// import 'package:car_rental_staff_app/views/return_upload_screen.dart';
+// import 'package:flutter/material.dart';
+// import 'package:provider/provider.dart';
+// import 'package:http/http.dart' as http;
+// import 'dart:convert';
+// import 'dart:io';
+// import 'package:image_picker/image_picker.dart';
+
+// class CarPickupDetailsScreen extends StatefulWidget {
+//   final String? bookingId;
+//   const CarPickupDetailsScreen({Key? key, this.bookingId}) : super(key: key);
+
+//   @override
+//   State<CarPickupDetailsScreen> createState() => _CarPickupDetailsScreenState();
+// }
+
+// class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
+//   bool isPickupExpanded = true;
+//   bool isReturnExpanded = false;
+//   bool isProceedEnabled = false;
+//   bool useSameDetails = false; // Checkbox state
+  
+//   // Form controllers
+//   final TextEditingController nameController = TextEditingController();
+//   final TextEditingController mobileController = TextEditingController();
+//   final TextEditingController altMobileController = TextEditingController();
+//   final TextEditingController emailController = TextEditingController();
+  
+//   // Date and time variables
+//   DateTime? returnDate;
+//   TimeOfDay? returnTime;
+//   DateTime? delayDate;
+//   TimeOfDay? delayTime;
+  
+//   int delayAmount = 0;
+//   bool hasDelay = false;
+//   File? delayPaymentScreenshot;
+//   final ImagePicker _picker = ImagePicker();
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     // Fetch booking data when screen initializes
+//     if (widget.bookingId != null) {
+//       WidgetsBinding.instance.addPostFrameCallback((_) {
+//         context
+//             .read<SingleBookingProvider>()
+//             .fetchSingleBooking(widget.bookingId!);
+//       });
+//     }
+//   }
+
+//   void _populateReturnDateTimeFromBooking(Booking? booking) {
+//     if (booking != null) {
+//       // Parse return date from booking.rentalEndDate
+//       if (booking.rentalEndDate != null) {
+//         try {
+//           // Assuming rentalEndDate is in format "YYYY-MM-DD" or similar
+//           final dateParts = booking.rentalEndDate!.split('-');
+//           if (dateParts.length == 3) {
+//             returnDate = DateTime(
+//               int.parse(dateParts[0]),
+//               int.parse(dateParts[1]),
+//               int.parse(dateParts[2]),
+//             );
+//           }
+//         } catch (e) {
+//           print('Error parsing return date: $e');
+//         }
+//       }
+      
+//       // Parse return time from booking.to
+//       if (booking.to != null) {
+//         try {
+//           // Assuming time format is "HH:MM" or "HH:MM AM/PM"
+//           final timeStr = booking.to!.replaceAll(RegExp(r'[AP]M'), '').trim();
+//           final timeParts = timeStr.split(':');
+//           if (timeParts.length == 2) {
+//             int hour = int.parse(timeParts[0]);
+//             int minute = int.parse(timeParts[1]);
+            
+//             // Handle 12-hour format conversion if needed
+//             if (booking.to!.contains('PM') && hour != 12) {
+//               hour += 12;
+//             } else if (booking.to!.contains('AM') && hour == 12) {
+//               hour = 0;
+//             }
+            
+//             returnTime = TimeOfDay(hour: hour, minute: minute);
+//           }
+//         } catch (e) {
+//           print('Error parsing return time: $e');
+//         }
+//       }
+//     }
+//   }
+
+//   void _fillSameDetails(Booking? booking) {
+//     if (booking != null && booking.userId != null) {
+//       setState(() {
+//         nameController.text = booking.userId!.name ?? '';
+//         mobileController.text = booking.userId!.mobile ?? '';
+//         altMobileController.text = booking.userId!.mobile ?? ''; // Using same mobile as alternate
+//         emailController.text = booking.userId!.email ?? '';
+//       });
+//     }
+//   }
+
+//   void _calculateDelayAmount() {
+//     if (returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+//       final returnDateTime = DateTime(
+//         returnDate!.year,
+//         returnDate!.month,
+//         returnDate!.day,
+//         returnTime!.hour,
+//         returnTime!.minute,
+//       );
+      
+//       final delayDateTime = DateTime(
+//         delayDate!.year,
+//         delayDate!.month,
+//         delayDate!.day,
+//         delayTime!.hour,
+//         delayTime!.minute,
+//       );
+      
+//       if (delayDateTime.isAfter(returnDateTime)) {
+//         final difference = delayDateTime.difference(returnDateTime);
+//         final hoursDifference = difference.inHours;
+//         setState(() {
+//           delayAmount = hoursDifference * 100;
+//           hasDelay = true;
+//           isProceedEnabled = false; // Reset proceed button when delay is detected
+//           delayPaymentScreenshot = null; // Reset screenshot
+//         });
+//       } else {
+//         setState(() {
+//           delayAmount = 0;
+//           hasDelay = false;
+//           isProceedEnabled = true;
+//           delayPaymentScreenshot = null;
+//         });
+//       }
+//     } else {
+//       setState(() {
+//         delayAmount = 0;
+//         hasDelay = false;
+//         isProceedEnabled = !hasDelay; // Enable if no delay
+//       });
+//     }
+//   }
+
+//   Future<void> _selectDate(BuildContext context, bool isReturn) async {
+//     final DateTime? picked = await showDatePicker(
+//       context: context,
+//       initialDate: DateTime.now(),
+//       firstDate: DateTime.now(),
+//       lastDate: DateTime.now().add(const Duration(days: 365)),
+//     );
+    
+//     if (picked != null) {
+//       setState(() {
+//         if (isReturn) {
+//           returnDate = picked;
+//         } else {
+//           delayDate = picked;
+//         }
+//       });
+//       _calculateDelayAmount();
+//     }
+//   }
+
+//   Future<void> _selectTime(BuildContext context, bool isReturn) async {
+//     final TimeOfDay? picked = await showTimePicker(
+//       context: context,
+//       initialTime: TimeOfDay.now(),
+//     );
+    
+//     if (picked != null) {
+//       setState(() {
+//         if (isReturn) {
+//           returnTime = picked;
+//         } else {
+//           delayTime = picked;
+//         }
+//       });
+//       _calculateDelayAmount();
+//     }
+//   }
+
+// Future<void> _pickDelayPaymentScreenshotBottomSheet() async {
+//   try {
+//     final ImageSource? source = await showModalBottomSheet<ImageSource>(
+//       context: context,
+//       builder: (BuildContext context) {
+//         return SafeArea(
+//           child: Wrap(
+//             children: [
+//               ListTile(
+//                 leading: const Icon(Icons.camera_alt),
+//                 title: const Text('Camera'),
+//                 onTap: () => Navigator.of(context).pop(ImageSource.camera),
+//               ),
+//               ListTile(
+//                 leading: const Icon(Icons.photo_library),
+//                 title: const Text('Gallery'),
+//                 onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+//               ),
+//               ListTile(
+//                 leading: const Icon(Icons.cancel),
+//                 title: const Text('Cancel'),
+//                 onTap: () => Navigator.of(context).pop(),
+//               ),
+//             ],
+//           ),
+//         );
+//       },
+//     );
+
+//     if (source == null) return;
+
+//     final XFile? image = await _picker.pickImage(
+//       source: source,
+//       maxWidth: 1000,
+//       maxHeight: 1000,
+//       imageQuality: 80,
+//     );
+    
+//     if (image != null) {
+//       setState(() {
+//         delayPaymentScreenshot = File(image.path);
+//         isProceedEnabled = true;
+//       });
+//     }
+//   } catch (e) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(content: Text('Error picking image: $e')),
+//     );
+//   }
+// }
+
+//   Future<void> _submitReturnData() async {
+//     if (widget.bookingId == null) return;
+    
+//     try {
+//       final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
+      
+//       // Calculate delay time and days
+//       int delayTimeHours = 0;
+//       int delayDays = 0;
+      
+//       if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+//         final returnDateTime = DateTime(
+//           returnDate!.year,
+//           returnDate!.month,
+//           returnDate!.day,
+//           returnTime!.hour,
+//           returnTime!.minute,
+//         );
+        
+//         final delayDateTime = DateTime(
+//           delayDate!.year,
+//           delayDate!.month,
+//           delayDate!.day,
+//           delayTime!.hour,
+//           delayTime!.minute,
+//         );
+        
+//         final difference = delayDateTime.difference(returnDateTime);
+//         delayTimeHours = difference.inHours;
+//         delayDays = difference.inDays;
+//       }
+      
+//       final requestBody = {
+//         "name": nameController.text,
+//         "email": emailController.text,
+//         "mobile": mobileController.text,
+//         "alternativeMobile": altMobileController.text,
+//         "returnTime": returnTime != null ? returnTime!.format(context) : "",
+//         "returnDate": returnDate != null ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}" : "",
+//         "delayTime": delayTimeHours,
+//         "delayDay": delayDays
+//       };
+      
+//       final response = await http.post(
+//         Uri.parse(url),
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: json.encode(requestBody),
+//       );
+      
+//       if (response.statusCode == 200) {
+//         Navigator.push(
+//           context,
+//           MaterialPageRoute(
+//             builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+//           ),
+//         );
+//       } else {
+//         ScaffoldMessenger.of(context).showSnackBar(
+//           SnackBar(content: Text('Error: ${response.statusCode}')),
+//         );
+//       }
+//     } catch (e) {
+//       ScaffoldMessenger.of(context).showSnackBar(
+//         SnackBar(content: Text('Network Error: $e')),
+//       );
+//     }
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final screenWidth = MediaQuery.of(context).size.width;
+
+//     return Scaffold(
+//       body: Consumer<SingleBookingProvider>(
+//         builder: (context, bookingProvider, child) {
+//           if (bookingProvider.isLoading) {
+//             return const Center(child: CircularProgressIndicator());
+//           }
+
+//           if (bookingProvider.error != null) {
+//             return Center(
+//               child: Column(
+//                 mainAxisAlignment: MainAxisAlignment.center,
+//                 children: [
+//                   Text(
+//                     'Error: ${bookingProvider.error}',
+//                     style: const TextStyle(color: Colors.red),
+//                   ),
+//                   ElevatedButton(
+//                     onPressed: () {
+//                       if (widget.bookingId != null) {
+//                         bookingProvider.fetchSingleBooking(widget.bookingId!);
+//                       }
+//                     },
+//                     child: const Text('Retry'),
+//                   ),
+//                 ],
+//               ),
+//             );
+//           }
+
+//           final booking = bookingProvider.currentBooking;
+          
+//           // Auto-populate return date and time from booking when first loaded
+//           if (booking != null && returnDate == null && returnTime == null) {
+//             WidgetsBinding.instance.addPostFrameCallback((_) {
+//               _populateReturnDateTimeFromBooking(booking);
+//             });
+//           }
+
+//           return SingleChildScrollView(
+//             child: Padding(
+//               padding: const EdgeInsets.all(8.0),
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   const SizedBox(height: 50),
+//                   Padding(
+//                     padding: const EdgeInsets.all(8.0),
+//                     child: Row(
+//                       children: [
+//                         Container(
+//                           decoration: BoxDecoration(
+//                             color: Colors.grey.shade200,
+//                             shape: BoxShape.circle,
+//                           ),
+//                           child: IconButton(
+//                             icon: Icon(
+//                               Icons.arrow_back,
+//                               color: Colors.black,
+//                               size: screenWidth * 0.06,
+//                             ),
+//                             onPressed: () {
+//                               Navigator.pop(context);
+//                             },
+//                           ),
+//                         ),
+//                         SizedBox(width: screenWidth * 0.25),
+//                         Text(
+//                           "ID: ${booking?.id != null ? booking!.id.substring(booking!.id.length - 4) : (widget.bookingId != null ? widget.bookingId!.substring(widget.bookingId!.length - 4) : '----')}",
+//                           style: TextStyle(
+//                             color: const Color.fromARGB(255, 255, 0, 0),
+//                             fontSize: screenWidth * 0.045,
+//                             fontWeight: FontWeight.w800,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//                   ),
+//                   const SizedBox(height: 30),
+//                   _buildCarDetailsCard(booking, screenWidth),
+//                   const SizedBox(height: 30),
+
+//                   // Pickup Section (Collapsible)
+//                   _buildCollapsibleSection(
+//                     title: 'Pickup details',
+//                     isExpanded: isPickupExpanded,
+//                     onTap: () {
+//                       setState(() {
+//                         isPickupExpanded = !isPickupExpanded;
+//                       });
+//                     },
+//                     child: isPickupExpanded
+//                         ? Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const SizedBox(height: 25),
+//                               const Text(
+//                                 'Pickup Details',
+//                                 style: TextStyle(
+//                                     fontSize: 18, fontWeight: FontWeight.bold),
+//                               ),
+//                               _buildDisplayField(
+//                                   icon: Icons.person_outline,
+//                                   label: 'Name',
+//                                   value: booking?.userId?.name ?? 'Not Available'),
+
+//                               _buildDisplayField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Mobile Number',
+//                                 value: booking?.userId?.mobile ?? 'Not Available',
+//                               ),
+
+//                               _buildDisplayField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Alternate Mobile Number',
+//                                 value: booking?.userId?.mobile ?? 'Not Available',
+//                               ),
+
+//                               _buildDisplayField(
+//                                   icon: Icons.email_outlined,
+//                                   label: 'Email',
+//                                   value: booking?.userId?.email ?? 'Not Available'),
+
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.access_time_outlined,
+//                                       label: 'Pickup time',
+//                                       value: booking?.from ?? 'Not set',
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.calendar_today_outlined,
+//                                       label: 'Pickup date',
+//                                       value: booking?.rentalStartDate ?? 'Not set',
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                               const Divider(height: 20, thickness: 1),
+//                               _buildSecurityDepositSection(),
+//                             ],
+//                           )
+//                         : const SizedBox(),
+//                   ),
+
+//                   const SizedBox(height: 10),
+
+//                   // Return Section (Collapsible)
+//                   _buildCollapsibleSection(
+//                     title: 'Return Details',
+//                     isExpanded: isReturnExpanded,
+//                     onTap: () {
+//                       setState(() {
+//                         isReturnExpanded = !isReturnExpanded;
+//                       });
+//                     },
+//                     child: isReturnExpanded
+//                         ? Column(
+//                             crossAxisAlignment: CrossAxisAlignment.start,
+//                             children: [
+//                               const SizedBox(height: 25),
+//                               const Text(
+//                                 'Return Details',
+//                                 style: TextStyle(
+//                                     fontSize: 18, fontWeight: FontWeight.bold),
+//                               ),
+                              
+//                               // Checkbox for same details
+//                               Padding(
+//                                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+//                                 child: Row(
+//                                   children: [
+//                                     Checkbox(
+//                                       value: useSameDetails,
+//                                       onChanged: (bool? value) {
+//                                         setState(() {
+//                                           useSameDetails = value ?? false;
+//                                           if (useSameDetails) {
+//                                             _fillSameDetails(booking);
+//                                           } else {
+//                                             // Clear fields when unchecked
+//                                             nameController.clear();
+//                                             mobileController.clear();
+//                                             altMobileController.clear();
+//                                             emailController.clear();
+//                                           }
+//                                         });
+//                                       },
+//                                     ),
+//                                     const Text(
+//                                       'Use same details as pickup',
+//                                       style: TextStyle(fontSize: 14),
+//                                     ),
+//                                   ],
+//                                 ),
+//                               ),
+                              
+//                               _buildInputField(
+//                                 icon: Icons.person_outline,
+//                                 label: 'Name',
+//                                 controller: nameController,
+//                               ),
+
+//                               _buildInputField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Mobile Number',
+//                                 controller: mobileController,
+//                               ),
+
+//                               _buildInputField(
+//                                 icon: Icons.phone_outlined,
+//                                 label: 'Alternate Mobile Number',
+//                                 controller: altMobileController,
+//                               ),
+
+//                               _buildInputField(
+//                                 icon: Icons.email_outlined,
+//                                 label: 'Email',
+//                                 controller: emailController,
+//                               ),
+
+//                               // Return time and date (auto-populated, read-only)
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.access_time_outlined,
+//                                       label: 'Return time',
+//                                       value: returnTime?.format(context) ?? 'Not set',
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDisplayField(
+//                                       icon: Icons.calendar_today_outlined,
+//                                       label: 'Return date',
+//                                       value: returnDate != null 
+//                                           ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
+//                                           : 'Not set',
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+
+//                               // Delay information
+//                               const Padding(
+//                                 padding: EdgeInsets.all(16.0),
+//                                 child: Text(
+//                                   'Delay Information (Optional)',
+//                                   style: TextStyle(
+//                                     fontSize: 16,
+//                                     fontWeight: FontWeight.bold,
+//                                     color: Colors.orange,
+//                                   ),
+//                                 ),
+//                               ),
+                              
+//                               Row(
+//                                 children: [
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.timelapse_outlined,
+//                                       label: 'Delay time',
+//                                       value: delayTime?.format(context) ?? 'Select time',
+//                                       onTap: () => _selectTime(context, false),
+//                                     ),
+//                                   ),
+//                                   const SizedBox(width: 10),
+//                                   Expanded(
+//                                     child: _buildDateTimeField(
+//                                       icon: Icons.date_range_outlined,
+//                                       label: 'Delay date',
+//                                       value: delayDate != null 
+//                                           ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
+//                                           : 'Select date',
+//                                       onTap: () => _selectDate(context, false),
+//                                     ),
+//                                   ),
+//                                 ],
+//                               ),
+//                             ],
+//                           )
+//                         : const SizedBox(),
+//                   ),
+
+//                   const SizedBox(height: 10),
+                  
+//                   // Show delay amount and screenshot upload when there's delay
+//                   if (hasDelay) ...[
+//                     _buildDelayAmountDisplay(),
+//                     _buildScreenshotUploadSection(),
+//                   ],
+                  
+//                   const SizedBox(height: 130),
+//                   _buildButtons()
+//                 ],
+//               ),
+//             ),
+//           );
+//         },
+//       ),
+//     );
+//   }
+
+//   Widget _buildDelayAmountDisplay() {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Container(
+//         padding: const EdgeInsets.all(16),
+//         decoration: BoxDecoration(
+//           color: Colors.orange.shade50,
+//           borderRadius: BorderRadius.circular(8),
+//           border: Border.all(color: Colors.orange.shade200),
+//         ),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 const Text(
+//                   'Delay Charges',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                     color: Colors.orange,
+//                   ),
+//                 ),
+//                 Text(
+//                   'Amount to be paid: ₹$delayAmount',
+//                   style: const TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.grey,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             Icon(
+//               Icons.payment,
+//               color: Colors.orange.shade600,
+//               size: 30,
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildScreenshotUploadSection() {
+//     return Padding(
+//       padding: const EdgeInsets.all(16.0),
+//       child: Column(
+//         crossAxisAlignment: CrossAxisAlignment.start,
+//         children: [
+//           const Text(
+//             'Upload Payment Screenshot',
+//             style: TextStyle(
+//               fontSize: 16,
+//               fontWeight: FontWeight.bold,
+//             ),
+//           ),
+//           const SizedBox(height: 12),
+//           InkWell(
+//             onTap: _pickDelayPaymentScreenshotBottomSheet,
+//             child: Container(
+//               height: 150,
+//               width: double.infinity,
+//               decoration: BoxDecoration(
+//                 border: Border.all(
+//                   color: delayPaymentScreenshot != null ? Colors.green : Colors.grey,
+//                   width: 2,
+//                   style: BorderStyle.solid,
+//                 ),
+//                 borderRadius: BorderRadius.circular(8),
+//                 color: delayPaymentScreenshot != null ? Colors.green.shade50 : Colors.grey.shade50,
+//               ),
+//               child: delayPaymentScreenshot != null
+//                   ? Stack(
+//                       children: [
+//                         ClipRRect(
+//                           borderRadius: BorderRadius.circular(6),
+//                           child: Image.file(
+//                             delayPaymentScreenshot!,
+//                             height: 150,
+//                             width: double.infinity,
+//                             fit: BoxFit.cover,
+//                           ),
+//                         ),
+//                         Positioned(
+//                           top: 8,
+//                           right: 8,
+//                           child: Container(
+//                             decoration: const BoxDecoration(
+//                               color: Colors.green,
+//                               shape: BoxShape.circle,
+//                             ),
+//                             child: const Icon(
+//                               Icons.check,
+//                               color: Colors.white,
+//                               size: 20,
+//                             ),
+//                           ),
+//                         ),
+//                       ],
+//                     )
+//                   : const Column(
+//                       mainAxisAlignment: MainAxisAlignment.center,
+//                       children: [
+//                         Icon(
+//                           Icons.cloud_upload_outlined,
+//                           size: 40,
+//                           color: Colors.grey,
+//                         ),
+//                         SizedBox(height: 8),
+//                         Text(
+//                           'Tap to upload payment screenshot',
+//                           style: TextStyle(
+//                             color: Colors.grey,
+//                             fontSize: 14,
+//                           ),
+//                         ),
+//                       ],
+//                     ),
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+
+//   Widget _buildDateTimeField({
+//     required IconData icon,
+//     required String label,
+//     required String value,
+//     required VoidCallback onTap,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+//       decoration: const BoxDecoration(
+//         border: Border(
+//             bottom: BorderSide(color: Color.fromARGB(255, 162, 162, 162))),
+//       ),
+//       child: InkWell(
+//         onTap: onTap,
+//         child: Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 12),
+//           child: Row(
+//             children: [
+//               Icon(icon, color: Colors.grey.shade600, size: 20),
+//               const SizedBox(width: 12),
+//               Expanded(
+//                 child: Text(
+//                   value,
+//                   style: TextStyle(
+//                     color: value.contains('Select') ? Colors.grey.shade500 : Colors.black87,
+//                     fontSize: 16,
+//                   ),
+//                 ),
+//               ),
+//             ],
+//           ),
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
+//     return Card(
+//       elevation: 1,
+//       color: const Color(0XFFFFFFFF),
+//       shape: RoundedRectangleBorder(
+//         borderRadius: BorderRadius.circular(12),
+//         side: BorderSide(color: Colors.grey.shade200),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 Text(
+//                   booking?.car?.vehicleNumber ?? 'TS 05 TD 4544',
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     color: Colors.red.shade700,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   booking?.car?.carName ?? 'Hyundai Verna',
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.w600,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+
+//             Row(
+//               children: [
+//                 const Icon(Icons.settings, size: 16, color: Colors.grey),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   booking?.car?.type ?? 'Automatic',
+//                   style: const TextStyle(
+//                     color: Colors.grey,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 16),
+//                 Row(
+//                   children: [
+//                     const Icon(Icons.airline_seat_recline_normal,
+//                         size: 16, color: Colors.grey),
+//                     const SizedBox(width: 4),
+//                     Text(
+//                       '${booking?.car?.seats ?? 5} Seaters',
+//                       style: const TextStyle(
+//                         color: Colors.grey,
+//                         fontSize: 13,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ],
+//             ),
+//             const SizedBox(height: 12),
+
+//             Row(
+//               mainAxisAlignment: MainAxisAlignment.end,
+//               children: [
+//                 const Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   '${booking?.rentalEndDate ?? 'Not set'}',
+//                   style: const TextStyle(
+//                     color: Colors.black87,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//                 const SizedBox(width: 16),
+//                 const Icon(Icons.access_time, size: 16, color: Colors.blue),
+//                 const SizedBox(width: 4),
+//                 Text(
+//                   '${booking?.to ?? 'Not set'}',
+//                   style: const TextStyle(
+//                     color: Colors.black87,
+//                     fontSize: 13,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   Widget _buildCollapsibleSection({
+//     required String title,
+//     required bool isExpanded,
+//     required VoidCallback onTap,
+//     required Widget child,
+//   }) {
+//     return Column(
+//       children: [
+//         const SizedBox(height: 20),
+//         InkWell(
+//           onTap: onTap,
+//           child: Container(
+//             height: 60,
+//             padding:
+//                 const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+//             decoration: BoxDecoration(
+//               color: const Color.fromARGB(255, 206, 206, 206),
+//               borderRadius: BorderRadius.circular(8),
+//               boxShadow: [
+//                 BoxShadow(
+//                   color: Colors.black.withOpacity(0.1),
+//                   spreadRadius: 1,
+//                   blurRadius: 6,
+//                   offset: const Offset(0, 2),
+//                 ),
+//               ],
+//             ),
+//             child: Row(
+//               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//               children: [
+//                 Text(
+//                   title,
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//                 Icon(
+//                   isExpanded
+//                       ? Icons.keyboard_arrow_up
+//                       : Icons.keyboard_arrow_down,
+//                   color: Colors.black54,
+//                 ),
+//               ],
+//             ),
+//           ),
+//         ),
+//         child,
+//       ],
+//     );
+//   }
+
+//   Widget _buildDisplayField({
+//     required IconData icon,
+//     required String label,
+//     required String value,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16),
+//       decoration: const BoxDecoration(
+//         border: Border(
+//           bottom: BorderSide(color: Color.fromARGB(255, 162, 162, 162)),
+//         ),
+//       ),
+//       child: Padding(
+//         padding: const EdgeInsets.symmetric(vertical: 12),
+//         child: Row(
+//           children: [
+//             Icon(icon, color: Colors.grey.shade600, size: 20),
+//             const SizedBox(width: 12),
+//             Expanded(
+//               child: Column(
+//                 crossAxisAlignment: CrossAxisAlignment.start,
+//                 children: [
+//                   Text(
+//                     value,
+//                     style: const TextStyle(
+//                       color: Colors.black87,
+//                       fontSize: 16,
+//                       fontWeight: FontWeight.w400,
+//                     ),
+//                   ),
+//                 ],
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+// Widget _buildInputField({
+//     required IconData icon,
+//     required String label,
+//     TextEditingController? controller,
+//   }) {
+//     return Container(
+//       margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
+//       decoration: const BoxDecoration(
+//         border: Border(
+//           bottom: BorderSide(color: Color.fromARGB(255, 162, 162, 162)),
+//         ),
+//       ),
+//       child: TextFormField(
+//         controller: controller,
+//         decoration: InputDecoration(
+//           prefixIcon: Icon(icon, color: Colors.grey.shade600, size: 20),
+//           labelText: label,
+//           labelStyle: TextStyle(color: Colors.grey.shade600),
+//           border: InputBorder.none,
+//           contentPadding: const EdgeInsets.symmetric(vertical: 12),
+//         ),
+//         style: const TextStyle(
+//           color: Colors.black87,
+//           fontSize: 16,
+//         ),
+//       ),
+//     );
+//   }
+
+
+//     Widget _buildSecurityDepositSection() {
+//   return Consumer<SingleBookingProvider>(
+//     builder: (context, bookingProvider, child) {
+//       final booking = bookingProvider.currentBooking;
+      
+//       // Get deposit proof images from booking data
+//       final depositProof = booking?.depositeProof ?? [];
+
+//       print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
+      
+//       // Create a list of security deposit images
+//       List<Map<String, String>> securityImages = [];
+      
+//       // Add deposit proof images (front and back of security deposit item)
+//       for (var proof in depositProof) {
+//         String title = 'Security Deposit';
+//         if (proof.label == 'depositeFront') {
+//           title = 'Security Deposit - Front';
+//         } else if (proof.label == 'depositeBack') {
+//           title = 'Security Deposit - Back';
+//         }
+        
+//         securityImages.add({
+//           'title': title,
+//           'url': proof.url ?? '',
+//         });
+//       }
+      
+//       // If no deposit images available, show placeholders for front and back
+//       if (securityImages.isEmpty) {
+//         securityImages = [
+//           {'title': 'Security Deposit - Front', 'url': ''},
+//           {'title': 'Security Deposit - Back', 'url': ''},
+//         ];
+//       }
+      
+//       return Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: [
+//             const Text(
+//               'Security Deposit',
+//               style: TextStyle(
+//                 fontSize: 16,
+//                 fontWeight: FontWeight.bold,
+//               ),
+//             ),
+//             const SizedBox(height: 16),
+//             GridView.builder(
+//               shrinkWrap: true,
+//               physics: const NeverScrollableScrollPhysics(),
+//               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+//                 crossAxisCount: 2,
+//                 childAspectRatio: 1.5,
+//                 crossAxisSpacing: 10,
+//                 mainAxisSpacing: 10,
+//               ),
+//               itemCount: securityImages.length,
+//               itemBuilder: (context, index) {
+//                 final imageData = securityImages[index];
+//                 return _buildSecurityDocumentCard(
+//                   title: imageData['title']!,
+//                   imageUrl: imageData['url']!,
+//                 );
+//               },
+//             ),
+//           ],
+//         ),
+//       );
+//     },
+//   );
+// }
+
+// Widget _buildSecurityDocumentCard({
+//   required String title,
+//   required String imageUrl,
+// }) {
+//   return Container(
+//     height: 206,
+//     decoration: BoxDecoration(
+//       borderRadius: BorderRadius.circular(12),
+//       color: Colors.grey.shade200,
+//     ),
+//     child: Stack(
+//       children: [
+//         // Main image
+//         if (imageUrl.isNotEmpty)
+//           ClipRRect(
+//             borderRadius: BorderRadius.circular(12),
+//             child: Image.network(
+//               imageUrl,
+//               fit: BoxFit.cover,
+//               width: double.infinity,
+//               height: double.infinity,
+//               loadingBuilder: (context, child, loadingProgress) {
+//                 if (loadingProgress == null) return child;
+//                 return Center(
+//                   child: CircularProgressIndicator(
+//                     value: loadingProgress.expectedTotalBytes != null
+//                         ? loadingProgress.cumulativeBytesLoaded /
+//                             loadingProgress.expectedTotalBytes!
+//                         : null,
+//                   ),
+//                 );
+//               },
+//               errorBuilder: (context, error, stackTrace) => Container(
+//                 decoration: BoxDecoration(
+//                   borderRadius: BorderRadius.circular(12),
+//                   color: Colors.grey.shade300,
+//                 ),
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   children: [
+//                     Icon(
+//                       Icons.image_not_supported,
+//                       size: 40,
+//                       color: Colors.grey.shade600,
+//                     ),
+//                     const SizedBox(height: 8),
+//                     Text(
+//                       'Image not available',
+//                       style: TextStyle(
+//                         color: Colors.grey.shade600,
+//                         fontSize: 12,
+//                       ),
+//                     ),
+//                   ],
+//                 ),
+//               ),
+//             ),
+//           )
+//         else
+//           // Placeholder when no image URL
+//           Container(
+//             decoration: BoxDecoration(
+//               borderRadius: BorderRadius.circular(12),
+//               color: Colors.grey.shade300,
+//             ),
+//             child: Column(
+//               mainAxisAlignment: MainAxisAlignment.center,
+//               children: [
+//                 Icon(
+//                   Icons.security,
+//                   size: 40,
+//                   color: Colors.grey.shade600,
+//                 ),
+//                 const SizedBox(height: 8),
+//                 Text(
+//                   'Security Deposit',
+//                   style: TextStyle(
+//                     color: Colors.grey.shade600,
+//                     fontSize: 12,
+//                     fontWeight: FontWeight.w500,
+//                   ),
+//                   textAlign: TextAlign.center,
+//                 ),
+//               ],
+//             ),
+//           ),
+        
+//         // Title overlay at bottom
+//         Positioned(
+//           bottom: 0,
+//           left: 0,
+//           right: 0,
+//           child: Container(
+//             padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+//             decoration: BoxDecoration(
+//               borderRadius: const BorderRadius.vertical(
+//                 bottom: Radius.circular(12),
+//               ),
+//               gradient: LinearGradient(
+//                 begin: Alignment.topCenter,
+//                 end: Alignment.bottomCenter,
+//                 colors: [
+//                   Colors.transparent,
+//                   Colors.black.withOpacity(0.7),
+//                 ],
+//               ),
+//             ),
+//             child: Text(
+//               title,
+//               style: const TextStyle(
+//                 color: Colors.white,
+//                 fontSize: 12,
+//                 fontWeight: FontWeight.w600,
+//               ),
+//               textAlign: TextAlign.center,
+//             ),
+//           ),
+//         ),
+//       ],
+//     ),
+//   );
+// }
+
+  // Widget _buildSecurityDepositSection() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         'Security Deposit',
+  //         style: TextStyle(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //           color: Colors.green,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 8),
+  //       Container(
+  //         padding: const EdgeInsets.all(12),
+  //         decoration: BoxDecoration(
+  //           color: Colors.green.shade50,
+  //           borderRadius: BorderRadius.circular(8),
+  //           border: Border.all(color: Colors.green.shade200),
+  //         ),
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //           children: [
+  //             const Column(
+  //               crossAxisAlignment: CrossAxisAlignment.start,
+  //               children: [
+  //                 Text(
+  //                   'Amount: ₹5000',
+  //                   style: TextStyle(
+  //                     fontSize: 14,
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.green,
+  //                   ),
+  //                 ),
+  //                 Text(
+  //                   'Status: Collected',
+  //                   style: TextStyle(
+  //                     fontSize: 12,
+  //                     color: Colors.grey,
+  //                   ),
+  //                 ),
+  //               ],
+  //             ),
+  //             Icon(
+  //               Icons.check_circle,
+  //               color: Colors.green.shade600,
+  //               size: 24,
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+//   Widget _buildButtons() {
+//     return Positioned(
+//       bottom: 0,
+//       left: 0,
+//       right: 0,
+//       child: Container(
+//         padding: const EdgeInsets.all(16),
+//         decoration: BoxDecoration(
+//           color: Colors.white,
+//           boxShadow: [
+//             BoxShadow(
+//               color: Colors.black.withOpacity(0.1),
+//               spreadRadius: 1,
+//               blurRadius: 6,
+//               offset: const Offset(0, -2),
+//             ),
+//           ],
+//         ),
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             SizedBox(
+//               width: double.infinity,
+//               height: 50,
+//               child: ElevatedButton(
+//                 onPressed: isProceedEnabled ? _submitReturnData : null,
+//                 style: ElevatedButton.styleFrom(
+//                   backgroundColor: isProceedEnabled 
+//                       ? const Color(0xFF2E7D32) 
+//                       : Colors.grey.shade400,
+//                   foregroundColor: Colors.white,
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                   elevation: 0,
+//                 ),
+//                 child: Text(
+//                   hasDelay && delayPaymentScreenshot == null 
+//                       ? 'Upload Payment Screenshot to Proceed'
+//                       : 'Proceed',
+//                   style: const TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             const SizedBox(height: 12),
+//             SizedBox(
+//               width: double.infinity,
+//               height: 50,
+//               child: OutlinedButton(
+//                 onPressed: () {
+//                   Navigator.pop(context);
+//                 },
+//                 style: OutlinedButton.styleFrom(
+//                   foregroundColor: const Color(0xFF2E7D32),
+//                   side: const BorderSide(color: Color(0xFF2E7D32)),
+//                   shape: RoundedRectangleBorder(
+//                     borderRadius: BorderRadius.circular(8),
+//                   ),
+//                 ),
+//                 child: const Text(
+//                   'Cancel',
+//                   style: TextStyle(
+//                     fontSize: 16,
+//                     fontWeight: FontWeight.bold,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+
+//   @override
+//   void dispose() {
+//     nameController.dispose();
+//     mobileController.dispose();
+//     altMobileController.dispose();
+//     emailController.dispose();
+//     super.dispose();
+//   }
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import 'package:car_rental_staff_app/models/single_booking_model.dart';
+import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/return_upload_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class CarPickupDetailsScreen extends StatefulWidget {
-  const CarPickupDetailsScreen({Key? key}) : super(key: key);
+  final String? bookingId;
+  const CarPickupDetailsScreen({Key? key, this.bookingId}) : super(key: key);
 
   @override
   State<CarPickupDetailsScreen> createState() => _CarPickupDetailsScreenState();
@@ -11,368 +2490,1361 @@ class CarPickupDetailsScreen extends StatefulWidget {
 class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
   bool isPickupExpanded = true;
   bool isReturnExpanded = false;
+  bool isProceedEnabled = false;
+  bool useSameDetails = false;
+  bool isUploadingPaymentScreenshot = false;
+  
+  // Form controllers
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController mobileController = TextEditingController();
+  final TextEditingController altMobileController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  
+  // Date and time variables
+  DateTime? returnDate;
+  TimeOfDay? returnTime;
+  DateTime? delayDate;
+  TimeOfDay? delayTime;
+  
+  int delayAmount = 0;
+  bool hasDelay = false;
+  File? delayPaymentScreenshot;
+  final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.bookingId != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        context
+            .read<SingleBookingProvider>()
+            .fetchSingleBooking(widget.bookingId!);
+      });
+    }
+  }
+
+  bool _hasReturnDetails(Booking? booking) {
+    return booking != null && booking.returnDetails.isNotEmpty;
+  }
+
+  void _populateReturnDateTimeFromBooking(Booking? booking) {
+    if (booking != null) {
+      if (booking.rentalEndDate != null) {
+        try {
+          final dateParts = booking.rentalEndDate!.split('-');
+          if (dateParts.length == 3) {
+            returnDate = DateTime(
+              int.parse(dateParts[0]),
+              int.parse(dateParts[1]),
+              int.parse(dateParts[2]),
+            );
+          }
+        } catch (e) {
+          print('Error parsing return date: $e');
+        }
+      }
+      
+      if (booking.to != null) {
+        try {
+          final timeStr = booking.to!.replaceAll(RegExp(r'[AP]M'), '').trim();
+          final timeParts = timeStr.split(':');
+          if (timeParts.length == 2) {
+            int hour = int.parse(timeParts[0]);
+            int minute = int.parse(timeParts[1]);
+            
+            if (booking.to!.contains('PM') && hour != 12) {
+              hour += 12;
+            } else if (booking.to!.contains('AM') && hour == 12) {
+              hour = 0;
+            }
+            
+            returnTime = TimeOfDay(hour: hour, minute: minute);
+          }
+        } catch (e) {
+          print('Error parsing return time: $e');
+        }
+      }
+    }
+  }
+
+  void _populateFromReturnDetails(Booking? booking) {
+    if (booking != null && booking.returnDetails.isNotEmpty) {
+      final returnDetail = booking.returnDetails[0];
+      setState(() {
+        nameController.text = returnDetail['name'] ?? '';
+        mobileController.text = returnDetail['mobile'] ?? '';
+        altMobileController.text = returnDetail['alternativeMobile'] ?? '';
+        emailController.text = returnDetail['email'] ?? '';
+        
+        // Parse return date and time from returnDetails
+        if (returnDetail['returnDate'] != null) {
+          try {
+            final dateParts = returnDetail['returnDate'].split('-');
+            if (dateParts.length == 3) {
+              returnDate = DateTime(
+                int.parse(dateParts[0]),
+                int.parse(dateParts[1]),
+                int.parse(dateParts[2]),
+              );
+            }
+          } catch (e) {
+            print('Error parsing return date from returnDetails: $e');
+          }
+        }
+        
+        if (returnDetail['returnTime'] != null) {
+          try {
+            final timeStr = returnDetail['returnTime'].toString();
+            final timeParts = timeStr.split(':');
+            if (timeParts.length >= 2) {
+              int hour = int.parse(timeParts[0]);
+              int minute = int.parse(timeParts[1].split(' ')[0]);
+              
+              if (timeStr.contains('PM') && hour != 12) {
+                hour += 12;
+              } else if (timeStr.contains('AM') && hour == 12) {
+                hour = 0;
+              }
+              
+              returnTime = TimeOfDay(hour: hour, minute: minute);
+            }
+          } catch (e) {
+            print('Error parsing return time from returnDetails: $e');
+          }
+        }
+        
+        // Handle delay information
+        final delayTime = returnDetail['delayTime'] ?? 0;
+        final delayDay = returnDetail['delayDay'] ?? 0;
+        
+        if (delayTime > 0 || delayDay > 0) {
+          hasDelay = true;
+          delayAmount = delayTime * 100; // Assuming 100 per hour
+        }
+        
+        isProceedEnabled = true; // Enable proceed since data is already filled
+      });
+    }
+  }
+
+  void _fillSameDetails(Booking? booking) {
+    if (booking != null && booking.userId != null) {
+      setState(() {
+        nameController.text = booking.userId!.name ?? '';
+        mobileController.text = booking.userId!.mobile ?? '';
+        altMobileController.text = booking.userId!.mobile ?? '';
+        emailController.text = booking.userId!.email ?? '';
+        isProceedEnabled = true;
+      });
+    }
+  }
+
+  void _calculateDelayAmount() {
+    if (returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+      final returnDateTime = DateTime(
+        returnDate!.year,
+        returnDate!.month,
+        returnDate!.day,
+        returnTime!.hour,
+        returnTime!.minute,
+      );
+      
+      final delayDateTime = DateTime(
+        delayDate!.year,
+        delayDate!.month,
+        delayDate!.day,
+        delayTime!.hour,
+        delayTime!.minute,
+      );
+      
+      if (delayDateTime.isAfter(returnDateTime)) {
+        final difference = delayDateTime.difference(returnDateTime);
+        final hoursDifference = difference.inHours;
+        setState(() {
+          delayAmount = hoursDifference * 100;
+          hasDelay = true;
+          isProceedEnabled = false;
+          delayPaymentScreenshot = null;
+        });
+      } else {
+        setState(() {
+          delayAmount = 0;
+          hasDelay = false;
+          isProceedEnabled = true;
+          delayPaymentScreenshot = null;
+        });
+      }
+    } else {
+      setState(() {
+        delayAmount = 0;
+        hasDelay = false;
+        isProceedEnabled = !hasDelay;
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context, bool isReturn) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    
+    if (picked != null) {
+      setState(() {
+        if (isReturn) {
+          returnDate = picked;
+        } else {
+          delayDate = picked;
+        }
+      });
+      _calculateDelayAmount();
+    }
+  }
+
+  Future<void> _selectTime(BuildContext context, bool isReturn) async {
+    final TimeOfDay? picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.now(),
+    );
+    
+    if (picked != null) {
+      setState(() {
+        if (isReturn) {
+          returnTime = picked;
+        } else {
+          delayTime = picked;
+        }
+      });
+      _calculateDelayAmount();
+    }
+  }
+
+  Future<void> _pickDelayPaymentScreenshotBottomSheet() async {
+    try {
+      final ImageSource? source = await showModalBottomSheet<ImageSource>(
+        context: context,
+        builder: (BuildContext context) {
+          return SafeArea(
+            child: Wrap(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.camera),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Gallery'),
+                  onTap: () => Navigator.of(context).pop(ImageSource.gallery),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.cancel),
+                  title: const Text('Cancel'),
+                  onTap: () => Navigator.of(context).pop(),
+                ),
+              ],
+            ),
+          );
+        },
+      );
+
+      if (source == null) return;
+
+      final XFile? image = await _picker.pickImage(
+        source: source,
+        maxWidth: 1000,
+        maxHeight: 1000,
+        imageQuality: 80,
+      );
+      
+      if (image != null) {
+        await _uploadDelayPaymentScreenshot(File(image.path));
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error picking image: $e')),
+      );
+    }
+  }
+
+  Future<void> _uploadDelayPaymentScreenshot(File imageFile) async {
+    setState(() {
+      isUploadingPaymentScreenshot = true;
+    });
+
+    try {
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse('http://194.164.148.244:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
+      );
+      
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'paymentScreenshot',
+          imageFile.path,
+        ),
+      );
+
+      var response = await request.send();
+
+      print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr${response}");
+      
+      if (response.statusCode == 200) {
+        setState(() {
+          delayPaymentScreenshot = imageFile;
+          isProceedEnabled = true;
+          isUploadingPaymentScreenshot = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Payment screenshot uploaded successfully')),
+        );
+      } else {
+        setState(() {
+          isUploadingPaymentScreenshot = false;
+        });
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Upload failed: ${response.statusCode}')),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        isUploadingPaymentScreenshot = false;
+      });
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Upload error: $e')),
+      );
+    }
+  }
+
+  Future<dynamic> _submitReturnData(hasReturnDetails) async {
+    if (widget.bookingId == null) return;
+    
+    try {
+      print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$hasReturnDetails");
+      if(!hasReturnDetails){
+        final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
+      
+      int delayTimeHours = 0;
+      int delayDays = 0;
+      
+      if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+        final returnDateTime = DateTime(
+          returnDate!.year,
+          returnDate!.month,
+          returnDate!.day,
+          returnTime!.hour,
+          returnTime!.minute,
+        );
+        
+        final delayDateTime = DateTime(
+          delayDate!.year,
+          delayDate!.month,
+          delayDate!.day,
+          delayTime!.hour,
+          delayTime!.minute,
+        );
+        
+        final difference = delayDateTime.difference(returnDateTime);
+        delayTimeHours = difference.inHours;
+        delayDays = difference.inDays;
+      }
+      
+      final requestBody = {
+        "name": nameController.text,
+        "email": emailController.text,
+        "mobile": mobileController.text,
+        "alternativeMobile": altMobileController.text,
+        "returnTime": returnTime != null ? returnTime!.format(context) : "",
+        "returnDate": returnDate != null ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}" : "",
+        "delayTime": delayTimeHours,
+        "delayDay": delayDays
+      };
+      
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: json.encode(requestBody),
+      );
+      
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${response.statusCode}')),
+        );
+      }
+      }else{
+               Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Network Error: $e')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                height: 50,
+      body: Consumer<SingleBookingProvider>(
+        builder: (context, bookingProvider, child) {
+          if (bookingProvider.isLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (bookingProvider.error != null) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Error: ${bookingProvider.error}',
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      if (widget.bookingId != null) {
+                        bookingProvider.fetchSingleBooking(widget.bookingId!);
+                      }
+                    },
+                    child: const Text('Retry'),
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: screenWidth * 0.06,
+            );
+          }
+
+          final booking = bookingProvider.currentBooking;
+          final hasReturnDetails = _hasReturnDetails(booking);
+          
+          // Auto-populate data when first loaded
+          if (booking != null && returnDate == null && returnTime == null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (hasReturnDetails) {
+                _populateFromReturnDetails(booking);
+              } else {
+                _populateReturnDateTimeFromBooking(booking);
+              }
+            });
+          }
+
+          return SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 50),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.grey.shade200,
+                            shape: BoxShape.circle,
+                          ),
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.arrow_back,
+                              color: Colors.black,
+                              size: screenWidth * 0.06,
+                            ),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    SizedBox(width: screenWidth * 0.25),
-                    Text(
-                      "id: #1234",
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 255, 0, 0),
-                        fontSize: screenWidth * 0.045,
-                        fontWeight: FontWeight.w800,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(
-                height: 30,
-              ),
-              Card(
-                elevation: 1,
-                color: const Color(0XFFFFFFFF),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.grey.shade200),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Text(
-                            'TS 05 TD 4544',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.red.shade700,
-                              fontWeight: FontWeight.bold,
-                            ),
+                        SizedBox(width: screenWidth * 0.25),
+                        Text(
+                          "ID: ${booking?.id != null ? booking!.id.substring(booking!.id.length - 4) : (widget.bookingId != null ? widget.bookingId!.substring(widget.bookingId!.length - 4) : '----')}",
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 255, 0, 0),
+                            fontSize: screenWidth * 0.045,
+                            fontWeight: FontWeight.w800,
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Text(
-                            'Hyundai Verna',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 30),
+                  _buildCarDetailsCard(booking, screenWidth),
+                  const SizedBox(height: 30),
 
-                      // Automatic & Seaters Row
-                      Row(
-                        children: [
-                          const Icon(Icons.settings,
-                              size: 16, color: Colors.grey),
-                          const SizedBox(width: 4),
-                          const Text(
-                            'Automatic',
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: 13,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Row(
-                            children: const [
-                              Icon(Icons.airline_seat_recline_normal,
-                                  size: 16, color: Colors.grey),
-                              SizedBox(width: 4),
-                              Text(
-                                '5 Seaters',
-                                style: TextStyle(
-                                  color: Colors.grey,
-                                  fontSize: 13,
-                                ),
+                  // Pickup Section
+                  _buildCollapsibleSection(
+                    title: 'Pickup details',
+                    isExpanded: isPickupExpanded,
+                    onTap: () {
+                      setState(() {
+                        isPickupExpanded = !isPickupExpanded;
+                      });
+                    },
+                    child: isPickupExpanded
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 25),
+                              // const Text(
+                              //   'Pickup Details',
+                              //   style: TextStyle(
+                              //       fontSize: 18, fontWeight: FontWeight.bold),
+                              // ),
+                              _buildDisplayField(
+                                  icon: Icons.person_outline,
+                                  label: 'Name',
+                                  value: booking?.userId?.name ?? 'Not Available'),
+                              _buildDisplayField(
+                                icon: Icons.phone_outlined,
+                                label: 'Mobile Number',
+                                value: booking?.userId?.mobile ?? 'Not Available',
                               ),
+                              _buildDisplayField(
+                                icon: Icons.phone_outlined,
+                                label: 'Alternate Mobile Number',
+                                value: booking?.userId?.mobile ?? 'Not Available',
+                              ),
+                              _buildDisplayField(
+                                  icon: Icons.email_outlined,
+                                  label: 'Email',
+                                  value: booking?.userId?.email ?? 'Not Available'),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildDisplayField(
+                                      icon: Icons.access_time_outlined,
+                                      label: 'Pickup time',
+                                      value: booking?.from ?? 'Not set',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _buildDisplayField(
+                                      icon: Icons.calendar_today_outlined,
+                                      label: 'Pickup date',
+                                      value: booking?.rentalStartDate ?? 'Not set',
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const Divider(height: 20, thickness: 1),
+                              _buildSecurityDepositSection(),
                             ],
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                          )
+                        : const SizedBox(),
+                  ),
 
-                      // Date & Time Row
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: const [
-                          Icon(Icons.calendar_today,
-                              size: 16, color: Colors.blue),
-                          SizedBox(width: 4),
-                          Text(
-                            '23-03-2025',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 13,
-                            ),
-                          ),
-                          SizedBox(width: 16),
-                          Icon(Icons.access_time, size: 16, color: Colors.blue),
-                          SizedBox(width: 4),
-                          Text(
-                            '11:00 AM',
-                            style: TextStyle(
-                              color: Colors.black87,
-                              fontSize: 13,
-                            ),
-                          ),
-                        ],
+                  const SizedBox(height: 10),
+
+                  // Return Section
+                  _buildCollapsibleSection(
+                    title: 'Return Details',
+                    isExpanded: isReturnExpanded,
+                    onTap: () {
+                      setState(() {
+                        isReturnExpanded = !isReturnExpanded;
+                      });
+                    },
+                    child: isReturnExpanded
+                        ? Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 25),
+                              Row(
+                                children: [
+                                  // const Text(
+                                  //   'Return Details',
+                                  //   style: TextStyle(
+                                  //       fontSize: 18, fontWeight: FontWeight.bold),
+                                  // ),
+                                  if (hasReturnDetails) ...[
+                                    const SizedBox(width: 10),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.green.shade100,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(color: Colors.green.shade300),
+                                      ),
+                                      child: const Text(
+                                        'Completed',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: Colors.green,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              
+                              // Show checkbox only if no return details exist
+                              if (!hasReturnDetails) ...[
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Checkbox(
+                                        value: useSameDetails,
+                                        onChanged: (bool? value) {
+                                          setState(() {
+                                            useSameDetails = value ?? false;
+                                            if (useSameDetails) {
+                                              _fillSameDetails(booking);
+                                            } else {
+                                              nameController.clear();
+                                              mobileController.clear();
+                                              altMobileController.clear();
+                                              emailController.clear();
+                                              isProceedEnabled = false;
+                                            }
+                                          });
+                                        },
+                                      ),
+                                      const Text(
+                                        'Use same details as pickup',
+                                        style: TextStyle(fontSize: 14),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                              
+                              // Show fields based on whether return details exist
+                              if (hasReturnDetails) ...[
+                                // Read-only display fields
+                                _buildDisplayField(
+                                  icon: Icons.person_outline,
+                                  label: 'Name',
+                                  value: nameController.text.isNotEmpty ? nameController.text : 'Not Available',
+                                ),
+                                _buildDisplayField(
+                                  icon: Icons.phone_outlined,
+                                  label: 'Mobile Number',
+                                  value: mobileController.text.isNotEmpty ? mobileController.text : 'Not Available',
+                                ),
+                                _buildDisplayField(
+                                  icon: Icons.phone_outlined,
+                                  label: 'Alternate Mobile Number',
+                                  value: altMobileController.text.isNotEmpty ? altMobileController.text : 'Not Available',
+                                ),
+                                _buildDisplayField(
+                                  icon: Icons.email_outlined,
+                                  label: 'Email',
+                                  value: emailController.text.isNotEmpty ? emailController.text : 'Not Available',
+                                ),
+                              ] else ...[
+                                // Editable input fields
+                                _buildInputField(
+                                  icon: Icons.person_outline,
+                                  label: 'Name',
+                                  controller: nameController,
+                                ),
+                                _buildInputField(
+                                  icon: Icons.phone_outlined,
+                                  label: 'Mobile Number',
+                                  controller: mobileController,
+                                ),
+                                _buildInputField(
+                                  icon: Icons.phone_outlined,
+                                  label: 'Alternate Mobile Number',
+                                  controller: altMobileController,
+                                ),
+                                _buildInputField(
+                                  icon: Icons.email_outlined,
+                                  label: 'Email',
+                                  controller: emailController,
+                                ),
+                              ],
+
+                              // Return time and date (always read-only)
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _buildDisplayField(
+                                      icon: Icons.access_time_outlined,
+                                      label: 'Return time',
+                                      value: returnTime?.format(context) ?? 'Not set',
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: _buildDisplayField(
+                                      icon: Icons.calendar_today_outlined,
+                                      label: 'Return date',
+                                      value: returnDate != null 
+                                          ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
+                                          : 'Not set',
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                              // Delay information - only show editable if no return details
+                              if (!hasReturnDetails) ...[
+                                const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    'Delay Information (Optional)',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange,
+                                    ),
+                                  ),
+                                ),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: _buildDateTimeField(
+                                        icon: Icons.timelapse_outlined,
+                                        label: 'Delay time',
+                                        value: delayTime?.format(context) ?? 'Select time',
+                                        onTap: () => _selectTime(context, false),
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: _buildDateTimeField(
+                                        icon: Icons.date_range_outlined,
+                                        label: 'Delay date',
+                                        value: delayDate != null 
+                                            ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
+                                            : 'Select date',
+                                        onTap: () => _selectDate(context, false),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ] else if (hasDelay) ...[
+                                // Show delay info as read-only if return details exist and has delay
+                                const Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    'Delay Information',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.orange,
+                                    ),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                  child: Text(
+                                    'Delay charges applied: ₹$delayAmount',
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.orange,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ],
+                          )
+                        : const SizedBox(),
+                  ),
+
+                  const SizedBox(height: 10),
+                  
+                  // Show delay amount and screenshot upload when there's delay
+                  if (hasDelay && !hasReturnDetails) ...[
+                    _buildDelayAmountDisplay(),
+                    _buildScreenshotUploadSection(),
+                  ] else if (hasDelay && hasReturnDetails) ...[
+                    // _buildDelayAmountDisplay(),
+                    // Show existing delay payment screenshots if they exist
+                    _buildExistingDelayScreenshots(booking),
+                  ],
+                  
+                  const SizedBox(height: 130),
+                  _buildButtons()
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildExistingDelayScreenshots(Booking? booking) {
+    // This method would show existing delay payment screenshots from booking data
+    // You'll need to add delay payment screenshot URLs to your booking model
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Payment Screenshot',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 150,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.green, width: 2),
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.green.shade50,
+            ),
+            child: Stack(
+              children: [
+                const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.check_circle,
+                        size: 40,
+                        color: Colors.green,
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Payment Screenshot Uploaded',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500,
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-
-              SizedBox(
-                height: 30,
-              ),
-
-              // Pickup Section (Collapsible)
-              _buildCollapsibleSection(
-                title: 'Pickup details',
-                isExpanded: isPickupExpanded,
-                onTap: () {
-                  setState(() {
-                    isPickupExpanded = !isPickupExpanded;
-                  });
-                },
-                child: isPickupExpanded
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 25,
-                          ),
-                          Text(
-                            'Pickup Details',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-
-                          // Name field
-                          _buildInputField(
-                            icon: Icons.person_outline,
-                            label: 'Name',
-                          ),
-
-                          // Mobile Number field
-                          _buildInputField(
-                            icon: Icons.phone_outlined,
-                            label: 'Mobile Number',
-                          ),
-
-                          // Alternate Mobile Number field
-                          _buildInputField(
-                            icon: Icons.phone_outlined,
-                            label: 'Alternate Mobile Number',
-                          ),
-
-                          // Email field
-                          _buildInputField(
-                            icon: Icons.email_outlined,
-                            label: 'Email',
-                          ),
-
-                          // Pickup time and date
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.access_time_outlined,
-                                  label: 'Pickup time',
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.calendar_today_outlined,
-                                  label: 'Pickup date',
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          const Divider(height: 20, thickness: 1),
-                          _buildSecurityDepositSection(),
-                        ],
-                      )
-                    : SizedBox(),
-              ),
-
-              SizedBox(
-                height: 30,
-              ),
-
-              // Return Section (Collapsible)
-              _buildCollapsibleSection(
-                title: 'Return Details',
-                isExpanded: isReturnExpanded,
-                onTap: () {
-                  setState(() {
-                    isReturnExpanded = !isReturnExpanded;
-                  });
-                },
-                child: isReturnExpanded
-                    ? Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 25,
-                          ),
-
-                          Text(
-                            'Return Details',
-                            style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold),
-                          ),
-                          // Name field
-                          _buildInputField(
-                            icon: Icons.person_outline,
-                            label: 'Name',
-                          ),
-
-                          // Mobile Number field
-                          _buildInputField(
-                            icon: Icons.phone_outlined,
-                            label: 'Mobile Number',
-                          ),
-
-                          // Alternate Mobile Number field
-                          _buildInputField(
-                            icon: Icons.phone_outlined,
-                            label: 'Alternate Mobile Number',
-                          ),
-
-                          // Email field
-                          _buildInputField(
-                            icon: Icons.email_outlined,
-                            label: 'Email',
-                          ),
-
-                          // Return time and date
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.access_time_outlined,
-                                  label: 'Return time',
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.calendar_today_outlined,
-                                  label: 'Return date',
-                                ),
-                              ),
-                            ],
-                          ),
-
-                          // Delay information
-                          Row(
-                            children: [
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.timelapse_outlined,
-                                  label: 'Delay time',
-                                ),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: _buildInputField(
-                                  icon: Icons.date_range_outlined,
-                                  label: 'Date date',
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    : SizedBox(),
-              ),
-
-              const SizedBox(height: 20),
-              _buildBottomButtons(),
-              SizedBox(
-                height: 130,
-              ),
-              _buildButtons()
-            ],
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.green,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.check,
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
+        ],
+      ),
+    );
+  }
+
+  // Continue from the existing code - this is the remaining part
+
+  Widget _buildDelayAmountDisplay() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.orange.shade50,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: Colors.orange.shade200),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Delay Charges',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '₹$delayAmount',
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.orange,
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+              decoration: BoxDecoration(
+                color: Colors.orange.shade100,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: const Text(
+                'Payment Required',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.orange,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-  Widget _buildDocumentCard({
-    required String title,
-  }) {
-    return Container(
-      height: 206,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        image: const DecorationImage(
-          image: AssetImage('assets/adhar.png'),
-          fit: BoxFit.cover,
-        ),
-      ),
-      child: Stack(
+  Widget _buildScreenshotUploadSection() {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Gradient overlay at bottom
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 60,
+          const Text(
+            'Upload Payment Screenshot',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: delayPaymentScreenshot == null && !isUploadingPaymentScreenshot
+                ? _pickDelayPaymentScreenshotBottomSheet
+                : null,
             child: Container(
-              decoration: const BoxDecoration(
-                borderRadius:
-                    BorderRadius.vertical(bottom: Radius.circular(12)),
+              height: 150,
+              width: double.infinity,
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: delayPaymentScreenshot != null 
+                      ? Colors.green 
+                      : Colors.grey.shade400,
+                  width: 2,
+                  style: BorderStyle.solid,
+                ),
+                borderRadius: BorderRadius.circular(8),
+                color: delayPaymentScreenshot != null 
+                    ? Colors.green.shade50 
+                    : Colors.grey.shade50,
+              ),
+              child: Stack(
+                children: [
+                  Center(
+                    child: isUploadingPaymentScreenshot
+                        ? const Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CircularProgressIndicator(),
+                              SizedBox(height: 8),
+                              Text(
+                                'Uploading...',
+                                style: TextStyle(
+                                  color: Colors.grey,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ],
+                          )
+                        : delayPaymentScreenshot != null
+                            ? const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.check_circle,
+                                    size: 40,
+                                    color: Colors.green,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Payment Screenshot Uploaded',
+                                    style: TextStyle(
+                                      color: Colors.green,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    Icons.cloud_upload_outlined,
+                                    size: 40,
+                                    color: Colors.grey,
+                                  ),
+                                  SizedBox(height: 8),
+                                  Text(
+                                    'Tap to upload payment screenshot',
+                                    style: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 14,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                  ),
+                  if (delayPaymentScreenshot != null)
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.green,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.check,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  // Widget _buildExistingDelayScreenshots(Booking? booking) {
+  //   // Check if booking has delay payment screenshots
+  //   final hasDelayScreenshots = booking?.returnDetails.isNotEmpty == true && 
+  //       booking!.returnDetails[0]['delayPaymentScreenshot'] != null;
+    
+  //   if (!hasDelayScreenshots) return const SizedBox();
+    
+  //   return Padding(
+  //     padding: const EdgeInsets.all(16.0),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       children: [
+  //         const Text(
+  //           'Payment Screenshot',
+  //           style: TextStyle(
+  //             fontSize: 16,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         const SizedBox(height: 12),
+  //         Container(
+  //           height: 150,
+  //           width: double.infinity,
+  //           decoration: BoxDecoration(
+  //             border: Border.all(color: Colors.green, width: 2),
+  //             borderRadius: BorderRadius.circular(8),
+  //             color: Colors.green.shade50,
+  //           ),
+  //           child: Stack(
+  //             children: [
+  //               Center(
+  //                 child: GestureDetector(
+  //                   onTap: () {
+  //                     // Show full image dialog
+  //                     _showImageDialog(booking!.returnDetails[0]['delayPaymentScreenshot']);
+  //                   },
+  //                   child: const Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     children: [
+  //                       Icon(
+  //                         Icons.image,
+  //                         size: 40,
+  //                         color: Colors.green,
+  //                       ),
+  //                       SizedBox(height: 8),
+  //                       Text(
+  //                         'Payment Screenshot Uploaded',
+  //                         style: TextStyle(
+  //                           color: Colors.green,
+  //                           fontSize: 14,
+  //                           fontWeight: FontWeight.w500,
+  //                         ),
+  //                       ),
+  //                       SizedBox(height: 4),
+  //                       Text(
+  //                         'Tap to view',
+  //                         style: TextStyle(
+  //                           color: Colors.grey,
+  //                           fontSize: 12,
+  //                         ),
+  //                       ),
+  //                     ],
+  //                   ),
+  //                 ),
+  //               ),
+  //               Positioned(
+  //                 top: 8,
+  //                 right: 8,
+  //                 child: Container(
+  //                   decoration: const BoxDecoration(
+  //                     color: Colors.green,
+  //                     shape: BoxShape.circle,
+  //                   ),
+  //                   child: const Icon(
+  //                     Icons.check,
+  //                     color: Colors.white,
+  //                     size: 20,
+  //                   ),
+  //                 ),
+  //               ),
+  //             ],
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
+
+  void _showImageDialog(String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          child: Container(
+            width: double.maxFinite,
+            height: 400,
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Payment Screenshot',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                Expanded(
+                  child: Image.network(
+                    imageUrl,
+                    fit: BoxFit.contain,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Text('Failed to load image'),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+    Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
+    return Card(
+      elevation: 1,
+      color: const Color(0XFFFFFFFF),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                  booking?.car?.vehicleNumber ?? 'TS 05 TD 4544',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.red.shade700,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  booking?.car?.carName ?? 'Hyundai Verna',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            Row(
+              children: [
+                const Icon(Icons.settings, size: 16, color: Colors.grey),
+                const SizedBox(width: 4),
+                Text(
+                  booking?.car?.type ?? 'Automatic',
+                  style: const TextStyle(
+                    color: Colors.grey,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Row(
+                  children: [
+                    const Icon(Icons.airline_seat_recline_normal,
+                        size: 16, color: Colors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${booking?.car?.seats ?? 5} Seaters',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                const Icon(Icons.calendar_today, size: 16, color: Colors.blue),
+                const SizedBox(width: 4),
+                Text(
+                  '${booking?.rentalEndDate ?? 'Not set'}',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                const Icon(Icons.access_time, size: 16, color: Colors.blue),
+                const SizedBox(width: 4),
+                Text(
+                  '${booking?.to ?? 'Not set'}',
+                  style: const TextStyle(
+                    color: Colors.black87,
+                    fontSize: 13,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  // Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
+  //   return Container(
+  //     width: double.infinity,
+  //     decoration: BoxDecoration(
+  //       color: Colors.white,
+  //       borderRadius: BorderRadius.circular(12),
+  //       boxShadow: [
+  //         BoxShadow(
+  //           color: Colors.grey.withOpacity(0.1),
+  //           spreadRadius: 1,
+  //           blurRadius: 5,
+  //           offset: const Offset(0, 2),
+  //         ),
+  //       ],
+  //     ),
+  //     child: Padding(
+  //       padding: const EdgeInsets.all(16.0),
+  //       child: Column(
+  //         crossAxisAlignment: CrossAxisAlignment.start,
+  //         children: [
+  //           Text(
+  //             booking?.car?.carName ?? 'Car Name',
+  //             style: TextStyle(
+  //               fontSize: screenWidth * 0.05,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //           ),
+  //           const SizedBox(height: 8),
+  //           Text(
+  //             booking?.car?.model ?? 'Car Model',
+  //             style: TextStyle(
+  //               fontSize: screenWidth * 0.04,
+  //               color: Colors.grey[600],
+  //             ),
+  //           ),
+  //           const SizedBox(height: 12),
+  //           Row(
+  //             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //             children: [
+  //               _buildCarDetailItem(
+  //                 'Number Plate',
+  //                 booking?.car?.vehicleNumber ?? 'N/A',
+  //                 screenWidth,
+  //               ),
+  //               // _buildCarDetailItem(
+  //               //   'Fuel Type',
+  //               //   booking?.car?.?? 'N/A',
+  //               //   screenWidth,
+  //               // ),
+  //             ],
+  //           ),
+  //         ],
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  Widget _buildCarDetailItem(String label, String value, double screenWidth) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: screenWidth * 0.03,
+            color: Colors.grey[600],
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: screenWidth * 0.035,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 
@@ -382,75 +3854,123 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     required VoidCallback onTap,
     required Widget child,
   }) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 20,
-        ),
-        InkWell(
-          onTap: onTap,
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 6,
-                  offset: Offset(0, 2), // subtle downward shadow
-                ),
-              ],
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.1),
+            spreadRadius: 1,
+            blurRadius: 5,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          GestureDetector(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Icon(
+                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    size: 24,
+                  ),
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          if (isExpanded)
+            Padding(
+              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+              child: child,
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDisplayField({
+    required IconData icon,
+    required String label,
+    required String value,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  title,
+                  label,
                   style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    color: Colors.grey[600],
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
-                Icon(
-                  isExpanded
-                      ? Icons.keyboard_arrow_up
-                      : Icons.keyboard_arrow_down,
-                  color: Colors.black54,
+                const SizedBox(height: 4),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
           ),
-        ),
-        child,
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildInputField({
     required IconData icon,
     required String label,
+    required TextEditingController controller,
   }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 16, left: 16, right: 16),
-      decoration: BoxDecoration(
-        border: Border(
-            bottom:
-                BorderSide(color: const Color.fromARGB(255, 162, 162, 162))),
-      ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
       child: Row(
         children: [
-          Icon(icon, color: Colors.grey.shade600, size: 20),
+          Icon(icon, size: 20, color: Colors.grey[600]),
           const SizedBox(width: 12),
           Expanded(
-            child: TextField(
+            child: TextFormField(
+              controller: controller,
               decoration: InputDecoration(
-                hintText: label,
-                hintStyle: TextStyle(color: Colors.grey.shade500),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+                labelText: label,
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
+              onChanged: (value) {
+                setState(() {
+                  isProceedEnabled = nameController.text.isNotEmpty &&
+                      mobileController.text.isNotEmpty &&
+                      altMobileController.text.isNotEmpty &&
+                      emailController.text.isNotEmpty &&
+                      returnDate != null &&
+                      returnTime != null;
+                      // (!hasDelay || delayPaymentScreenshot != null);
+                });
+              },
             ),
           ),
         ],
@@ -458,31 +3978,44 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     );
   }
 
-  Widget _buildSecurityDepositSection() {
+  Widget _buildDateTimeField({
+    required IconData icon,
+    required String label,
+    required String value,
+    required VoidCallback onTap,
+  }) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Row(
         children: [
-          const Text(
-            'Security Deposit',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 16),
-          GridView.count(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 2,
-            childAspectRatio: 1.5,
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
-            children: List.generate(
-              4,
-              (index) => _buildDocumentCard(
-                title: 'Aadhar card',
+          Icon(icon, size: 20, color: Colors.grey[600]),
+          const SizedBox(width: 12),
+          Expanded(
+            child: GestureDetector(
+              onTap: onTap,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      value,
+                      style: const TextStyle(fontSize: 16),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -491,77 +4024,301 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     );
   }
 
-  Widget _buildBottomButtons() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF1E0AFE), // #FF1206
-              Color(0xFF120698), // #981206
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+
+      Widget _buildSecurityDepositSection() {
+  return Consumer<SingleBookingProvider>(
+    builder: (context, bookingProvider, child) {
+      final booking = bookingProvider.currentBooking;
+      
+      // Get deposit proof images from booking data
+      final depositProof = booking?.depositeProof ?? [];
+
+      print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
+      
+      // Create a list of security deposit images
+      List<Map<String, String>> securityImages = [];
+      
+      // Add deposit proof images (front and back of security deposit item)
+      for (var proof in depositProof) {
+        String title = 'Security Deposit';
+        if (proof.label == 'depositeFront') {
+          title = 'Security Deposit - Front';
+        } else if (proof.label == 'depositeBack') {
+          title = 'Security Deposit - Back';
+        }
+        
+        securityImages.add({
+          'title': title,
+          'url': proof.url ?? '',
+        });
+      }
+      
+      // If no deposit images available, show placeholders for front and back
+      if (securityImages.isEmpty) {
+        securityImages = [
+          {'title': 'Security Deposit - Front', 'url': ''},
+          {'title': 'Security Deposit - Back', 'url': ''},
+        ];
+      }
+      
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              '₹ 500/- Paid to continue',
-              style: const TextStyle(
-                color: Colors.white,
+            const Text(
+              'Security Deposit',
+              style: TextStyle(
+                fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(width: 8),
-            const Icon(Icons.file_upload_outlined,
-                color: Colors.white, size: 18),
+            const SizedBox(height: 16),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 1.5,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemCount: securityImages.length,
+              itemBuilder: (context, index) {
+                final imageData = securityImages[index];
+                return _buildSecurityDocumentCard(
+                  title: imageData['title']!,
+                  imageUrl: imageData['url']!,
+                );
+              },
+            ),
           ],
+        ),
+      );
+    },
+  );
+}
+
+
+Widget _buildSecurityDocumentCard({
+  required String title,
+  required String imageUrl,
+}) {
+  return Container(
+    height: 206,
+    decoration: BoxDecoration(
+      borderRadius: BorderRadius.circular(12),
+      color: Colors.grey.shade200,
+    ),
+    child: Stack(
+      children: [
+        // Main image
+        if (imageUrl.isNotEmpty)
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              imageUrl,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: double.infinity,
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(
+                  child: CircularProgressIndicator(
+                    value: loadingProgress.expectedTotalBytes != null
+                        ? loadingProgress.cumulativeBytesLoaded /
+                            loadingProgress.expectedTotalBytes!
+                        : null,
+                  ),
+                );
+              },
+              errorBuilder: (context, error, stackTrace) => Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.grey.shade300,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.image_not_supported,
+                      size: 40,
+                      color: Colors.grey.shade600,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Image not available',
+                      style: TextStyle(
+                        color: Colors.grey.shade600,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          )
+        else
+          // Placeholder when no image URL
+          Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.grey.shade300,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.security,
+                  size: 40,
+                  color: Colors.grey.shade600,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Security Deposit',
+                  style: TextStyle(
+                    color: Colors.grey.shade600,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        
+        // Title overlay at bottom
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Container(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.vertical(
+                bottom: Radius.circular(12),
+              ),
+              gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+                  Colors.transparent,
+                  Colors.black.withOpacity(0.7),
+                ],
+              ),
+            ),
+            child: Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
+}
+
+  
+
+  // Widget _buildSecurityDepositSection() {
+  //   return Column(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     children: [
+  //       const Text(
+  //         'Security Deposit',
+  //         style: TextStyle(
+  //           fontSize: 16,
+  //           fontWeight: FontWeight.bold,
+  //         ),
+  //       ),
+  //       const SizedBox(height: 8),
+  //       Container(
+  //         padding: const EdgeInsets.all(12),
+  //         decoration: BoxDecoration(
+  //           color: Colors.green.shade50,
+  //           borderRadius: BorderRadius.circular(8),
+  //           border: Border.all(color: Colors.green.shade200),
+  //         ),
+  //         child: const Row(
+  //           children: [
+  //             Icon(Icons.check_circle, color: Colors.green, size: 20),
+  //             SizedBox(width: 8),
+  //             Text(
+  //               'Security deposit collected',
+  //               style: TextStyle(
+  //                 color: Colors.green,
+  //                 fontWeight: FontWeight.w500,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
+
+  Widget _buildButtons() {
+    final hasReturnDetails = _hasReturnDetails(
+      context.read<SingleBookingProvider>().currentBooking
+    );
+    
+    return Positioned(
+      bottom: 0,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 5,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: SafeArea(
+          child: SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton(
+              onPressed: (hasReturnDetails || isProceedEnabled) ? () => _submitReturnData(hasReturnDetails) : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: (hasReturnDetails || isProceedEnabled) 
+                    ? const Color.fromARGB(255, 255, 0, 0) 
+                    : Colors.grey,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: const Text(
+                'Proceed',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildButtons() {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Container(
-        width: double.infinity,
-        height: 50,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0xFF1E0AFE), // #FF1206
-              Color(0xFF120698), // #981206
-            ],
-            begin: Alignment.centerLeft,
-            end: Alignment.centerRight,
-          ),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            TextButton(
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context)=>ReturnUploadScreen(id: "1234")));
-              },
-              child: Text(
-                'Proceed',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            )
-          ],
-        ),
-      ),
-    );
+  @override
+  void dispose() {
+    nameController.dispose();
+    mobileController.dispose();
+    altMobileController.dispose();
+    emailController.dispose();
+    super.dispose();
   }
 }

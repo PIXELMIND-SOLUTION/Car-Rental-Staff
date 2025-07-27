@@ -1,52 +1,20 @@
+import 'dart:io';
+
+import 'package:car_rental_staff_app/models/single_booking_model.dart';
+import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/booking_detail_screen.dart';
 import 'package:car_rental_staff_app/views/pickup_details_screen.dart';
 import 'package:car_rental_staff_app/widgect/custom_search.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-
-// Model classes remain unchanged
-class Car {
-  final String id;
-  final String name;
-  final String type;
-  final int seats;
-  final String image;
-  final double pricePerDay;
-
-  Car({
-    required this.id,
-    required this.name,
-    required this.type,
-    required this.seats,
-    required this.image,
-    required this.pricePerDay,
-  });
-}
-
-class Booking {
-  final String id;
-  final String userId;
-  final Car car;
-  final DateTime rentalStartDate;
-  final DateTime rentalEndDate;
-  final double totalPrice;
-  final String otp;
-  final String status;
-
-  Booking({
-    required this.id,
-    required this.userId,
-    required this.car,
-    required this.rentalStartDate,
-    required this.rentalEndDate,
-    required this.totalPrice,
-    required this.otp,
-    required this.status,
-  });
-
-  bool get isPickup => status == "pickup";
-  bool get isReturn => status == "return";
-}
+import 'package:open_file/open_file.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:provider/provider.dart';
 
 class AllBookingsScreen extends StatefulWidget {
   const AllBookingsScreen({super.key});
@@ -55,110 +23,382 @@ class AllBookingsScreen extends StatefulWidget {
   State<AllBookingsScreen> createState() => _AllBookingsScreenState();
 }
 
-class _AllBookingsScreenState extends State<AllBookingsScreen> {
-  // Static data for bookings
-  late List<Booking> allBookings;
-  bool isLoading = true;
+class _AllBookingsScreenState extends State<AllBookingsScreen>
+    with TickerProviderStateMixin {
+  late TabController _tabController;
   final TextEditingController _searchController = TextEditingController();
+
+  // Current selected date and status
+  DateTime? _selectedDate; // Changed to nullable
+  String _currentStatus = 'active'; // 'active' or 'completed'
+  bool _hasUserSelectedDate =
+      false; // Track if user has manually selected a date
+
+  // Date picker state
+  List<DateTime> _dateOptions = [];
 
   @override
   void initState() {
     super.initState();
-    // Simulate loading delay
-    Future.delayed(Duration(seconds: 1), () {
-      setState(() {
-        allBookings = _createMockBookings();
-        isLoading = false;
-      });
+    _tabController = TabController(length: 2, vsync: this);
+    _generateDateOptions();
+
+    // Load initial data (active bookings without date filter)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchBookings();
+    });
+
+    // Listen to tab changes
+    _tabController.addListener(() {
+      if (_tabController.indexIsChanging) {
+        setState(() {
+          _currentStatus = _tabController.index == 0 ? 'active' : 'completed';
+        });
+        _fetchBookings();
+      }
     });
   }
 
-  // Create mock data for bookings - unchanged
-// Create mock data for bookings - with fixed status values
-  List<Booking> _createMockBookings() {
-    // Create a few car models
-    final Car hondaCity = Car(
-      id: 'car1',
-      name: 'Honda City',
-      type: 'automatic',
-      seats: 5,
-      image: 'assets/car.png',
-      pricePerDay: 2500,
-    );
+  void _generateDateOptions() {
+    _dateOptions = List.generate(4, (index) {
+      return DateTime.now().add(Duration(days: index));
+    });
+  }
 
-    final Car toyotaInnova = Car(
-      id: 'car2',
-      name: 'Toyota Innova',
-      type: 'manual',
-      seats: 7,
-      image: 'assets/car.png',
-      pricePerDay: 3500,
-    );
+  void _fetchBookings() {
+    final provider = Provider.of<SingleBookingProvider>(context, listen: false);
 
-    final Car hyundaiVenue = Car(
-      id: 'car3',
-      name: 'Hyundai Venue',
-      type: 'manual',
-      seats: 5,
-      image: 'assets/car.png',
-      pricePerDay: 2000,
-    );
+    // Only pass date if user has specifically selected one
+    if (_hasUserSelectedDate && _selectedDate != null) {
+      final formattedDate = DateFormat('yyyy-MM-dd').format(_selectedDate!);
+      provider.fetchBookingsWithStatusAndDate(_currentStatus,
+          date: formattedDate);
+    } else {
+      // Call without date parameter
+      provider.fetchBookingsWithStatusAndDate(_currentStatus);
+    }
+  }
 
-    final Car marutiSwift = Car(
-      id: 'car4',
-      name: 'Maruti Swift',
-      type: 'automatic',
-      seats: 5,
-      image: 'assets/car.png',
-      pricePerDay: 1800,
-    );
+  // Pull-to-refresh handler
+  Future<void> _onRefresh() async {
+    // Add a small delay to show the refresh indicator
+    await Future.delayed(const Duration(milliseconds: 500));
+    _fetchBookings();
+  }
 
-    // Create bookings with these cars
-    return [
-      // Active bookings
-      Booking(
-        id: 'book1001',
-        userId: 'user123',
-        car: hondaCity,
-        rentalStartDate: DateTime.now().add(Duration(days: 1)),
-        rentalEndDate: DateTime.now().add(Duration(days: 3)),
-        totalPrice: 5000,
-        otp: '1234',
-        status: 'pickup', // Changed from 'isPickup' to 'pickup'
+  @override
+  void dispose() {
+    _tabController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  // Function to download PDF and save to public Downloads folder
+  Future<void> _downloadPdfToDownloads(String pdfUrl, String bookingId) async {
+    try {
+      // Request storage permission
+      bool hasPermission = await _requestStoragePermission();
+      if (!hasPermission) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Storage permission denied. Cannot download PDF.')),
+        );
+        return;
+      }
+
+      // Create Dio instance for downloading
+      Dio dio = Dio();
+
+      String fileName =
+          'deposit_receipt_${bookingId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      String filePath;
+
+      if (Platform.isAndroid) {
+        // For Android - save to public Downloads directory
+        filePath = '/storage/emulated/0/Download/$fileName';
+
+        // Alternative paths to try if the first one fails
+        List<String> possiblePaths = [
+          '/storage/emulated/0/Download/$fileName',
+          '/sdcard/Download/$fileName',
+          '/storage/sdcard0/Download/$fileName',
+        ];
+
+        // Try to create the Downloads directory if it doesn't exist
+        for (String path in possiblePaths) {
+          try {
+            Directory downloadsDir =
+                Directory(path.substring(0, path.lastIndexOf('/')));
+            if (!await downloadsDir.exists()) {
+              await downloadsDir.create(recursive: true);
+            }
+            filePath = path;
+            break;
+          } catch (e) {
+            print('Failed to create directory for path: $path');
+            continue;
+          }
+        }
+      } else if (Platform.isIOS) {
+        // For iOS, save to app documents directory (iOS doesn't have a public Downloads folder)
+        Directory appDocDir = await getApplicationDocumentsDirectory();
+        filePath = '${appDocDir.path}/$fileName';
+      } else {
+        throw Exception('Unsupported platform');
+      }
+
+      print('Attempting to save PDF to: $filePath');
+
+      // Show downloading progress
+      _showDownloadProgress();
+
+      // Download the file
+      await dio.download(
+        pdfUrl,
+        filePath,
+        options: Options(
+          receiveTimeout: const Duration(minutes: 5),
+          sendTimeout: const Duration(minutes: 5),
+          headers: {
+            'Accept': 'application/pdf',
+            'User-Agent': 'Mozilla/5.0 (Android; Mobile)',
+          },
+        ),
+        onReceiveProgress: (received, total) {
+          if (total != -1) {
+            double progress = received / total;
+            print('Download progress: ${(progress * 100).toStringAsFixed(0)}%');
+          }
+        },
+      );
+
+      // Hide download progress
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      // Verify the file was downloaded successfully
+      File downloadedFile = File(filePath);
+      bool fileExists = await downloadedFile.exists();
+
+      if (!fileExists) {
+        throw Exception('File was not created at expected location');
+      }
+
+      int fileSize = await downloadedFile.length();
+      if (fileSize == 0) {
+        throw Exception('Downloaded file is empty');
+      }
+
+      print('File downloaded successfully: $filePath (Size: $fileSize bytes)');
+
+      // For Android, add the file to MediaStore so it appears in file managers
+      if (Platform.isAndroid) {
+        await _addToMediaStore(filePath, fileName);
+      }
+
+      // Show success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('PDF saved to Downloads'),
+          duration: const Duration(seconds: 6),
+          action: SnackBarAction(
+            label: 'Show Location',
+            onPressed: () => _showFileLocation(fileName),
+          ),
+        ),
+      );
+    } catch (e) {
+      // Hide download progress if showing
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      print('Error downloading PDF: $e');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Download failed: ${e.toString()}'),
+          duration: const Duration(seconds: 5),
+          action: SnackBarAction(
+            label: 'Retry',
+            onPressed: () => _downloadPdfToDownloads(pdfUrl, bookingId),
+          ),
+        ),
+      );
+    }
+  }
+
+// Show file location instead of trying to open
+  void _showFileLocation(String fileName) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('PDF Downloaded'),
+        content: Text(
+          'Your receipt has been saved to:\n\n'
+          'Downloads > $fileName\n\n'
+          'You can find it in your phone\'s Downloads folder using any file manager app.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
       ),
-      Booking(
-        id: 'book1002',
-        userId: 'user123',
-        car: toyotaInnova,
-        rentalStartDate: DateTime.now().add(Duration(days: 5)),
-        rentalEndDate: DateTime.now().add(Duration(days: 8)),
-        totalPrice: 10500,
-        otp: '5678',
-        status: 'pickup', // Changed from 'isPickup' to 'pickup'
-      ),
+    );
+  }
 
-      // return bookings
-      Booking(
-        id: 'book1003',
-        userId: 'user123',
-        car: marutiSwift,
-        rentalStartDate: DateTime.now().subtract(Duration(days: 10)),
-        rentalEndDate: DateTime.now().subtract(Duration(days: 8)),
-        totalPrice: 3600,
-        otp: '9012',
-        status: 'return', // Changed from 'isReturn' to 'return'
-      ),
-      Booking(
-        id: 'book1004',
-        userId: 'user123',
-        car: hondaCity,
-        rentalStartDate: DateTime.now().subtract(Duration(days: 20)),
-        rentalEndDate: DateTime.now().subtract(Duration(days: 18)),
-        totalPrice: 5000,
-        otp: '3456',
-        status: 'return', // Changed from 'isReturn' to 'return'
-      ),
-    ];
+// Add file to Android MediaStore so it appears in file managers
+  Future<void> _addToMediaStore(String filePath, String fileName) async {
+    try {
+      if (Platform.isAndroid) {
+        // Use method channel to add file to MediaStore
+        const platform = MethodChannel('file_operations');
+        await platform.invokeMethod('addToMediaStore', {
+          'filePath': filePath,
+          'fileName': fileName,
+          'mimeType': 'application/pdf'
+        });
+      }
+    } catch (e) {
+      print('Error adding to MediaStore: $e');
+      // This is not critical, file should still be accessible
+    }
+  }
+
+// Improved permission handling for different Android versions
+  Future<bool> _requestStoragePermission() async {
+    if (Platform.isAndroid) {
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      int sdkInt = androidInfo.version.sdkInt;
+
+      print('Android SDK version: $sdkInt');
+
+      if (sdkInt >= 33) {
+        // Android 13+ (API 33+) - Scoped storage, no special permission needed for Downloads
+        return true;
+      } else if (sdkInt >= 30) {
+        // Android 11-12 (API 30-32) - Need MANAGE_EXTERNAL_STORAGE
+        var status = await Permission.manageExternalStorage.status;
+        if (status.isDenied) {
+          status = await Permission.manageExternalStorage.request();
+        }
+
+        if (status.isDenied) {
+          // Fallback to regular storage permission
+          var storageStatus = await Permission.storage.request();
+          return storageStatus.isGranted;
+        }
+        return status.isGranted;
+      } else {
+        // Android 10 and below - Use regular storage permission
+        var status = await Permission.storage.request();
+        return status.isGranted;
+      }
+    }
+    return true; // iOS or other platforms
+  }
+
+// Open the downloaded PDF file
+  Future<void> _openPdfFile(String filePath) async {
+    try {
+      // Try to open with default PDF viewer
+      OpenResult result = await OpenFile.open(filePath);
+
+      if (result.type == ResultType.done) {
+        print('PDF opened successfully');
+      } else {
+        String errorMessage = 'Failed to open PDF';
+
+        switch (result.type) {
+          case ResultType.noAppToOpen:
+            errorMessage =
+                'No PDF viewer found. Please install a PDF reader app.';
+            break;
+          case ResultType.fileNotFound:
+            errorMessage = 'PDF file not found';
+            break;
+          case ResultType.permissionDenied:
+            errorMessage = 'Permission denied to open PDF';
+            break;
+          case ResultType.error:
+            errorMessage = 'Error opening PDF: ${result.message}';
+            break;
+          default:
+            errorMessage = 'Unknown error opening PDF';
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(errorMessage)),
+        );
+      }
+    } catch (e) {
+      print('Error opening PDF: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error opening PDF: $e')),
+      );
+    }
+  }
+
+// Alternative method using SAF (Storage Access Framework) for Android 10+
+  Future<void> _downloadUsingSAF(String pdfUrl, String bookingId) async {
+    try {
+      if (!Platform.isAndroid) return;
+
+      // Use SAF to let user choose where to save
+      String? directoryPath = await FilePicker.platform.getDirectoryPath();
+
+      if (directoryPath == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No directory selected')),
+        );
+        return;
+      }
+
+      String fileName =
+          'deposit_receipt_${bookingId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+      String filePath = '$directoryPath/$fileName';
+
+      // Download using Dio
+      Dio dio = Dio();
+      _showDownloadProgress();
+
+      await dio.download(pdfUrl, filePath);
+
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('PDF saved to: $directoryPath')),
+      );
+    } catch (e) {
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      print('SAF download error: $e');
+    }
+  }
+
+  void _showDownloadProgress() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const AlertDialog(
+          content: Row(
+            children: [
+              CircularProgressIndicator(),
+              SizedBox(width: 20),
+              Text('Downloading PDF...'),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -168,176 +408,163 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
     final screenHeight = screenSize.height;
     final paddingValue = screenWidth * 0.04;
 
-    return DefaultTabController(
-      length: 2, // Fixed: Changed from 3 to 2 since there are only 2 tabs
-      child: SafeArea(
-        child: Scaffold(
-          body: Column(
-            children: [
-              SizedBox(height: screenHeight * 0.03),
-              // Header with back button and title
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: paddingValue),
-                child: Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade200,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        icon: Icon(
-                          Icons.arrow_back,
-                          color: Colors.black,
-                          size: screenWidth * 0.06,
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+    backgroundColor: Colors.white,
+    elevation: 0,
+    centerTitle: true,
+    automaticallyImplyLeading: false, // Removes the default back arrow
+    title: Text(
+      "Bookings",
+      style: TextStyle(
+        color: Colors.black,
+        fontSize: screenWidth * 0.055,
+        fontWeight: FontWeight.w800,
+      ),
+      overflow: TextOverflow.ellipsis,
+    ),
+  ),
+        body: Column(
+          children: [
+            SizedBox(height: screenHeight * 0.03),
+            // Header with back button and title
+            // Padding(
+            //   padding: EdgeInsets.symmetric(horizontal: paddingValue),
+            //   child: Row(
+            //     children: [
+            //       Container(
+            //         decoration: BoxDecoration(
+            //           color: Colors.grey.shade200,
+            //           shape: BoxShape.circle,
+            //         ),
+            //         child: IconButton(
+            //           icon: Icon(
+            //             Icons.arrow_back,
+            //             color: Colors.black,
+            //             size: screenWidth * 0.06,
+            //           ),
+            //           onPressed: () {
+            //             Navigator.pop(context);
+            //           },
+            //         ),
+            //       ),
+            //       SizedBox(width: screenWidth * 0.25),
+            //       Expanded(
+            //         child: Text(
+            //           "Bookings",
+            //           style: TextStyle(
+            //             color: Colors.black,
+            //             fontSize: screenWidth * 0.045,
+            //             fontWeight: FontWeight.w800,
+            //           ),
+            //           overflow: TextOverflow.ellipsis,
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // SizedBox(height: screenHeight * 0.02),
+
+            // TabBar for Pickup/Return tabs
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: paddingValue),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  padding: EdgeInsets.zero,
+                  tabAlignment: TabAlignment.start,
+                  tabs: [
+                    Tab(
+                      child: SizedBox(
+                        width: screenWidth * 0.4,
+                        height: screenHeight * 0.04,
+                        child: Center(
+                          child: Text(
+                            "Pickup",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.045,
+                            ),
+                          ),
                         ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
                       ),
                     ),
-                    SizedBox(width: screenWidth * 0.25),
-                    Expanded(
-                      child: Text(
-                        "Bookings",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: screenWidth * 0.045,
-                          fontWeight: FontWeight.w800,
+                    Tab(
+                      child: SizedBox(
+                        width: screenWidth * 0.4,
+                        height: screenHeight * 0.04,
+                        child: Center(
+                          child: Text(
+                            "Return",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.045,
+                            ),
+                          ),
                         ),
-                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
-                ),
-              ),
-              SizedBox(height: screenHeight * 0.02),
-
-              // TabBar for Pickup/Return tabs
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: paddingValue),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TabBar(
-                    isScrollable: true,
-                    padding: EdgeInsets.zero,
-                    tabAlignment: TabAlignment.start,
-                    tabs: [
-                      Tab(
-                        child: SizedBox(
-                          width: screenWidth * 0.4,
-                          height: screenHeight * 0.04,
-                          child: Center(
-                            child: Text(
-                              "Pickup",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.045,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                      Tab(
-                        child: SizedBox(
-                          width: screenWidth * 0.4,
-                          height: screenHeight * 0.04,
-                          child: Center(
-                            child: Text(
-                              "Return",
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.045,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    labelColor: Colors.white,
-                    unselectedLabelColor: const Color(0XFF1808C5),
-                    indicator: BoxDecoration(
-                      color: const Color(0XFF1808C5),
-                      borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                    ),
-                    indicatorSize: TabBarIndicatorSize.label,
-                    dividerColor: Colors.transparent,
+                  labelColor: Colors.white,
+                  unselectedLabelColor: const Color(0XFF1808C5),
+                  indicator: BoxDecoration(
+                    color: const Color(0XFF1808C5),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
                   ),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  dividerColor: Colors.transparent,
                 ),
               ),
+            ),
 
-              // Search bar - now has consistent padding
-              Padding(
-                padding: EdgeInsets.symmetric(
-                  horizontal: paddingValue,
-                  vertical: screenHeight * 0.02,
-                ),
-                child: CustomSearchBar(
-                  controller: _searchController,
-                  onChanged: (value) {
-                    print('Search value: $value');
-                  },
-                  onClear: () {
-                    _searchController.clear();
-                    setState(() {}); // Refresh UI
-                  },
-                ),
+            // Search bar
+            Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: paddingValue,
+                vertical: screenHeight * 0.02,
               ),
+              child: CustomSearchBar(
+                controller: _searchController,
+                onChanged: (value) {
+                  // Implement search functionality here if needed
+                  setState(() {});
+                },
+                onClear: () {
+                  _searchController.clear();
+                  setState(() {});
+                },
+              ),
+            ),
 
-              // Date picker row - now has consistent padding
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: paddingValue),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: List.generate(5, (index) {
-                    DateTime today = DateTime.now();
-                    DateTime date = DateTime.now().add(Duration(days: index));
-
+            // Date picker row
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: paddingValue),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  // Date options
+                  ...List.generate(4, (index) {
+                    DateTime date = _dateOptions[index];
                     String day = DateFormat('d').format(date);
                     String month = DateFormat('MMM').format(date);
 
-                    // Check if this card's date is today
-                    bool isToday = date.day == today.day &&
-                        date.month == today.month &&
-                        date.year == today.year;
-
-                    // Calendar icon
-                    if (index == 4) {
-                      return GestureDetector(
-                        onTap: () => _selectFromCalendar(isStartDate: true),
-                        child: Stack(
-                          alignment: Alignment.topCenter,
-                          children: [
-                            Positioned(
-                              top: 0,
-                              child: Container(
-                                height: 6,
-                                width: 50,
-                                decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius: BorderRadius.circular(30),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              margin: const EdgeInsets.only(top: 4),
-                              height: 80,
-                              width: 55,
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(8),
-                                border: Border.all(color: Colors.black12),
-                              ),
-                              child: const Icon(Icons.calendar_month_sharp),
-                            ),
-                          ],
-                        ),
-                      );
-                    }
+                    bool isSelected = _hasUserSelectedDate &&
+                        _selectedDate != null &&
+                        _selectedDate!.day == date.day &&
+                        _selectedDate!.month == date.month &&
+                        _selectedDate!.year == date.year;
 
                     return GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        setState(() {
+                          _selectedDate = date;
+                          _hasUserSelectedDate = true;
+                        });
+                        _fetchBookings();
+                      },
                       child: Stack(
                         alignment: Alignment.topCenter,
                         children: [
@@ -347,7 +574,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                               height: 6,
                               width: 50,
                               decoration: BoxDecoration(
-                                color: isToday
+                                color: isSelected
                                     ? const Color(0XFF120698)
                                     : Colors.black,
                                 borderRadius: BorderRadius.circular(30),
@@ -360,7 +587,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                             width: 60,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             decoration: BoxDecoration(
-                              color: isToday
+                              color: isSelected
                                   ? const Color(0XFF120698)
                                   : Colors.white,
                               borderRadius: BorderRadius.circular(8),
@@ -371,8 +598,9 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                                 Text(
                                   day,
                                   style: TextStyle(
-                                    color:
-                                        isToday ? Colors.white : Colors.black,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                   ),
@@ -381,8 +609,9 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                                 Text(
                                   month,
                                   style: TextStyle(
-                                    color:
-                                        isToday ? Colors.white : Colors.black,
+                                    color: isSelected
+                                        ? Colors.white
+                                        : Colors.black,
                                     fontSize: 14,
                                     fontWeight: FontWeight.bold,
                                   ),
@@ -394,46 +623,170 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                       ),
                     );
                   }),
+
+                  // Calendar icon
+                  GestureDetector(
+                    onTap: () => _selectFromCalendar(),
+                    child: Stack(
+                      alignment: Alignment.topCenter,
+                      children: [
+                        Positioned(
+                          top: 0,
+                          child: Container(
+                            height: 6,
+                            width: 50,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(30),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          margin: const EdgeInsets.only(top: 4),
+                          height: 80,
+                          width: 55,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.black12),
+                          ),
+                          child: const Icon(Icons.calendar_month_sharp),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Clear date filter button (show only when date is selected)
+            if (_hasUserSelectedDate)
+              Padding(
+                padding: EdgeInsets.symmetric(
+                    horizontal: paddingValue, vertical: screenHeight * 0.01),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    GestureDetector(
+                      onTap: _clearDateFilter,
+                      child: Container(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: screenWidth * 0.04,
+                          vertical: screenHeight * 0.008,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade200,
+                          borderRadius:
+                              BorderRadius.circular(screenWidth * 0.02),
+                          border: Border.all(color: Colors.grey.shade400),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.clear,
+                              size: screenWidth * 0.04,
+                              color: Colors.grey.shade700,
+                            ),
+                            SizedBox(width: screenWidth * 0.01),
+                            Text(
+                              "Clear Date Filter",
+                              style: TextStyle(
+                                fontSize: screenWidth * 0.03,
+                                color: Colors.grey.shade700,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 
-              SizedBox(height: screenHeight * 0.02),
+            SizedBox(height: screenHeight * 0.02),
 
-              // TabBarView content
-              Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : TabBarView(
-                        physics: const ClampingScrollPhysics(),
-                        children: [
-                          // Active bookings tab
-                          _buildBookingList(
-                            context,
-                            allBookings
-                                .where((booking) => booking.isPickup)
-                                .toList(),
-                            "No active bookings",
-                            paddingValue,
-                            screenWidth,
-                            screenHeight,
-                          ),
+            // TabBarView content with Provider Consumer and RefreshIndicator
+            Expanded(
+              child: Consumer<SingleBookingProvider>(
+                builder: (context, bookingProvider, child) {
+                  if (bookingProvider.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                          // return bookings tab
-                          _buildBookingList(
-                            context,
-                            allBookings
-                                .where((booking) => booking.isReturn)
-                                .toList(),
-                            "No return bookings",
-                            paddingValue,
-                            screenWidth,
-                            screenHeight,
+                  if (bookingProvider.error != null) {
+                    return RefreshIndicator(
+                      onRefresh: _onRefresh,
+                      child: SingleChildScrollView(
+                        physics: const AlwaysScrollableScrollPhysics(),
+                        child: Container(
+                          height: MediaQuery.of(context).size.height * 0.5,
+                          child: Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                  'Error: ${bookingProvider.error}',
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.04,
+                                    color: Colors.red,
+                                  ),
+                                  textAlign: TextAlign.center,
+                                ),
+                                SizedBox(height: 16),
+                                ElevatedButton(
+                                  onPressed: _fetchBookings,
+                                  child: Text('Retry'),
+                                ),
+                              ],
+                            ),
                           ),
-                        ],
+                        ),
                       ),
+                    );
+                  }
+
+                  return TabBarView(
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      // Active bookings tab with RefreshIndicator
+                      RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        color: const Color(0XFF1808C5),
+                        backgroundColor: Colors.white,
+                        child: _buildBookingList(
+                          context,
+                          bookingProvider.bookings,
+                          "No active bookings found",
+                          paddingValue,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
+
+                      // Completed bookings tab with RefreshIndicator
+                      RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        color: const Color(0XFF1808C5),
+                        backgroundColor: Colors.white,
+                        child: _buildBookingList(
+                          context,
+                          bookingProvider.bookings,
+                          "No completed bookings found",
+                          paddingValue,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -447,37 +800,73 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
     double screenWidth,
     double screenHeight,
   ) {
-    if (bookings.isEmpty) {
-      return Center(
-        child: Text(
-          emptyMessage,
-          style: TextStyle(
-            fontSize: screenWidth * 0.04,
-            color: Colors.grey,
+    // Filter bookings based on search text
+    List<Booking> filteredBookings = bookings;
+    if (_searchController.text.isNotEmpty) {
+      filteredBookings = bookings.where((booking) {
+        final searchText = _searchController.text.toLowerCase();
+        return booking.car?.carName.toLowerCase().contains(searchText) ==
+                true ||
+            booking.car?.model.toLowerCase().contains(searchText) == true ||
+            booking.id.toLowerCase().contains(searchText);
+      }).toList();
+    }
+
+    if (filteredBookings.isEmpty) {
+      return SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.5,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.inbox_outlined,
+                  size: screenWidth * 0.15,
+                  color: Colors.grey.shade400,
+                ),
+                SizedBox(height: screenHeight * 0.02),
+                Text(
+                  emptyMessage,
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.04,
+                    color: Colors.grey,
+                  ),
+                ),
+                SizedBox(height: screenHeight * 0.01),
+                Text(
+                  "Pull down to refresh",
+                  style: TextStyle(
+                    fontSize: screenWidth * 0.035,
+                    color: Colors.grey.shade400,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       );
     }
 
-    return Padding(
+    return ListView.builder(
+      physics: const AlwaysScrollableScrollPhysics(),
       padding: EdgeInsets.all(paddingValue),
-      child: ListView.builder(
-        itemCount: bookings.length,
-        itemBuilder: (context, index) {
-          final booking = bookings[index];
-          return Column(
-            children: [
-              _buildBookingCard(
-                context,
-                booking: booking,
-                screenWidth: screenWidth,
-                screenHeight: screenHeight,
-              ),
-              SizedBox(height: screenHeight * 0.02),
-            ],
-          );
-        },
-      ),
+      itemCount: filteredBookings.length,
+      itemBuilder: (context, index) {
+        final booking = filteredBookings[index];
+        return Column(
+          children: [
+            _buildBookingCard(
+              context,
+              booking: booking,
+              screenWidth: screenWidth,
+              screenHeight: screenHeight,
+            ),
+            SizedBox(height: screenHeight * 0.02),
+          ],
+        );
+      },
     );
   }
 
@@ -489,10 +878,14 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
   }) {
     return GestureDetector(
       onTap: () {
-        Navigator.push(
+        if (booking.status == "active")
+          Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) =>CarPickupDetailsScreen()));
+              builder: (context) =>
+                  CarPickupDetailsScreen(bookingId: booking.id),
+            ),
+          );
       },
       child: Container(
         width: double.infinity,
@@ -517,23 +910,60 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+                      // Left side: Car name
                       Text(
-                        booking.car.name,
+                        booking.car?.carName ?? 'Unknown Car',
                         style: TextStyle(
                           fontSize: screenWidth * 0.04,
                           fontWeight: FontWeight.bold,
                           color: const Color.fromARGB(255, 0, 0, 0),
                         ),
                       ),
-                      Text(
-                        booking.isReturn
-                            ? "Completed"
-                            : "ID: ${booking.id.substring(booking.id.length - 4)}",
-                        style: TextStyle(
-                          fontSize: screenWidth * 0.03,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red.shade400,
-                        ),
+
+                      // Right side: ID and download icon
+                      Row(
+                        children: [
+                          Text(
+                            booking.status == "completed"
+                                ? "Completed"
+                                : "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.03,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.red.shade400,
+                            ),
+                          ),
+                          const SizedBox(
+                              width: 8), // spacing between text and icon
+                          GestureDetector(
+                            onTap: () async {
+                              print(
+                                  'hhhhhhhhhhhhhhhhhhhhhhhhhh${booking.depositPDF}');
+                              if (booking.depositPDF != null && booking.status == "active") {
+                                String fullPdfUrl =
+                                    'http://194.164.148.244:4062${booking.depositPDF}';
+                                print('PDF URL: $fullPdfUrl');
+
+                                // Download PDF before navigation
+                                await _downloadPdfToDownloads(
+                                    fullPdfUrl, booking.id);
+                              }else if(booking.finalBookingPDF != null && booking.status == "completed"){
+                                String fullPdfUrl =
+                                    'http://194.164.148.244:4062${booking.finalBookingPDF}';
+                                print('PDF URL: $fullPdfUrl');
+
+                                // Download PDF before navigation
+                                await _downloadPdfToDownloads(
+                                    fullPdfUrl, booking.id);
+                              }
+                            },
+                            child: const Icon(
+                              Icons.file_download_outlined,
+                              color: Colors.green,
+                              size: 24,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -554,9 +984,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
                                 Text(
-                                  booking.car.type == 'automatic'
-                                      ? "Automatic"
-                                      : "Manual",
+                                  booking.car?.model ?? "Unknown",
                                   style: TextStyle(
                                     fontSize: screenWidth * 0.035,
                                     color: const Color.fromARGB(255, 0, 0, 0)
@@ -569,24 +997,26 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                             Row(
                               children: [
                                 Icon(
-                                  Icons.people,
+                                  Icons.location_on,
                                   size: screenWidth * 0.04,
                                   color: Colors.black87,
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                Text(
-                                  "${booking.car.seats} Seaters",
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.035,
-                                    color: const Color.fromARGB(255, 0, 0, 0)
-                                        .withOpacity(0.9),
+                                Expanded(
+                                  child: Text(
+                                    booking.pickupLocation,
+                                    style: TextStyle(
+                                      fontSize: screenWidth * 0.035,
+                                      color: const Color.fromARGB(255, 0, 0, 0)
+                                          .withOpacity(0.9),
+                                    ),
                                   ),
                                 ),
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.015),
                             Text(
-                              "Collect Date & time: ${_formatDate(booking.rentalStartDate)}, ${_formatTime(booking.rentalStartDate)}",
+                              "Collect Date & time: ${booking.rentalStartDate}, ${booking.from}",
                               style: TextStyle(
                                 fontSize: screenWidth * 0.025,
                                 color: const Color.fromARGB(255, 0, 0, 0),
@@ -594,7 +1024,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                             ),
                             SizedBox(height: screenHeight * 0.008),
                             Text(
-                              "Return Date & time: ${_formatDate(booking.rentalEndDate)}, ${_formatTime(booking.rentalEndDate)}",
+                              "Return Date & time: ${booking.rentalEndDate}, ${booking.to}",
                               style: TextStyle(
                                 fontSize: screenWidth * 0.025,
                                 color: const Color.fromARGB(255, 0, 0, 0),
@@ -609,14 +1039,18 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                         decoration: BoxDecoration(
                           borderRadius:
                               BorderRadius.circular(screenWidth * 0.02),
-                          image: booking.car.image.isNotEmpty
+                          image: (booking.car?.carImage.isNotEmpty == true)
                               ? DecorationImage(
-                                  image: AssetImage(booking.car.image),
+                                  image:
+                                      NetworkImage(booking.car!.carImage.first),
                                   fit: BoxFit.cover,
+                                  onError: (exception, stackTrace) {
+                                    // Handle image load error
+                                  },
                                 )
                               : null,
                         ),
-                        child: booking.car.image.isEmpty
+                        child: (booking.car?.carImage.isEmpty ?? true)
                             ? Icon(
                                 Icons.directions_car,
                                 size: screenWidth * 0.12,
@@ -645,7 +1079,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
                   ),
                 ),
                 child: Text(
-                  "₹${booking.totalPrice.toStringAsFixed(0)}/-",
+                  "₹${booking.totalPrice}/-",
                   style: TextStyle(
                     fontSize: screenWidth * 0.035,
                     color: const Color.fromARGB(255, 255, 255, 255),
@@ -660,21 +1094,29 @@ class _AllBookingsScreenState extends State<AllBookingsScreen> {
     );
   }
 
-  String _formatDate(DateTime dateTime) {
-    return "${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year}";
-  }
-
-  String _formatTime(DateTime dateTime) {
-    return "${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}";
-  }
-
-  Future<void> _selectFromCalendar({required bool isStartDate}) async {
+  Future<void> _selectFromCalendar() async {
     final DateTime today = DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: today,
-      firstDate: today,
+      initialDate: _selectedDate ?? today,
+      firstDate: DateTime(today.year - 1),
       lastDate: DateTime(today.year + 1),
     );
+
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _hasUserSelectedDate = true;
+      });
+      _fetchBookings();
+    }
+  }
+
+  void _clearDateFilter() {
+    setState(() {
+      _selectedDate = null;
+      _hasUserSelectedDate = false;
+    });
+    _fetchBookings();
   }
 }

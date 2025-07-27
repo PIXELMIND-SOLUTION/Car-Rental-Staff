@@ -2,6 +2,7 @@
 import 'package:car_rental_staff_app/controllers/auth_controller.dart';
 import 'package:car_rental_staff_app/views/home_screen.dart';
 import 'package:car_rental_staff_app/views/main_layout.dart';
+import 'package:car_rental_staff_app/views/otp_screen.dart';
 import 'package:car_rental_staff_app/widgect/blurred_circle.dart';
 import 'package:flutter/material.dart';
 
@@ -90,7 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     controller: _mobileController,
                     decoration: const InputDecoration(
                       prefixIcon: Icon(Icons.phone),
-                      hintText: "9898989898",
+                      hintText: "Enter Mobile",
                       border: UnderlineInputBorder(),
                     ),
                   ),
@@ -109,7 +110,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (ctx) => const MainLayout()));
+                                  builder: (ctx) => const OtpScreen()));
                         // } else {
                         //   ScaffoldMessenger.of(context).showSnackBar(
                         //     const SnackBar(content: Text("Login Failed")),
