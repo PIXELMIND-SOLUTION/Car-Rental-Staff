@@ -1,9 +1,3 @@
-
-
-
-
-
-
 // import 'package:car_rental_staff_app/models/single_booking_model.dart';
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 // import 'package:car_rental_staff_app/views/return_upload_screen.dart';
@@ -25,19 +19,19 @@
 //   bool isReturnExpanded = false;
 //   bool isProceedEnabled = false;
 //   bool isAmountPaid = false;
-  
+
 //   // Form controllers
 //   final TextEditingController nameController = TextEditingController();
 //   final TextEditingController mobileController = TextEditingController();
 //   final TextEditingController altMobileController = TextEditingController();
 //   final TextEditingController emailController = TextEditingController();
-  
+
 //   // Date and time variables
 //   DateTime? returnDate;
 //   TimeOfDay? returnTime;
 //   DateTime? delayDate;
 //   TimeOfDay? delayTime;
-  
+
 //   int delayAmount = 0;
 //   bool hasDelay = false;
 
@@ -63,7 +57,7 @@
 //         returnTime!.hour,
 //         returnTime!.minute,
 //       );
-      
+
 //       final delayDateTime = DateTime(
 //         delayDate!.year,
 //         delayDate!.month,
@@ -71,7 +65,7 @@
 //         delayTime!.hour,
 //         delayTime!.minute,
 //       );
-      
+
 //       if (delayDateTime.isAfter(returnDateTime)) {
 //         final difference = delayDateTime.difference(returnDateTime);
 //         final hoursDifference = difference.inHours;
@@ -104,7 +98,7 @@
 //       firstDate: DateTime.now(),
 //       lastDate: DateTime.now().add(const Duration(days: 365)),
 //     );
-    
+
 //     if (picked != null) {
 //       setState(() {
 //         if (isReturn) {
@@ -122,7 +116,7 @@
 //       context: context,
 //       initialTime: TimeOfDay.now(),
 //     );
-    
+
 //     if (picked != null) {
 //       setState(() {
 //         if (isReturn) {
@@ -167,14 +161,14 @@
 
 //   Future<void> _submitReturnData() async {
 //     if (widget.bookingId == null) return;
-    
+
 //     try {
 //       final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
-      
+
 //       // Calculate delay time and days
 //       int delayTimeHours = 0;
 //       int delayDays = 0;
-      
+
 //       if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
 //         final returnDateTime = DateTime(
 //           returnDate!.year,
@@ -183,7 +177,7 @@
 //           returnTime!.hour,
 //           returnTime!.minute,
 //         );
-        
+
 //         final delayDateTime = DateTime(
 //           delayDate!.year,
 //           delayDate!.month,
@@ -191,12 +185,12 @@
 //           delayTime!.hour,
 //           delayTime!.minute,
 //         );
-        
+
 //         final difference = delayDateTime.difference(returnDateTime);
 //         delayTimeHours = difference.inHours;
 //         delayDays = difference.inDays;
 //       }
-      
+
 //       final requestBody = {
 //         "name": nameController.text,
 //         "email": emailController.text,
@@ -207,7 +201,7 @@
 //         "delayTime": delayTimeHours,
 //         "delayDay": delayDays
 //       };
-      
+
 //       final response = await http.post(
 //         Uri.parse(url),
 //         headers: {
@@ -215,7 +209,7 @@
 //         },
 //         body: json.encode(requestBody),
 //       );
-      
+
 //       if (response.statusCode == 200) {
 //         // Success - navigate to next screen
 //         // Navigator.push(
@@ -465,7 +459,7 @@
 //                                     child: _buildDateTimeField(
 //                                       icon: Icons.calendar_today_outlined,
 //                                       label: 'Return date',
-//                                       value: returnDate != null 
+//                                       value: returnDate != null
 //                                           ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
 //                                           : 'Select date',
 //                                       onTap: () => _selectDate(context, true),
@@ -490,7 +484,7 @@
 //                                     child: _buildDateTimeField(
 //                                       icon: Icons.date_range_outlined,
 //                                       label: 'Delay date',
-//                                       value: delayDate != null 
+//                                       value: delayDate != null
 //                                           ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
 //                                           : 'Select date',
 //                                       onTap: () => _selectDate(context, false),
@@ -504,10 +498,10 @@
 //                   ),
 
 //                   const SizedBox(height: 20),
-                  
+
 //                   // Show amount section only if there's delay
 //                   if (hasDelay) _buildDelayAmountButton(),
-                  
+
 //                   const SizedBox(height: 130),
 //                   _buildButtons()
 //                 ],
@@ -563,7 +557,7 @@
 //         height: 50,
 //         decoration: BoxDecoration(
 //           gradient: LinearGradient(
-//             colors: isAmountPaid 
+//             colors: isAmountPaid
 //                 ? [Colors.green.shade600, Colors.green.shade800]
 //                 : [
 //                     const Color(0xFF1E0AFE),
@@ -580,7 +574,7 @@
 //             mainAxisAlignment: MainAxisAlignment.spaceAround,
 //             children: [
 //               Text(
-//                 isAmountPaid 
+//                 isAmountPaid
 //                     ? '₹ $delayAmount/- Paid'
 //                     : '₹ $delayAmount/- Pay to continue',
 //                 style: const TextStyle(
@@ -856,20 +850,19 @@
 //     );
 //   }
 
-
 //   Widget _buildSecurityDepositSection() {
 //   return Consumer<SingleBookingProvider>(
 //     builder: (context, bookingProvider, child) {
 //       final booking = bookingProvider.currentBooking;
-      
+
 //       // Get deposit proof images from booking data
 //       final depositProof = booking?.depositeProof ?? [];
 
 //       print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
-      
+
 //       // Create a list of security deposit images
 //       List<Map<String, String>> securityImages = [];
-      
+
 //       // Add deposit proof images (front and back of security deposit item)
 //       for (var proof in depositProof) {
 //         String title = 'Security Deposit';
@@ -878,13 +871,13 @@
 //         } else if (proof.label == 'depositeBack') {
 //           title = 'Security Deposit - Back';
 //         }
-        
+
 //         securityImages.add({
 //           'title': title,
 //           'url': proof.url ?? '',
 //         });
 //       }
-      
+
 //       // If no deposit images available, show placeholders for front and back
 //       if (securityImages.isEmpty) {
 //         securityImages = [
@@ -892,7 +885,7 @@
 //           {'title': 'Security Deposit - Back', 'url': ''},
 //         ];
 //       }
-      
+
 //       return Padding(
 //         padding: const EdgeInsets.all(16.0),
 //         child: Column(
@@ -1017,7 +1010,7 @@
 //               ],
 //             ),
 //           ),
-        
+
 //         // Title overlay at bottom
 //         Positioned(
 //           bottom: 0,
@@ -1096,18 +1089,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
 // import 'package:car_rental_staff_app/models/single_booking_model.dart';
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 // import 'package:car_rental_staff_app/views/return_upload_screen.dart';
@@ -1131,19 +1112,19 @@
 //   bool isReturnExpanded = false;
 //   bool isProceedEnabled = false;
 //   bool useSameDetails = false; // Checkbox state
-  
+
 //   // Form controllers
 //   final TextEditingController nameController = TextEditingController();
 //   final TextEditingController mobileController = TextEditingController();
 //   final TextEditingController altMobileController = TextEditingController();
 //   final TextEditingController emailController = TextEditingController();
-  
+
 //   // Date and time variables
 //   DateTime? returnDate;
 //   TimeOfDay? returnTime;
 //   DateTime? delayDate;
 //   TimeOfDay? delayTime;
-  
+
 //   int delayAmount = 0;
 //   bool hasDelay = false;
 //   File? delayPaymentScreenshot;
@@ -1180,7 +1161,7 @@
 //           print('Error parsing return date: $e');
 //         }
 //       }
-      
+
 //       // Parse return time from booking.to
 //       if (booking.to != null) {
 //         try {
@@ -1190,14 +1171,14 @@
 //           if (timeParts.length == 2) {
 //             int hour = int.parse(timeParts[0]);
 //             int minute = int.parse(timeParts[1]);
-            
+
 //             // Handle 12-hour format conversion if needed
 //             if (booking.to!.contains('PM') && hour != 12) {
 //               hour += 12;
 //             } else if (booking.to!.contains('AM') && hour == 12) {
 //               hour = 0;
 //             }
-            
+
 //             returnTime = TimeOfDay(hour: hour, minute: minute);
 //           }
 //         } catch (e) {
@@ -1227,7 +1208,7 @@
 //         returnTime!.hour,
 //         returnTime!.minute,
 //       );
-      
+
 //       final delayDateTime = DateTime(
 //         delayDate!.year,
 //         delayDate!.month,
@@ -1235,7 +1216,7 @@
 //         delayTime!.hour,
 //         delayTime!.minute,
 //       );
-      
+
 //       if (delayDateTime.isAfter(returnDateTime)) {
 //         final difference = delayDateTime.difference(returnDateTime);
 //         final hoursDifference = difference.inHours;
@@ -1269,7 +1250,7 @@
 //       firstDate: DateTime.now(),
 //       lastDate: DateTime.now().add(const Duration(days: 365)),
 //     );
-    
+
 //     if (picked != null) {
 //       setState(() {
 //         if (isReturn) {
@@ -1287,7 +1268,7 @@
 //       context: context,
 //       initialTime: TimeOfDay.now(),
 //     );
-    
+
 //     if (picked != null) {
 //       setState(() {
 //         if (isReturn) {
@@ -1337,7 +1318,7 @@
 //       maxHeight: 1000,
 //       imageQuality: 80,
 //     );
-    
+
 //     if (image != null) {
 //       setState(() {
 //         delayPaymentScreenshot = File(image.path);
@@ -1353,14 +1334,14 @@
 
 //   Future<void> _submitReturnData() async {
 //     if (widget.bookingId == null) return;
-    
+
 //     try {
 //       final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
-      
+
 //       // Calculate delay time and days
 //       int delayTimeHours = 0;
 //       int delayDays = 0;
-      
+
 //       if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
 //         final returnDateTime = DateTime(
 //           returnDate!.year,
@@ -1369,7 +1350,7 @@
 //           returnTime!.hour,
 //           returnTime!.minute,
 //         );
-        
+
 //         final delayDateTime = DateTime(
 //           delayDate!.year,
 //           delayDate!.month,
@@ -1377,12 +1358,12 @@
 //           delayTime!.hour,
 //           delayTime!.minute,
 //         );
-        
+
 //         final difference = delayDateTime.difference(returnDateTime);
 //         delayTimeHours = difference.inHours;
 //         delayDays = difference.inDays;
 //       }
-      
+
 //       final requestBody = {
 //         "name": nameController.text,
 //         "email": emailController.text,
@@ -1393,7 +1374,7 @@
 //         "delayTime": delayTimeHours,
 //         "delayDay": delayDays
 //       };
-      
+
 //       final response = await http.post(
 //         Uri.parse(url),
 //         headers: {
@@ -1401,7 +1382,7 @@
 //         },
 //         body: json.encode(requestBody),
 //       );
-      
+
 //       if (response.statusCode == 200) {
 //         Navigator.push(
 //           context,
@@ -1455,7 +1436,7 @@
 //           }
 
 //           final booking = bookingProvider.currentBooking;
-          
+
 //           // Auto-populate return date and time from booking when first loaded
 //           if (booking != null && returnDate == null && returnTime == null) {
 //             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -1594,7 +1575,7 @@
 //                                 style: TextStyle(
 //                                     fontSize: 18, fontWeight: FontWeight.bold),
 //                               ),
-                              
+
 //                               // Checkbox for same details
 //                               Padding(
 //                                 padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -1624,7 +1605,7 @@
 //                                   ],
 //                                 ),
 //                               ),
-                              
+
 //                               _buildInputField(
 //                                 icon: Icons.person_outline,
 //                                 label: 'Name',
@@ -1664,7 +1645,7 @@
 //                                     child: _buildDisplayField(
 //                                       icon: Icons.calendar_today_outlined,
 //                                       label: 'Return date',
-//                                       value: returnDate != null 
+//                                       value: returnDate != null
 //                                           ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
 //                                           : 'Not set',
 //                                     ),
@@ -1684,7 +1665,7 @@
 //                                   ),
 //                                 ),
 //                               ),
-                              
+
 //                               Row(
 //                                 children: [
 //                                   Expanded(
@@ -1700,7 +1681,7 @@
 //                                     child: _buildDateTimeField(
 //                                       icon: Icons.date_range_outlined,
 //                                       label: 'Delay date',
-//                                       value: delayDate != null 
+//                                       value: delayDate != null
 //                                           ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
 //                                           : 'Select date',
 //                                       onTap: () => _selectDate(context, false),
@@ -1714,13 +1695,13 @@
 //                   ),
 
 //                   const SizedBox(height: 10),
-                  
+
 //                   // Show delay amount and screenshot upload when there's delay
 //                   if (hasDelay) ...[
 //                     _buildDelayAmountDisplay(),
 //                     _buildScreenshotUploadSection(),
 //                   ],
-                  
+
 //                   const SizedBox(height: 130),
 //                   _buildButtons()
 //                 ],
@@ -2114,20 +2095,19 @@
 //     );
 //   }
 
-
 //     Widget _buildSecurityDepositSection() {
 //   return Consumer<SingleBookingProvider>(
 //     builder: (context, bookingProvider, child) {
 //       final booking = bookingProvider.currentBooking;
-      
+
 //       // Get deposit proof images from booking data
 //       final depositProof = booking?.depositeProof ?? [];
 
 //       print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
-      
+
 //       // Create a list of security deposit images
 //       List<Map<String, String>> securityImages = [];
-      
+
 //       // Add deposit proof images (front and back of security deposit item)
 //       for (var proof in depositProof) {
 //         String title = 'Security Deposit';
@@ -2136,13 +2116,13 @@
 //         } else if (proof.label == 'depositeBack') {
 //           title = 'Security Deposit - Back';
 //         }
-        
+
 //         securityImages.add({
 //           'title': title,
 //           'url': proof.url ?? '',
 //         });
 //       }
-      
+
 //       // If no deposit images available, show placeholders for front and back
 //       if (securityImages.isEmpty) {
 //         securityImages = [
@@ -2150,7 +2130,7 @@
 //           {'title': 'Security Deposit - Back', 'url': ''},
 //         ];
 //       }
-      
+
 //       return Padding(
 //         padding: const EdgeInsets.all(16.0),
 //         child: Column(
@@ -2275,7 +2255,7 @@
 //               ],
 //             ),
 //           ),
-        
+
 //         // Title overlay at bottom
 //         Positioned(
 //           bottom: 0,
@@ -2312,60 +2292,60 @@
 //   );
 // }
 
-  // Widget _buildSecurityDepositSection() {
-  //   return Column(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     children: [
-  //       const Text(
-  //         'Security Deposit',
-  //         style: TextStyle(
-  //           fontSize: 16,
-  //           fontWeight: FontWeight.bold,
-  //           color: Colors.green,
-  //         ),
-  //       ),
-  //       const SizedBox(height: 8),
-  //       Container(
-  //         padding: const EdgeInsets.all(12),
-  //         decoration: BoxDecoration(
-  //           color: Colors.green.shade50,
-  //           borderRadius: BorderRadius.circular(8),
-  //           border: Border.all(color: Colors.green.shade200),
-  //         ),
-  //         child: Row(
-  //           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //           children: [
-  //             const Column(
-  //               crossAxisAlignment: CrossAxisAlignment.start,
-  //               children: [
-  //                 Text(
-  //                   'Amount: ₹5000',
-  //                   style: TextStyle(
-  //                     fontSize: 14,
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.green,
-  //                   ),
-  //                 ),
-  //                 Text(
-  //                   'Status: Collected',
-  //                   style: TextStyle(
-  //                     fontSize: 12,
-  //                     color: Colors.grey,
-  //                   ),
-  //                 ),
-  //               ],
-  //             ),
-  //             Icon(
-  //               Icons.check_circle,
-  //               color: Colors.green.shade600,
-  //               size: 24,
-  //             ),
-  //           ],
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
+// Widget _buildSecurityDepositSection() {
+//   return Column(
+//     crossAxisAlignment: CrossAxisAlignment.start,
+//     children: [
+//       const Text(
+//         'Security Deposit',
+//         style: TextStyle(
+//           fontSize: 16,
+//           fontWeight: FontWeight.bold,
+//           color: Colors.green,
+//         ),
+//       ),
+//       const SizedBox(height: 8),
+//       Container(
+//         padding: const EdgeInsets.all(12),
+//         decoration: BoxDecoration(
+//           color: Colors.green.shade50,
+//           borderRadius: BorderRadius.circular(8),
+//           border: Border.all(color: Colors.green.shade200),
+//         ),
+//         child: Row(
+//           mainAxisAlignment: MainAxisAlignment.spaceBetween,
+//           children: [
+//             const Column(
+//               crossAxisAlignment: CrossAxisAlignment.start,
+//               children: [
+//                 Text(
+//                   'Amount: ₹5000',
+//                   style: TextStyle(
+//                     fontSize: 14,
+//                     fontWeight: FontWeight.bold,
+//                     color: Colors.green,
+//                   ),
+//                 ),
+//                 Text(
+//                   'Status: Collected',
+//                   style: TextStyle(
+//                     fontSize: 12,
+//                     color: Colors.grey,
+//                   ),
+//                 ),
+//               ],
+//             ),
+//             Icon(
+//               Icons.check_circle,
+//               color: Colors.green.shade600,
+//               size: 24,
+//             ),
+//           ],
+//         ),
+//       ),
+//     ],
+//   );
+// }
 
 //   Widget _buildButtons() {
 //     return Positioned(
@@ -2394,8 +2374,8 @@
 //               child: ElevatedButton(
 //                 onPressed: isProceedEnabled ? _submitReturnData : null,
 //                 style: ElevatedButton.styleFrom(
-//                   backgroundColor: isProceedEnabled 
-//                       ? const Color(0xFF2E7D32) 
+//                   backgroundColor: isProceedEnabled
+//                       ? const Color(0xFF2E7D32)
 //                       : Colors.grey.shade400,
 //                   foregroundColor: Colors.white,
 //                   shape: RoundedRectangleBorder(
@@ -2404,7 +2384,7 @@
 //                   elevation: 0,
 //                 ),
 //                 child: Text(
-//                   hasDelay && delayPaymentScreenshot == null 
+//                   hasDelay && delayPaymentScreenshot == null
 //                       ? 'Upload Payment Screenshot to Proceed'
 //                       : 'Proceed',
 //                   style: const TextStyle(
@@ -2454,21 +2434,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/return_upload_screen.dart';
@@ -2493,23 +2458,25 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
   bool isProceedEnabled = false;
   bool useSameDetails = false;
   bool isUploadingPaymentScreenshot = false;
-  
+
   // Form controllers
   final TextEditingController nameController = TextEditingController();
   final TextEditingController mobileController = TextEditingController();
   final TextEditingController altMobileController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
-  
+
   // Date and time variables
   DateTime? returnDate;
   TimeOfDay? returnTime;
   DateTime? delayDate;
   TimeOfDay? delayTime;
-  
+
   int delayAmount = 0;
   bool hasDelay = false;
   File? delayPaymentScreenshot;
   final ImagePicker _picker = ImagePicker();
+  int? delayPerHour;
+  int? delayPerDay;
 
   @override
   void initState() {
@@ -2518,7 +2485,16 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         context
             .read<SingleBookingProvider>()
-            .fetchSingleBooking(widget.bookingId!);
+            .fetchSingleBooking(widget.bookingId!)
+            .then((_) {
+          final booking = context.read<SingleBookingProvider>().currentBooking;
+          if (booking != null) {
+            setState(() {
+              delayPerHour = booking.car?.delayPerHour;
+              delayPerDay = booking.car?.delayPerDay;
+            });
+          }
+        });
       });
     }
   }
@@ -2543,7 +2519,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           print('Error parsing return date: $e');
         }
       }
-      
+
       if (booking.to != null) {
         try {
           final timeStr = booking.to!.replaceAll(RegExp(r'[AP]M'), '').trim();
@@ -2551,13 +2527,13 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           if (timeParts.length == 2) {
             int hour = int.parse(timeParts[0]);
             int minute = int.parse(timeParts[1]);
-            
+
             if (booking.to!.contains('PM') && hour != 12) {
               hour += 12;
             } else if (booking.to!.contains('AM') && hour == 12) {
               hour = 0;
             }
-            
+
             returnTime = TimeOfDay(hour: hour, minute: minute);
           }
         } catch (e) {
@@ -2575,7 +2551,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
         mobileController.text = returnDetail['mobile'] ?? '';
         altMobileController.text = returnDetail['alternativeMobile'] ?? '';
         emailController.text = returnDetail['email'] ?? '';
-        
+
         // Parse return date and time from returnDetails
         if (returnDetail['returnDate'] != null) {
           try {
@@ -2591,7 +2567,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
             print('Error parsing return date from returnDetails: $e');
           }
         }
-        
+
         if (returnDetail['returnTime'] != null) {
           try {
             final timeStr = returnDetail['returnTime'].toString();
@@ -2599,29 +2575,31 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
             if (timeParts.length >= 2) {
               int hour = int.parse(timeParts[0]);
               int minute = int.parse(timeParts[1].split(' ')[0]);
-              
+
               if (timeStr.contains('PM') && hour != 12) {
                 hour += 12;
               } else if (timeStr.contains('AM') && hour == 12) {
                 hour = 0;
               }
-              
+
               returnTime = TimeOfDay(hour: hour, minute: minute);
             }
           } catch (e) {
             print('Error parsing return time from returnDetails: $e');
           }
         }
-        
+
         // Handle delay information
         final delayTime = returnDetail['delayTime'] ?? 0;
         final delayDay = returnDetail['delayDay'] ?? 0;
-        
+
+        print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$delayTime");
+
         if (delayTime > 0 || delayDay > 0) {
           hasDelay = true;
-          delayAmount = delayTime * 100; // Assuming 100 per hour
+          delayAmount = delayTime * 1000; // Assuming 100 per hour
         }
-        
+
         isProceedEnabled = true; // Enable proceed since data is already filled
       });
     }
@@ -2639,8 +2617,57 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     }
   }
 
+  // void _calculateDelayAmount() {
+  //   if (returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+  //     final returnDateTime = DateTime(
+  //       returnDate!.year,
+  //       returnDate!.month,
+  //       returnDate!.day,
+  //       returnTime!.hour,
+  //       returnTime!.minute,
+  //     );
+
+  //     final delayDateTime = DateTime(
+  //       delayDate!.year,
+  //       delayDate!.month,
+  //       delayDate!.day,
+  //       delayTime!.hour,
+  //       delayTime!.minute,
+  //     );
+
+  //     if (delayDateTime.isAfter(returnDateTime)) {
+  //       final difference = delayDateTime.difference(returnDateTime);
+  //       final hoursDifference = difference.inHours;
+  //       setState(() {
+  //         delayAmount = hoursDifference * 100;
+  //         hasDelay = true;
+  //         isProceedEnabled = false;
+  //         delayPaymentScreenshot = null;
+  //       });
+  //     } else {
+  //       setState(() {
+  //         delayAmount = 0;
+  //         hasDelay = false;
+  //         isProceedEnabled = true;
+  //         delayPaymentScreenshot = null;
+  //       });
+  //     }
+  //   } else {
+  //     setState(() {
+  //       delayAmount = 0;
+  //       hasDelay = false;
+  //       isProceedEnabled = !hasDelay;
+  //     });
+  //   }
+  // }
+
   void _calculateDelayAmount() {
-    if (returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
+    print("kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$hasDelay");
+
+    if (returnDate != null &&
+        returnTime != null &&
+        delayDate != null &&
+        delayTime != null) {
       final returnDateTime = DateTime(
         returnDate!.year,
         returnDate!.month,
@@ -2648,7 +2675,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
         returnTime!.hour,
         returnTime!.minute,
       );
-      
+
       final delayDateTime = DateTime(
         delayDate!.year,
         delayDate!.month,
@@ -2656,17 +2683,64 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
         delayTime!.hour,
         delayTime!.minute,
       );
-      
+
+      print(
+          "kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$returnDateTime");
+      print(
+          "kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$delayDateTime");
+
       if (delayDateTime.isAfter(returnDateTime)) {
         final difference = delayDateTime.difference(returnDateTime);
-        final hoursDifference = difference.inHours;
+        print("kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$difference");
+
+        final totalHours = difference.inHours;
+        final totalDays = difference.inDays;
+        final remainingHours = totalHours - (totalDays * 24);
+        print("kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$totalHours");
+
+        print("Total Days$totalDays");
+
+        print(
+            "kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$remainingHours");
+
+        double amount = 0;
+
+        if (totalDays == 0) {
+          // Less than 24 hours → charge only by hours
+          print("Amonuttttttttttttttttt$delayPerHour");
+
+          amount = totalHours * delayPerHour!.toDouble();
+          print("Amonuttttttttttttttt$amount");
+        } else if (totalDays >= 2 && remainingHours == 0) {
+          // Full days only → charge by days
+          amount = totalDays * delayPerDay!.toDouble();
+          print("Amonut11111111111111111$amount");
+        } else {
+          // Mix of days + hours → charge both
+          print("ppppppppppppppp${delayPerDay!.toDouble()}");
+          print("ppppppppppppppp${delayPerHour!.toDouble()}");
+
+          amount = (totalDays * delayPerDay!.toDouble()) +
+              (remainingHours * delayPerHour!.toDouble());
+
+          print("Amonut2222222222222$amount");
+        }
+
+        print("Delay amonytttttttttt$delayAmount");
+
         setState(() {
-          delayAmount = hoursDifference * 100;
+          delayAmount = amount.round(); // converts double → int
           hasDelay = true;
           isProceedEnabled = false;
           delayPaymentScreenshot = null;
         });
+
+        print("Delay amonytttttttttt$delayAmount");
+
+        print("kkkkkkkkkkkkhhhhhhhhhhhhhhhhhhhhhhhhggggggggggggggg$hasDelay");
       } else {
+        print("okokokokokokokookokkokok$hasDelay");
+
         setState(() {
           delayAmount = 0;
           hasDelay = false;
@@ -2690,7 +2764,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       firstDate: DateTime.now(),
       lastDate: DateTime.now().add(const Duration(days: 365)),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isReturn) {
@@ -2708,7 +2782,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       context: context,
       initialTime: TimeOfDay.now(),
     );
-    
+
     if (picked != null) {
       setState(() {
         if (isReturn) {
@@ -2758,7 +2832,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
         maxHeight: 1000,
         imageQuality: 80,
       );
-      
+
       if (image != null) {
         await _uploadDelayPaymentScreenshot(File(image.path));
       }
@@ -2777,9 +2851,10 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     try {
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://194.164.148.244:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
+        Uri.parse(
+            'http://194.164.148.244:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
       );
-      
+
       request.files.add(
         await http.MultipartFile.fromPath(
           'paymentScreenshot',
@@ -2789,23 +2864,25 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
 
       var response = await request.send();
 
-      print("rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr${response}");
-      
+      print(
+          "rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr${response}");
+
       if (response.statusCode == 200) {
         setState(() {
           delayPaymentScreenshot = imageFile;
           isProceedEnabled = true;
           isUploadingPaymentScreenshot = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Payment screenshot uploaded successfully')),
+          const SnackBar(
+              content: Text('Payment screenshot uploaded successfully')),
         );
       } else {
         setState(() {
           isUploadingPaymentScreenshot = false;
         });
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Upload failed: ${response.statusCode}')),
         );
@@ -2814,7 +2891,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       setState(() {
         isUploadingPaymentScreenshot = false;
       });
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Upload error: $e')),
       );
@@ -2823,70 +2900,78 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
 
   Future<dynamic> _submitReturnData(hasReturnDetails) async {
     if (widget.bookingId == null) return;
-    
+
     try {
-      print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$hasReturnDetails");
-      if(!hasReturnDetails){
-        final url = 'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
-      
-      int delayTimeHours = 0;
-      int delayDays = 0;
-      
-      if (hasDelay && returnDate != null && returnTime != null && delayDate != null && delayTime != null) {
-        final returnDateTime = DateTime(
-          returnDate!.year,
-          returnDate!.month,
-          returnDate!.day,
-          returnTime!.hour,
-          returnTime!.minute,
+      print(
+          "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$hasReturnDetails");
+      if (!hasReturnDetails) {
+        final url =
+            'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
+
+        int delayTimeHours = 0;
+        int delayDays = 0;
+
+        if (hasDelay &&
+            returnDate != null &&
+            returnTime != null &&
+            delayDate != null &&
+            delayTime != null) {
+          final returnDateTime = DateTime(
+            returnDate!.year,
+            returnDate!.month,
+            returnDate!.day,
+            returnTime!.hour,
+            returnTime!.minute,
+          );
+
+          final delayDateTime = DateTime(
+            delayDate!.year,
+            delayDate!.month,
+            delayDate!.day,
+            delayTime!.hour,
+            delayTime!.minute,
+          );
+
+          final difference = delayDateTime.difference(returnDateTime);
+          delayTimeHours = difference.inHours;
+          delayDays = difference.inDays;
+        }
+
+        final requestBody = {
+          "name": nameController.text,
+          "email": emailController.text,
+          "mobile": mobileController.text,
+          "alternativeMobile": altMobileController.text,
+          "returnTime": returnTime != null ? returnTime!.format(context) : "",
+          "returnDate": returnDate != null
+              ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}"
+              : "",
+          "delayTime": delayTimeHours,
+          "delayDay": delayDays
+        };
+
+        final response = await http.post(
+          Uri.parse(url),
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: json.encode(requestBody),
         );
-        
-        final delayDateTime = DateTime(
-          delayDate!.year,
-          delayDate!.month,
-          delayDate!.day,
-          delayTime!.hour,
-          delayTime!.minute,
-        );
-        
-        final difference = delayDateTime.difference(returnDateTime);
-        delayTimeHours = difference.inHours;
-        delayDays = difference.inDays;
-      }
-      
-      final requestBody = {
-        "name": nameController.text,
-        "email": emailController.text,
-        "mobile": mobileController.text,
-        "alternativeMobile": altMobileController.text,
-        "returnTime": returnTime != null ? returnTime!.format(context) : "",
-        "returnDate": returnDate != null ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}" : "",
-        "delayTime": delayTimeHours,
-        "delayDay": delayDays
-      };
-      
-      final response = await http.post(
-        Uri.parse(url),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json.encode(requestBody),
-      );
-      
-      if (response.statusCode == 200) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
-          ),
-        );
+
+        if (response.statusCode == 200) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
+            ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: ${response.statusCode}')),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${response.statusCode}')),
-        );
-      }
-      }else{
-               Navigator.pushReplacement(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => ReturnUploadScreen(id: widget.bookingId!),
@@ -2935,7 +3020,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
 
           final booking = bookingProvider.currentBooking;
           final hasReturnDetails = _hasReturnDetails(booking);
-          
+
           // Auto-populate data when first loaded
           if (booking != null && returnDate == null && returnTime == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -3012,21 +3097,25 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                               _buildDisplayField(
                                   icon: Icons.person_outline,
                                   label: 'Name',
-                                  value: booking?.userId?.name ?? 'Not Available'),
+                                  value:
+                                      booking?.userId?.name ?? 'Not Available'),
                               _buildDisplayField(
                                 icon: Icons.phone_outlined,
                                 label: 'Mobile Number',
-                                value: booking?.userId?.mobile ?? 'Not Available',
+                                value:
+                                    booking?.userId?.mobile ?? 'Not Available',
                               ),
                               _buildDisplayField(
                                 icon: Icons.phone_outlined,
                                 label: 'Alternate Mobile Number',
-                                value: booking?.userId?.mobile ?? 'Not Available',
+                                value:
+                                    booking?.userId?.mobile ?? 'Not Available',
                               ),
                               _buildDisplayField(
                                   icon: Icons.email_outlined,
                                   label: 'Email',
-                                  value: booking?.userId?.email ?? 'Not Available'),
+                                  value: booking?.userId?.email ??
+                                      'Not Available'),
                               Row(
                                 children: [
                                   Expanded(
@@ -3041,7 +3130,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                     child: _buildDisplayField(
                                       icon: Icons.calendar_today_outlined,
                                       label: 'Pickup date',
-                                      value: booking?.rentalStartDate ?? 'Not set',
+                                      value:
+                                          booking?.rentalStartDate ?? 'Not set',
                                     ),
                                   ),
                                 ],
@@ -3079,11 +3169,13 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                   if (hasReturnDetails) ...[
                                     const SizedBox(width: 10),
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 8, vertical: 4),
                                       decoration: BoxDecoration(
                                         color: Colors.green.shade100,
                                         borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(color: Colors.green.shade300),
+                                        border: Border.all(
+                                            color: Colors.green.shade300),
                                       ),
                                       child: const Text(
                                         'Completed',
@@ -3097,11 +3189,12 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                   ],
                                 ],
                               ),
-                              
+
                               // Show checkbox only if no return details exist
                               if (!hasReturnDetails) ...[
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16.0, vertical: 8.0),
                                   child: Row(
                                     children: [
                                       Checkbox(
@@ -3129,29 +3222,37 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                   ),
                                 ),
                               ],
-                              
+
                               // Show fields based on whether return details exist
                               if (hasReturnDetails) ...[
                                 // Read-only display fields
                                 _buildDisplayField(
                                   icon: Icons.person_outline,
                                   label: 'Name',
-                                  value: nameController.text.isNotEmpty ? nameController.text : 'Not Available',
+                                  value: nameController.text.isNotEmpty
+                                      ? nameController.text
+                                      : 'Not Available',
                                 ),
                                 _buildDisplayField(
                                   icon: Icons.phone_outlined,
                                   label: 'Mobile Number',
-                                  value: mobileController.text.isNotEmpty ? mobileController.text : 'Not Available',
+                                  value: mobileController.text.isNotEmpty
+                                      ? mobileController.text
+                                      : 'Not Available',
                                 ),
                                 _buildDisplayField(
                                   icon: Icons.phone_outlined,
                                   label: 'Alternate Mobile Number',
-                                  value: altMobileController.text.isNotEmpty ? altMobileController.text : 'Not Available',
+                                  value: altMobileController.text.isNotEmpty
+                                      ? altMobileController.text
+                                      : 'Not Available',
                                 ),
                                 _buildDisplayField(
                                   icon: Icons.email_outlined,
                                   label: 'Email',
-                                  value: emailController.text.isNotEmpty ? emailController.text : 'Not Available',
+                                  value: emailController.text.isNotEmpty
+                                      ? emailController.text
+                                      : 'Not Available',
                                 ),
                               ] else ...[
                                 // Editable input fields
@@ -3184,17 +3285,30 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                     child: _buildDisplayField(
                                       icon: Icons.access_time_outlined,
                                       label: 'Return time',
-                                      value: returnTime?.format(context) ?? 'Not set',
+                                      value: returnTime?.format(context) ??
+                                          'Not set',
                                     ),
                                   ),
                                   const SizedBox(width: 10),
+                                  // Fixed code to extract only date part
                                   Expanded(
                                     child: _buildDisplayField(
                                       icon: Icons.calendar_today_outlined,
                                       label: 'Return date',
-                                      value: returnDate != null 
-                                          ? "${returnDate!.day}/${returnDate!.month}/${returnDate!.year}"
-                                          : 'Not set',
+                                      value: returnDate != null
+                                          ? "${returnDate!.year}-${returnDate!.month.toString().padLeft(2, '0')}-${returnDate!.day.toString().padLeft(2, '0')}"
+                                          : (hasReturnDetails &&
+                                                  booking?.returnDetails
+                                                          .isNotEmpty ==
+                                                      true &&
+                                                  booking!.returnDetails[0]
+                                                          ['returnDate'] !=
+                                                      null)
+                                              ? booking!.returnDetails[0]
+                                                      ['returnDate']
+                                                  .toString()
+                                                  .split('T')[0]
+                                              : 'Not set',
                                     ),
                                   ),
                                 ],
@@ -3219,8 +3333,10 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                       child: _buildDateTimeField(
                                         icon: Icons.timelapse_outlined,
                                         label: 'Delay time',
-                                        value: delayTime?.format(context) ?? 'Select time',
-                                        onTap: () => _selectTime(context, false),
+                                        value: delayTime?.format(context) ??
+                                            'Select time',
+                                        onTap: () =>
+                                            _selectTime(context, false),
                                       ),
                                     ),
                                     const SizedBox(width: 10),
@@ -3228,10 +3344,11 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                       child: _buildDateTimeField(
                                         icon: Icons.date_range_outlined,
                                         label: 'Delay date',
-                                        value: delayDate != null 
+                                        value: delayDate != null
                                             ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
                                             : 'Select date',
-                                        onTap: () => _selectDate(context, false),
+                                        onTap: () =>
+                                            _selectDate(context, false),
                                       ),
                                     ),
                                   ],
@@ -3249,13 +3366,26 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                                                                 Padding(
+                                  padding:  EdgeInsets.symmetric(
+                                      horizontal: 16.0),
                                   child: Text(
-                                    'Delay charges applied: ₹$delayAmount',
-                                    style: const TextStyle(
+                                    'Delay Time: ${booking?.returnDetails[0]['delayTime']} hr',
+                                    style:  TextStyle(
                                       fontSize: 14,
-                                      color: Colors.orange,
+                                      color: const Color.fromARGB(255, 0, 0, 0),
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                ),
+                                const Padding(
+                                  padding:  EdgeInsets.symmetric(
+                                      horizontal: 16.0),
+                                  child: Text(
+                                    'Delay charges applied',
+                                    style:  TextStyle(
+                                      fontSize: 14,
+                                      color: Color.fromARGB(255, 0, 0, 0),
                                       fontWeight: FontWeight.w500,
                                     ),
                                   ),
@@ -3267,7 +3397,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                   ),
 
                   const SizedBox(height: 10),
-                  
+
                   // Show delay amount and screenshot upload when there's delay
                   if (hasDelay && !hasReturnDetails) ...[
                     _buildDelayAmountDisplay(),
@@ -3277,7 +3407,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                     // Show existing delay payment screenshots if they exist
                     _buildExistingDelayScreenshots(booking),
                   ],
-                  
+
                   const SizedBox(height: 130),
                   _buildButtons()
                 ],
@@ -3432,23 +3562,24 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: delayPaymentScreenshot == null && !isUploadingPaymentScreenshot
-                ? _pickDelayPaymentScreenshotBottomSheet
-                : null,
+            onTap:
+                delayPaymentScreenshot == null && !isUploadingPaymentScreenshot
+                    ? _pickDelayPaymentScreenshotBottomSheet
+                    : null,
             child: Container(
               height: 150,
               width: double.infinity,
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: delayPaymentScreenshot != null 
-                      ? Colors.green 
+                  color: delayPaymentScreenshot != null
+                      ? Colors.green
                       : Colors.grey.shade400,
                   width: 2,
                   style: BorderStyle.solid,
                 ),
                 borderRadius: BorderRadius.circular(8),
-                color: delayPaymentScreenshot != null 
-                    ? Colors.green.shade50 
+                color: delayPaymentScreenshot != null
+                    ? Colors.green.shade50
                     : Colors.grey.shade50,
               ),
               child: Stack(
@@ -3535,11 +3666,11 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
 
   // Widget _buildExistingDelayScreenshots(Booking? booking) {
   //   // Check if booking has delay payment screenshots
-  //   final hasDelayScreenshots = booking?.returnDetails.isNotEmpty == true && 
+  //   final hasDelayScreenshots = booking?.returnDetails.isNotEmpty == true &&
   //       booking!.returnDetails[0]['delayPaymentScreenshot'] != null;
-    
+
   //   if (!hasDelayScreenshots) return const SizedBox();
-    
+
   //   return Padding(
   //     padding: const EdgeInsets.all(16.0),
   //     child: Column(
@@ -3667,7 +3798,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     );
   }
 
-    Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
+  Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
     return Card(
       elevation: 1,
       color: const Color(0XFFFFFFFF),
@@ -3706,7 +3837,6 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-
             Row(
               children: [
                 const Icon(Icons.settings, size: 16, color: Colors.grey),
@@ -3736,7 +3866,6 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
               ],
             ),
             const SizedBox(height: 12),
-
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -3766,7 +3895,6 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       ),
     );
   }
-
 
   // Widget _buildCarDetailsCard(Booking? booking, double screenWidth) {
   //   return Container(
@@ -3858,6 +3986,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
+        border: Border.all(color: Colors.grey),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -3885,7 +4014,9 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                     ),
                   ),
                   Icon(
-                    isExpanded ? Icons.keyboard_arrow_up : Icons.keyboard_arrow_down,
+                    isExpanded
+                        ? Icons.keyboard_arrow_up
+                        : Icons.keyboard_arrow_down,
                     size: 24,
                   ),
                 ],
@@ -3958,7 +4089,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
               decoration: InputDecoration(
                 labelText: label,
                 border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               ),
               onChanged: (value) {
                 setState(() {
@@ -3968,7 +4100,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                       emailController.text.isNotEmpty &&
                       returnDate != null &&
                       returnTime != null;
-                      // (!hasDelay || delayPaymentScreenshot != null);
+                  // (!hasDelay || delayPaymentScreenshot != null);
                 });
               },
             ),
@@ -3994,7 +4126,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
             child: GestureDetector(
               onTap: onTap,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
                 decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey),
                   borderRadius: BorderRadius.circular(4),
@@ -4024,206 +4157,202 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
     );
   }
 
+  Widget _buildSecurityDepositSection() {
+    return Consumer<SingleBookingProvider>(
+      builder: (context, bookingProvider, child) {
+        final booking = bookingProvider.currentBooking;
 
-      Widget _buildSecurityDepositSection() {
-  return Consumer<SingleBookingProvider>(
-    builder: (context, bookingProvider, child) {
-      final booking = bookingProvider.currentBooking;
-      
-      // Get deposit proof images from booking data
-      final depositProof = booking?.depositeProof ?? [];
+        // Get deposit proof images from booking data
+        final depositProof = booking?.depositeProof ?? [];
 
-      print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
-      
-      // Create a list of security deposit images
-      List<Map<String, String>> securityImages = [];
-      
-      // Add deposit proof images (front and back of security deposit item)
-      for (var proof in depositProof) {
-        String title = 'Security Deposit';
-        if (proof.label == 'depositeFront') {
-          title = 'Security Deposit - Front';
-        } else if (proof.label == 'depositeBack') {
-          title = 'Security Deposit - Back';
+        print('kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$depositProof');
+
+        // Create a list of security deposit images
+        List<Map<String, String>> securityImages = [];
+
+        // Add deposit proof images (front and back of security deposit item)
+        for (var proof in depositProof) {
+          String title = 'Security Deposit';
+          if (proof.label == 'depositeFront') {
+            title = 'Security Deposit - Front';
+          } else if (proof.label == 'depositeBack') {
+            title = 'Security Deposit - Back';
+          }
+
+          securityImages.add({
+            'title': title,
+            'url': proof.url ?? '',
+          });
         }
-        
-        securityImages.add({
-          'title': title,
-          'url': proof.url ?? '',
-        });
-      }
-      
-      // If no deposit images available, show placeholders for front and back
-      if (securityImages.isEmpty) {
-        securityImages = [
-          {'title': 'Security Deposit - Front', 'url': ''},
-          {'title': 'Security Deposit - Back', 'url': ''},
-        ];
-      }
-      
-      return Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Security Deposit',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 1.5,
-                crossAxisSpacing: 10,
-                mainAxisSpacing: 10,
-              ),
-              itemCount: securityImages.length,
-              itemBuilder: (context, index) {
-                final imageData = securityImages[index];
-                return _buildSecurityDocumentCard(
-                  title: imageData['title']!,
-                  imageUrl: imageData['url']!,
-                );
-              },
-            ),
-          ],
-        ),
-      );
-    },
-  );
-}
 
+        // If no deposit images available, show placeholders for front and back
+        if (securityImages.isEmpty) {
+          securityImages = [
+            {'title': 'Security Deposit - Front', 'url': ''},
+            {'title': 'Security Deposit - Back', 'url': ''},
+          ];
+        }
 
-Widget _buildSecurityDocumentCard({
-  required String title,
-  required String imageUrl,
-}) {
-  return Container(
-    height: 206,
-    decoration: BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      color: Colors.grey.shade200,
-    ),
-    child: Stack(
-      children: [
-        // Main image
-        if (imageUrl.isNotEmpty)
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: Image.network(
-              imageUrl,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: double.infinity,
-              loadingBuilder: (context, child, loadingProgress) {
-                if (loadingProgress == null) return child;
-                return Center(
-                  child: CircularProgressIndicator(
-                    value: loadingProgress.expectedTotalBytes != null
-                        ? loadingProgress.cumulativeBytesLoaded /
-                            loadingProgress.expectedTotalBytes!
-                        : null,
-                  ),
-                );
-              },
-              errorBuilder: (context, error, stackTrace) => Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  color: Colors.grey.shade300,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(
-                      Icons.image_not_supported,
-                      size: 40,
-                      color: Colors.grey.shade600,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Image not available',
-                      style: TextStyle(
-                        color: Colors.grey.shade600,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                'Security Deposit',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-            ),
-          )
-        else
-          // Placeholder when no image URL
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: Colors.grey.shade300,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.security,
-                  size: 40,
-                  color: Colors.grey.shade600,
+              const SizedBox(height: 16),
+              GridView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.5,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  'Security Deposit',
-                  style: TextStyle(
-                    color: Colors.grey.shade600,
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+                itemCount: securityImages.length,
+                itemBuilder: (context, index) {
+                  final imageData = securityImages[index];
+                  return _buildSecurityDocumentCard(
+                    title: imageData['title']!,
+                    imageUrl: imageData['url']!,
+                  );
+                },
+              ),
+            ],
           ),
-        
-        // Title overlay at bottom
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-            decoration: BoxDecoration(
-              borderRadius: const BorderRadius.vertical(
-                bottom: Radius.circular(12),
+        );
+      },
+    );
+  }
+
+  Widget _buildSecurityDocumentCard({
+    required String title,
+    required String imageUrl,
+  }) {
+    return Container(
+      height: 206,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.grey.shade200,
+      ),
+      child: Stack(
+        children: [
+          // Main image
+          if (imageUrl.isNotEmpty)
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) return child;
+                  return Center(
+                    child: CircularProgressIndicator(
+                      value: loadingProgress.expectedTotalBytes != null
+                          ? loadingProgress.cumulativeBytesLoaded /
+                              loadingProgress.expectedTotalBytes!
+                          : null,
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) => Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    color: Colors.grey.shade300,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.image_not_supported,
+                        size: 40,
+                        color: Colors.grey.shade600,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Image not available',
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Colors.transparent,
-                  Colors.black.withOpacity(0.7),
+            )
+          else
+            // Placeholder when no image URL
+            Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                color: Colors.grey.shade300,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.security,
+                    size: 40,
+                    color: Colors.grey.shade600,
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Security Deposit',
+                    style: TextStyle(
+                      color: Colors.grey.shade600,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ],
               ),
             ),
-            child: Text(
-              title,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
+
+          // Title overlay at bottom
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+              decoration: BoxDecoration(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(12),
+                ),
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.7),
+                  ],
+                ),
               ),
-              textAlign: TextAlign.center,
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
             ),
           ),
-        ),
-      ],
-    ),
-  );
-}
-
-  
+        ],
+      ),
+    );
+  }
 
   // Widget _buildSecurityDepositSection() {
   //   return Column(
@@ -4263,10 +4392,9 @@ Widget _buildSecurityDocumentCard({
   // }
 
   Widget _buildButtons() {
-    final hasReturnDetails = _hasReturnDetails(
-      context.read<SingleBookingProvider>().currentBooking
-    );
-    
+    final hasReturnDetails =
+        _hasReturnDetails(context.read<SingleBookingProvider>().currentBooking);
+
     return Positioned(
       bottom: 0,
       left: 0,
@@ -4289,10 +4417,12 @@ Widget _buildSecurityDocumentCard({
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: (hasReturnDetails || isProceedEnabled) ? () => _submitReturnData(hasReturnDetails) : null,
+              onPressed: (hasReturnDetails || isProceedEnabled)
+                  ? () => _submitReturnData(hasReturnDetails)
+                  : null,
               style: ElevatedButton.styleFrom(
-                backgroundColor: (hasReturnDetails || isProceedEnabled) 
-                    ? const Color.fromARGB(255, 255, 0, 0) 
+                backgroundColor: (hasReturnDetails || isProceedEnabled)
+                    ? const Color.fromARGB(255, 255, 0, 0)
                     : Colors.grey,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),

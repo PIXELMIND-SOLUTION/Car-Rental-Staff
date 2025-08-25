@@ -121,8 +121,10 @@ class AuthProvider with ChangeNotifier {
   Future<void> loadProfileImage() async {
     final profileImage = _user?.profileImage ?? await StorageHelper.getProfileImage();
 
+    print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$profileImage");
+
     if (profileImage != null) {
-      _localImageUrl = 'https://carrentalbackent.onrender.com$profileImage';
+      _localImageUrl = 'http://194.164.148.244:4062$profileImage';
     } else {
       _localImageUrl =
           'https://avatar.iran.liara.run/public/boy?username=Ash';

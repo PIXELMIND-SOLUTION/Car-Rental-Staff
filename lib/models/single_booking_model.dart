@@ -201,6 +201,8 @@ class Car {
   final int seats;
   final List<String> carImage;
   final String vehicleNumber;
+  int? delayPerHour;
+  int? delayPerDay;
 
   Car({
     required this.id,
@@ -211,7 +213,9 @@ class Car {
     required this.type,
     required this.seats,
     required this.carImage,
-    required this.vehicleNumber
+    required this.vehicleNumber,
+    this.delayPerDay,
+    this.delayPerHour
   });
 
   factory Car.fromJson(Map<String, dynamic> json) {
@@ -224,7 +228,9 @@ class Car {
       type: json['type'] ?? '',
       seats: json['seats']?? 0,
       carImage: List<String>.from(json['carImage'] ?? []),
-      vehicleNumber: json['vehicleNumber']?? ''
+      vehicleNumber: json['vehicleNumber']?? '',
+      delayPerDay: json['delayPerDay'] ?? 1,
+      delayPerHour: json['delayPerHour'] ?? 1
     );
   }
 
@@ -238,7 +244,9 @@ class Car {
       'type': type,
       'seats':seats,
       'carImage': carImage,
-      'vehicleNumber': vehicleNumber
+      'vehicleNumber': vehicleNumber,
+      'delayPerHour': delayPerHour,
+      'delayPerDay': delayPerDay
     };
   }
 }

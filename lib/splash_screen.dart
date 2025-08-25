@@ -230,10 +230,24 @@ class _SplashScreenState extends State<SplashScreen>
                                 ),
                               ],
                             ),
-                            child: const Icon(
-                              Icons.directions_car_rounded,
-                              size: 60,
-                              color: Colors.white,
+                            child: ClipOval(
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Image.asset(
+                                  'assets/logoo.jpg', // Replace with your logo path
+                                  width: 100,
+                                  height: 100,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    // Fallback to icon if image fails to load
+                                    return const Icon(
+                                      Icons.directions_car_rounded,
+                                      size: 60,
+                                      color: Colors.white,
+                                    );
+                                  },
+                                ),
+                              ),
                             ),
                           ),
                         ),
