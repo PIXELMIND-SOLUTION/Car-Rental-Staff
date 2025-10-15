@@ -983,14 +983,19 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                                   color: Colors.black87,
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-                                Text(
-                                  booking.car?.model ?? "Unknown",
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.035,
-                                    color: const Color.fromARGB(255, 0, 0, 0)
-                                        .withOpacity(0.9),
-                                  ),
-                                ),
+       Text(
+  (booking.car?.model ?? "Unknown").substring(
+    0,
+    (booking.car?.model ?? "Unknown").length > 19
+        ? 19
+        : (booking.car?.model ?? "Unknown").length,
+  ),
+  style: TextStyle(
+    fontSize: screenWidth * 0.035,
+    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
+  ),
+),
+
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.012),

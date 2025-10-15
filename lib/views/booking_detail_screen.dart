@@ -2456,6 +2456,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
   bool isPickupExpanded = true;
   bool isReturnExpanded = false;
   bool isProceedEnabled = false;
+  bool isProceed = false;
+  bool isScreeshot = true;
   bool useSameDetails = false;
   bool isUploadingPaymentScreenshot = false;
 
@@ -2493,9 +2495,68 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
               delayPerHour = booking.car?.delayPerHour;
               delayPerDay = booking.car?.delayPerDay;
             });
+
+            _checkForAutomaticDelay();
           }
         });
       });
+    }
+  }
+
+  void _checkForAutomaticDelay() {
+    if (returnDate != null && returnTime != null) {
+      final returnDateTime = DateTime(
+        returnDate!.year,
+        returnDate!.month,
+        returnDate!.day,
+        returnTime!.hour,
+        returnTime!.minute,
+      );
+
+      final currentDateTime = DateTime.now();
+
+      if (currentDateTime.isAfter(returnDateTime)) {
+        final difference = currentDateTime.difference(returnDateTime);
+        final totalHours = difference.inHours;
+        final totalDays = difference.inDays;
+        final remainingHours = totalHours - (totalDays * 24);
+
+        double amount = 0;
+
+        if (totalDays == 0) {
+          amount = totalHours * delayPerHour!.toDouble();
+        } else if (totalDays >= 2 && remainingHours == 0) {
+          amount = totalDays * delayPerDay!.toDouble();
+        } else {
+          amount = (totalDays * delayPerDay!.toDouble()) +
+              (remainingHours * delayPerHour!.toDouble());
+        }
+
+        setState(() {
+          delayDate = DateTime(
+            currentDateTime.year,
+            currentDateTime.month,
+            currentDateTime.day,
+          );
+          delayTime = TimeOfDay(
+            hour: currentDateTime.hour,
+            minute: currentDateTime.minute,
+          );
+          delayAmount = amount.round();
+          isScreeshot = false;
+          hasDelay = true;
+          isProceedEnabled = false;
+          delayPaymentScreenshot = null;
+        });
+      } else {
+        setState(() {
+          hasDelay = false;
+          delayAmount = 0;
+          delayDate = null;
+          delayTime = null;
+          delayPaymentScreenshot = null;
+        });
+      }
     }
   }
 
@@ -2540,6 +2601,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           print('Error parsing return time: $e');
         }
       }
+
+      _checkForAutomaticDelay();
     }
   }
 
@@ -2828,6 +2891,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
 
       final XFile? image = await _picker.pickImage(
         source: source,
+        preferredCameraDevice: CameraDevice.rear,
         maxWidth: 1000,
         maxHeight: 1000,
         imageQuality: 80,
@@ -2870,6 +2934,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       if (response.statusCode == 200) {
         setState(() {
           delayPaymentScreenshot = imageFile;
+          isScreeshot = true;
           isProceedEnabled = true;
           isUploadingPaymentScreenshot = false;
         });
@@ -3022,6 +3087,17 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           final hasReturnDetails = _hasReturnDetails(booking);
 
           // Auto-populate data when first loaded
+          // if (booking != null && returnDate == null && returnTime == null) {
+          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+          //     if (hasReturnDetails) {
+          //       _populateFromReturnDetails(booking);
+          //     } else {
+          //       _populateReturnDateTimeFromBooking(booking);
+          //     }
+          //   });
+          // }
+
+          // Auto-populate data when first loaded
           if (booking != null && returnDate == null && returnTime == null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (hasReturnDetails) {
@@ -3029,6 +3105,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
               } else {
                 _populateReturnDateTimeFromBooking(booking);
               }
+              // Check for delay after populating data
+              _checkForAutomaticDelay();
             });
           }
 
@@ -3203,6 +3281,8 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                           setState(() {
                                             useSameDetails = value ?? false;
                                             if (useSameDetails) {
+                                                                                            isProceed = true;
+
                                               _fillSameDetails(booking);
                                             } else {
                                               nameController.clear();
@@ -3210,6 +3290,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                               altMobileController.clear();
                                               emailController.clear();
                                               isProceedEnabled = false;
+                                              isProceed = false;
                                             }
                                           });
                                         },
@@ -3366,12 +3447,12 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                     ),
                                   ),
                                 ),
-                                                                 Padding(
-                                  padding:  EdgeInsets.symmetric(
-                                      horizontal: 16.0),
+                                Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
                                   child: Text(
                                     'Delay Time: ${booking?.returnDetails[0]['delayTime']} hr',
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: const Color.fromARGB(255, 0, 0, 0),
                                       fontWeight: FontWeight.w500,
@@ -3379,11 +3460,11 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                                   ),
                                 ),
                                 const Padding(
-                                  padding:  EdgeInsets.symmetric(
-                                      horizontal: 16.0),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 16.0),
                                   child: Text(
                                     'Delay charges applied',
-                                    style:  TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       color: Color.fromARGB(255, 0, 0, 0),
                                       fontWeight: FontWeight.w500,
@@ -4417,7 +4498,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
             width: double.infinity,
             height: 50,
             child: ElevatedButton(
-              onPressed: (hasReturnDetails || isProceedEnabled)
+              onPressed: ((hasReturnDetails || isProceed ) && isProceedEnabled && isScreeshot)
                   ? () => _submitReturnData(hasReturnDetails)
                   : null,
               style: ElevatedButton.styleFrom(
