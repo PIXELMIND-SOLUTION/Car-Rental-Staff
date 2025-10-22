@@ -1,13 +1,10 @@
-
-
-
 import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:car_rental_staff_app/services/api/single_booking_service.dart';
 import 'package:flutter/foundation.dart';
 
 class SingleBookingProvider extends ChangeNotifier {
   final SingleBookingService _bookingService = SingleBookingService();
-  
+
   Booking? _currentBooking;
   List<Booking> _bookings = [];
   bool _isLoading = false;
@@ -23,38 +20,37 @@ class SingleBookingProvider extends ChangeNotifier {
   Future<void> fetchSingleBooking(String bookingId) async {
     _setLoading(true);
     _error = null;
-    
+
     try {
       final response = await _bookingService.getSingleBooking(bookingId);
       if (response != null) {
         _currentBooking = response.booking;
-        print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu${_currentBooking?.userId?.documents?.aadharCard?.url}");
-                print("uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu${_currentBooking?.userId?.documents?.drivingLicense?.url}");
+        print(
+            "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu${_currentBooking?.userId?.documents?.aadharCard?.url}");
+        print(
+            "uuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuuu${_currentBooking?.userId?.documents?.drivingLicense?.url}");
 
-      notifyListeners();
+        notifyListeners();
       } else {
         print("helooooooooooooooooooo");
-                _currentBooking = null;
+        _currentBooking = null;
 
         _error = 'Failed to fetch booking';
-              notifyListeners();
-
+        notifyListeners();
       }
     } catch (e) {
       _error = e.toString();
-            notifyListeners();
-
+      notifyListeners();
     } finally {
       _setLoading(false);
-            notifyListeners();
-
+      notifyListeners();
     }
   }
 
   Future<void> fetchAllBookings() async {
     _setLoading(true);
     _error = null;
-    
+
     try {
       final bookings = await _bookingService.getAllBookings();
       if (bookings != null) {
@@ -70,12 +66,14 @@ class SingleBookingProvider extends ChangeNotifier {
   }
 
   // New method for fetching bookings with status and optional date
-  Future<void> fetchBookingsWithStatusAndDate(String status, {String? date}) async {
+  Future<void> fetchBookingsWithStatusAndDate(String status,
+      {String? date}) async {
     _setLoading(true);
     _error = null;
-    
+
     try {
-      final bookings = await _bookingService.getBookingsWithStatusAndDate(status, date: date);
+      final bookings = await _bookingService
+          .getBookingsWithStatusAndDate(status, date: date);
       if (bookings != null) {
         _bookings = bookings;
       } else {
@@ -91,7 +89,7 @@ class SingleBookingProvider extends ChangeNotifier {
   // Future<bool> updateBookingStatus(String bookingId, String status) async {
   //   _setLoading(true);
   //   _error = null;
-    
+
   //   try {
   //     final success = await _bookingService.updateBookingStatus(bookingId, status);
   //     if (success) {
@@ -116,7 +114,7 @@ class SingleBookingProvider extends ChangeNotifier {
   //           car: _currentBooking!.car,
   //         );
   //       }
-        
+
   //       // Update in bookings list
   //       final index = _bookings.indexWhere((booking) => booking.id == bookingId);
   //       if (index != -1) {
