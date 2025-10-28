@@ -1,4 +1,3 @@
-
 // import 'dart:ui';
 // import 'dart:io';
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
@@ -62,7 +61,7 @@
 //       _capturedReturnImages[category] = null;
 //       _uploadedReturnImages[category] = null;
 //     }
-    
+
 //     // Fetch booking data when screen initializes
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       context.read<SingleBookingProvider>().fetchSingleBooking(widget.id);
@@ -75,13 +74,13 @@
 //     WidgetsBinding.instance.addPostFrameCallback((_) {
 //       final bookingProvider = context.read<SingleBookingProvider>();
 //       final booking = bookingProvider.currentBooking;
-      
-//       if (booking?.carReturnImages != null && 
+
+//       if (booking?.carReturnImages != null &&
 //           booking!.carReturnImages!.isNotEmpty) {
-        
+
 //         setState(() {
 //           _returnImagesAlreadyUploaded = true;
-          
+
 //           // Map uploaded images to categories in order
 //           for (int i = 0; i < ReturnImageCategory.values.length && i < booking.carReturnImages!.length; i++) {
 //             _uploadedReturnImages[ReturnImageCategory.values[i]] = booking.carReturnImages![i].url;
@@ -180,7 +179,7 @@
 //                         'Capture the dashboard showing final mileage, fuel level, and any warning lights.',
 //                         Icons.speed,
 //                       ),
-                      
+
 //                       const SizedBox(height: 16),
 //                       Container(
 //                         padding: const EdgeInsets.all(16),
@@ -289,7 +288,7 @@
 //         preferredCameraDevice: CameraDevice.rear,
 //         imageQuality: 80,
 //       );
-      
+
 //       if (photo != null) {
 //         setState(() {
 //           _capturedReturnImages[category] = File(photo.path);
@@ -316,7 +315,7 @@
 //         source: ImageSource.gallery,
 //         imageQuality: 80,
 //       );
-      
+
 //       if (image != null) {
 //         setState(() {
 //           _capturedReturnImages[category] = File(image.path);
@@ -337,7 +336,7 @@
 //       );
 //       return;
 //     }
-    
+
 //     setState(() {
 //       _capturedReturnImages[category] = null;
 //     });
@@ -398,7 +397,7 @@
 //         ScaffoldMessenger.of(context).showSnackBar(
 //           const SnackBar(content: Text('Return images uploaded successfully')),
 //         );
-        
+
 //         // Mark images as uploaded
 //         setState(() {
 //           _returnImagesAlreadyUploaded = true;
@@ -409,7 +408,7 @@
 //             }
 //           }
 //         });
-        
+
 //         return true;
 //       } else {
 //         ScaffoldMessenger.of(context).showSnackBar(
@@ -440,7 +439,7 @@
 
 //   Future<void> _verifyOtp() async {
 //     String enteredOtp = _otpControllers.map((controller) => controller.text).join();
-    
+
 //     // Validate OTP length
 //     if (enteredOtp.length != 4) {
 //       ScaffoldMessenger.of(context).showSnackBar(
@@ -486,7 +485,7 @@
 
 //       Navigator.pop(context); // Close loading dialog
 //       print('Return OTP verification status: ${response.body}');
-      
+
 //       if (response.statusCode == 200) {
 //         // OTP verification successful
 //         final responseData = json.decode(response.body);
@@ -496,21 +495,21 @@
 //         if (depositPdfPath != null) {
 //           String fullPdfUrl = 'http://194.164.148.244:4062$depositPdfPath';
 //           print('PDF URL: $fullPdfUrl');
-          
+
 //           // Download PDF before navigation
 //           await _downloadPdfToDownloads(fullPdfUrl, widget.id);
 //         }
-        
+
 //         setState(() {
 //           showOtpOverlay = false;
 //         });
-        
+
 //         // Navigate to home screen
 //         Navigator.pushReplacement(
 //           context,
 //           MaterialPageRoute(builder: (context) => MainLayout()),
 //         );
-        
+
 //       } else if (response.statusCode == 400) {
 //         // Invalid OTP
 //         final errorData = json.decode(response.body);
@@ -542,13 +541,13 @@
 //     final isCaptured = _capturedReturnImages[category] != null;
 //     final isUploaded = _uploadedReturnImages[category] != null;
 //     final hasImage = isCaptured || isUploaded;
-    
+
 //     return Container(
 //       decoration: BoxDecoration(
 //         borderRadius: BorderRadius.circular(12),
 //         border: Border.all(
-//           color: hasImage 
-//               ? (isUploaded ? Colors.blue : Colors.green) 
+//           color: hasImage
+//               ? (isUploaded ? Colors.blue : Colors.green)
 //               : Colors.grey.shade300,
 //           width: hasImage ? 2 : 1,
 //         ),
@@ -560,8 +559,8 @@
 //           Container(
 //             padding: const EdgeInsets.all(12),
 //             decoration: BoxDecoration(
-//               color: hasImage 
-//                   ? (isUploaded ? Colors.blue.shade50 : Colors.green.shade50) 
+//               color: hasImage
+//                   ? (isUploaded ? Colors.blue.shade50 : Colors.green.shade50)
 //                   : Colors.grey.shade50,
 //               borderRadius: const BorderRadius.only(
 //                 topLeft: Radius.circular(12),
@@ -571,15 +570,15 @@
 //             child: Row(
 //               children: [
 //                 Icon(
-//                   isUploaded 
+//                   isUploaded
 //                       ? Icons.cloud_done
-//                       : hasImage 
-//                           ? Icons.check_circle 
+//                       : hasImage
+//                           ? Icons.check_circle
 //                           : Icons.radio_button_unchecked,
-//                   color: isUploaded 
-//                       ? Colors.blue 
-//                       : hasImage 
-//                           ? Colors.green 
+//                   color: isUploaded
+//                       ? Colors.blue
+//                       : hasImage
+//                           ? Colors.green
 //                           : Colors.grey,
 //                   size: 20,
 //                 ),
@@ -592,10 +591,10 @@
 //                         category.displayName,
 //                         style: TextStyle(
 //                           fontWeight: FontWeight.bold,
-//                           color: isUploaded 
-//                               ? Colors.blue.shade700 
-//                               : hasImage 
-//                                   ? Colors.green.shade700 
+//                           color: isUploaded
+//                               ? Colors.blue.shade700
+//                               : hasImage
+//                                   ? Colors.green.shade700
 //                                   : Colors.grey.shade700,
 //                           fontSize: 13,
 //                         ),
@@ -669,14 +668,14 @@
 //                     children: [
 //                       Expanded(
 //                         child: GestureDetector(
-//                           onTap: _returnImagesAlreadyUploaded 
-//                               ? null 
+//                           onTap: _returnImagesAlreadyUploaded
+//                               ? null
 //                               : () => _takeReturnPhoto(category),
 //                           child: Container(
 //                             height: 150,
 //                             decoration: BoxDecoration(
-//                               color: _returnImagesAlreadyUploaded 
-//                                   ? Colors.grey.shade300 
+//                               color: _returnImagesAlreadyUploaded
+//                                   ? Colors.grey.shade300
 //                                   : Colors.grey.shade200,
 //                               borderRadius: const BorderRadius.only(
 //                                 bottomLeft: Radius.circular(12),
@@ -686,22 +685,22 @@
 //                               mainAxisAlignment: MainAxisAlignment.center,
 //                               children: [
 //                                 Icon(
-//                                   _returnImagesAlreadyUploaded 
-//                                       ? Icons.lock 
+//                                   _returnImagesAlreadyUploaded
+//                                       ? Icons.lock
 //                                       : Icons.camera_alt,
 //                                   size: 30,
-//                                   color: _returnImagesAlreadyUploaded 
-//                                       ? Colors.grey.shade500 
+//                                   color: _returnImagesAlreadyUploaded
+//                                       ? Colors.grey.shade500
 //                                       : Colors.grey.shade600,
 //                                 ),
 //                                 const SizedBox(height: 4),
 //                                 Text(
-//                                   _returnImagesAlreadyUploaded 
-//                                       ? 'Locked' 
+//                                   _returnImagesAlreadyUploaded
+//                                       ? 'Locked'
 //                                       : 'Camera',
 //                                   style: TextStyle(
-//                                     color: _returnImagesAlreadyUploaded 
-//                                         ? Colors.grey.shade500 
+//                                     color: _returnImagesAlreadyUploaded
+//                                         ? Colors.grey.shade500
 //                                         : Colors.grey.shade600,
 //                                     fontSize: 12,
 //                                   ),
@@ -718,14 +717,14 @@
 //                       ),
 //                       Expanded(
 //                         child: GestureDetector(
-//                           onTap: _returnImagesAlreadyUploaded 
-//                               ? null 
+//                           onTap: _returnImagesAlreadyUploaded
+//                               ? null
 //                               : () => _pickReturnImage(category),
 //                           child: Container(
 //                             height: 150,
 //                             decoration: BoxDecoration(
-//                               color: _returnImagesAlreadyUploaded 
-//                                   ? Colors.grey.shade300 
+//                               color: _returnImagesAlreadyUploaded
+//                                   ? Colors.grey.shade300
 //                                   : Colors.grey.shade200,
 //                               borderRadius: const BorderRadius.only(
 //                                 bottomRight: Radius.circular(12),
@@ -735,22 +734,22 @@
 //                               mainAxisAlignment: MainAxisAlignment.center,
 //                               children: [
 //                                 Icon(
-//                                   _returnImagesAlreadyUploaded 
-//                                       ? Icons.lock 
+//                                   _returnImagesAlreadyUploaded
+//                                       ? Icons.lock
 //                                       : Icons.file_upload_outlined,
 //                                   size: 30,
-//                                   color: _returnImagesAlreadyUploaded 
-//                                       ? Colors.grey.shade500 
+//                                   color: _returnImagesAlreadyUploaded
+//                                       ? Colors.grey.shade500
 //                                       : Colors.grey.shade600,
 //                                 ),
 //                                 const SizedBox(height: 4),
 //                                 Text(
-//                                   _returnImagesAlreadyUploaded 
-//                                       ? 'Locked' 
+//                                   _returnImagesAlreadyUploaded
+//                                       ? 'Locked'
 //                                       : 'Gallery',
 //                                   style: TextStyle(
-//                                     color: _returnImagesAlreadyUploaded 
-//                                         ? Colors.grey.shade500 
+//                                     color: _returnImagesAlreadyUploaded
+//                                         ? Colors.grey.shade500
 //                                         : Colors.grey.shade600,
 //                                     fontSize: 12,
 //                                   ),
@@ -806,21 +805,21 @@
 
 //     // Create Dio instance for downloading
 //     Dio dio = Dio();
-    
+
 //     String fileName = 'deposit_receipt_${bookingId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 //     String filePath;
-    
+
 //     if (Platform.isAndroid) {
 //       // For Android - save to public Downloads directory
 //       filePath = '/storage/emulated/0/Download/$fileName';
-      
+
 //       // Alternative paths to try if the first one fails
 //       List<String> possiblePaths = [
 //         '/storage/emulated/0/Download/$fileName',
 //         '/sdcard/Download/$fileName',
 //         '/storage/sdcard0/Download/$fileName',
 //       ];
-      
+
 //       // Try to create the Downloads directory if it doesn't exist
 //       for (String path in possiblePaths) {
 //         try {
@@ -876,7 +875,7 @@
 //     // Verify the file was downloaded successfully
 //     File downloadedFile = File(filePath);
 //     bool fileExists = await downloadedFile.exists();
-    
+
 //     if (!fileExists) {
 //       throw Exception('File was not created at expected location');
 //     }
@@ -910,9 +909,9 @@
 //     if (Navigator.of(context).canPop()) {
 //       Navigator.of(context).pop();
 //     }
-    
+
 //     print('Error downloading PDF: $e');
-    
+
 //     ScaffoldMessenger.of(context).showSnackBar(
 //       SnackBar(
 //         content: Text('Download failed: ${e.toString()}'),
@@ -971,9 +970,9 @@
 //     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
 //     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
 //     int sdkInt = androidInfo.version.sdkInt;
-    
+
 //     print('Android SDK version: $sdkInt');
-    
+
 //     if (sdkInt >= 33) {
 //       // Android 13+ (API 33+) - Scoped storage, no special permission needed for Downloads
 //       return true;
@@ -983,7 +982,7 @@
 //       if (status.isDenied) {
 //         status = await Permission.manageExternalStorage.request();
 //       }
-      
+
 //       if (status.isDenied) {
 //         // Fallback to regular storage permission
 //         var storageStatus = await Permission.storage.request();
@@ -1096,10 +1095,10 @@
 //                         ),
 //                       ),
 //                       SizedBox(height: 30),
-                      
+
 //                       // Car Details Card
 //                       _buildCarDetailsCard(booking, screenWidth),
-                      
+
 //                       SizedBox(height: 30),
 //                       const SizedBox(height: 10),
 //                       const Text(
@@ -1115,7 +1114,7 @@
 //                       _buildPickupPhotosGrid(booking),
 
 //                       const SizedBox(height: 30),
-                      
+
 //                       // Header with instructions button for return images
 //                       Row(
 //                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1145,28 +1144,28 @@
 //                         margin: const EdgeInsets.symmetric(vertical: 16),
 //                         padding: const EdgeInsets.all(12),
 //                         decoration: BoxDecoration(
-//                           color: _returnImagesAlreadyUploaded 
-//                               ? Colors.green.shade50 
+//                           color: _returnImagesAlreadyUploaded
+//                               ? Colors.green.shade50
 //                               : Colors.blue.shade50,
 //                           borderRadius: BorderRadius.circular(8),
 //                           border: Border.all(
-//                             color: _returnImagesAlreadyUploaded 
-//                                 ? Colors.green.shade200 
+//                             color: _returnImagesAlreadyUploaded
+//                                 ? Colors.green.shade200
 //                                 : Colors.blue.shade200
 //                           ),
 //                         ),
 //                         child: Row(
 //                           children: [
 //                             Icon(
-//                               _returnImagesAlreadyUploaded 
-//                                   ? Icons.cloud_done 
-//                                   : _allReturnImagesUploaded 
-//                                       ? Icons.check_circle 
+//                               _returnImagesAlreadyUploaded
+//                                   ? Icons.cloud_done
+//                                   : _allReturnImagesUploaded
+//                                       ? Icons.check_circle
 //                                       : Icons.camera_alt,
-//                               color: _returnImagesAlreadyUploaded 
-//                                   ? Colors.green 
-//                                   : _allReturnImagesUploaded 
-//                                       ? Colors.green 
+//                               color: _returnImagesAlreadyUploaded
+//                                   ? Colors.green
+//                                   : _allReturnImagesUploaded
+//                                       ? Colors.green
 //                                       : Colors.blue,
 //                             ),
 //                             const SizedBox(width: 8),
@@ -1178,10 +1177,10 @@
 //                                         ? 'All return images captured! Ready to proceed.'
 //                                         : 'Progress: ${_capturedReturnImages.values.where((img) => img != null).length}/${ReturnImageCategory.values.length} return images captured',
 //                                 style: TextStyle(
-//                                   color: _returnImagesAlreadyUploaded 
-//                                       ? Colors.green.shade700 
-//                                       : _allReturnImagesUploaded 
-//                                           ? Colors.green.shade700 
+//                                   color: _returnImagesAlreadyUploaded
+//                                       ? Colors.green.shade700
+//                                       : _allReturnImagesUploaded
+//                                           ? Colors.green.shade700
 //                                           : Colors.blue.shade700,
 //                                   fontWeight: FontWeight.w500,
 //                                 ),
@@ -1209,8 +1208,8 @@
 //                         child: ElevatedButton(
 //                           onPressed: (_isUploading || !_allReturnImagesUploaded) ? null : _showOtpVerification,
 //                           style: ElevatedButton.styleFrom(
-//                             backgroundColor: _allReturnImagesUploaded 
-//                                 ? const Color(0xFF120698) 
+//                             backgroundColor: _allReturnImagesUploaded
+//                                 ? const Color(0xFF120698)
 //                                 : Colors.grey.shade400,
 //                             padding: const EdgeInsets.symmetric(vertical: 14),
 //                             shape: RoundedRectangleBorder(
@@ -1222,8 +1221,8 @@
 //                               : Text(
 //                                   _returnImagesAlreadyUploaded
 //                                       ? 'Proceed to OTP Verification'
-//                                       : _allReturnImagesUploaded 
-//                                           ? 'Proceed' 
+//                                       : _allReturnImagesUploaded
+//                                           ? 'Proceed'
 //                                           : 'Capture All Return Images First',
 //                                   style: const TextStyle(
 //                                     color: Colors.white,
@@ -1354,7 +1353,7 @@
 
 //   Widget _buildPickupPhotosGrid(booking) {
 //     final pickupImages = booking?.carImagesBeforePickup ?? [];
-    
+
 //     if (pickupImages.isEmpty) {
 //       return Container(
 //         height: 150,
@@ -1562,21 +1561,13 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
 import 'dart:ui';
 import 'dart:io';
+import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/home_screen.dart';
 import 'package:car_rental_staff_app/views/main_layout.dart';
+import 'package:car_rental_staff_app/widgect/delay.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
@@ -1628,9 +1619,13 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
   // Image picker and captured images for return upload
   final ImagePicker _picker = ImagePicker();
   Map<ReturnImageCategory, File?> _capturedReturnImages = {};
-  Map<ReturnImageCategory, String?> _uploadedReturnImages = {}; // Store uploaded image URLs
+  Map<ReturnImageCategory, String?> _uploadedReturnImages =
+      {}; // Store uploaded image URLs
   bool _isUploading = false;
   bool _returnImagesAlreadyUploaded = false;
+  DateTime? returnDate;
+  TimeOfDay? returnTime;
+  bool hasReturnDetails = false;
 
   @override
   void initState() {
@@ -1640,7 +1635,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       _capturedReturnImages[category] = null;
       _uploadedReturnImages[category] = null;
     }
-    
+
     // Fetch booking data when screen initializes
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<SingleBookingProvider>().fetchSingleBooking(widget.id);
@@ -1653,16 +1648,19 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final bookingProvider = context.read<SingleBookingProvider>();
       final booking = bookingProvider.currentBooking;
-      
-      if (booking?.carReturnImages != null && 
+
+      if (booking?.carReturnImages != null &&
           booking!.carReturnImages!.isNotEmpty) {
-        
         setState(() {
           _returnImagesAlreadyUploaded = true;
-          
+
           // Map uploaded images to categories in order
-          for (int i = 0; i < ReturnImageCategory.values.length && i < booking.carReturnImages!.length; i++) {
-            _uploadedReturnImages[ReturnImageCategory.values[i]] = booking.carReturnImages![i].url;
+          for (int i = 0;
+              i < ReturnImageCategory.values.length &&
+                  i < booking.carReturnImages!.length;
+              i++) {
+            _uploadedReturnImages[ReturnImageCategory.values[i]] =
+                booking.carReturnImages![i].url;
           }
         });
       }
@@ -1680,10 +1678,62 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     super.dispose();
   }
 
+  // Add these variables to your ReturnUploadScreen state
+
+// Add this method to parse return date and time from booking
+  void _parseReturnDateTime(Booking? booking) {
+    if (booking != null) {
+      // Parse return date
+      if (booking.rentalEndDate != null) {
+        try {
+          final dateParts = booking.rentalEndDate!.split('-');
+          if (dateParts.length == 3) {
+            returnDate = DateTime(
+              int.parse(dateParts[0]),
+              int.parse(dateParts[1]),
+              int.parse(dateParts[2]),
+            );
+          }
+        } catch (e) {
+          print('Error parsing return date: $e');
+        }
+      }
+
+      // Parse return time
+      if (booking.to != null) {
+        try {
+          final timeStr = booking.to!.replaceAll(RegExp(r'[AP]M'), '').trim();
+          final timeParts = timeStr.split(':');
+          if (timeParts.length == 2) {
+            int hour = int.parse(timeParts[0]);
+            int minute = int.parse(timeParts[1]);
+
+            if (booking.to!.contains('PM') && hour != 12) {
+              hour += 12;
+            } else if (booking.to!.contains('AM') && hour == 12) {
+              hour = 0;
+            }
+
+            returnTime = TimeOfDay(hour: hour, minute: minute);
+          }
+        } catch (e) {
+          print('Error parsing return time: $e');
+        }
+      }
+
+      // Check if return details exist
+      hasReturnDetails = booking.returnDetails.isNotEmpty;
+    }
+  }
+
+// Call this method when you get booking data
+// In your Consumer builder, after getting booking data:
+
   // Function to check if all mandatory return images are captured or already uploaded
   bool get _allReturnImagesUploaded {
     if (_returnImagesAlreadyUploaded) {
-      return _uploadedReturnImages.values.every((image) => image != null && image.isNotEmpty);
+      return _uploadedReturnImages.values
+          .every((image) => image != null && image.isNotEmpty);
     }
     return _capturedReturnImages.values.every((image) => image != null);
   }
@@ -1707,13 +1757,13 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     required String title,
   }) {
     ImageProvider? imageProvider;
-    
+
     if (imageFile != null) {
       imageProvider = FileImage(imageFile);
     } else if (imageUrl != null && imageUrl.isNotEmpty) {
       imageProvider = NetworkImage(imageUrl);
     }
-    
+
     if (imageProvider == null) return;
 
     Navigator.of(context).push(
@@ -1816,7 +1866,6 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                         'Capture the front mirror and surrounding area for documentation.',
                         Icons.visibility,
                       ),
-                      
                       const SizedBox(height: 16),
                       Container(
                         padding: const EdgeInsets.all(16),
@@ -1862,7 +1911,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     );
   }
 
-  Widget _buildReturnInstructionItem(String title, String description, IconData icon) {
+  Widget _buildReturnInstructionItem(
+      String title, String description, IconData icon) {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(12),
@@ -1914,7 +1964,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
   Future<void> _takeReturnPhoto(ReturnImageCategory category) async {
     if (_returnImagesAlreadyUploaded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Return images are already uploaded and cannot be modified')),
+        const SnackBar(
+            content: Text(
+                'Return images are already uploaded and cannot be modified')),
       );
       return;
     }
@@ -1925,7 +1977,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         preferredCameraDevice: CameraDevice.rear,
         imageQuality: 80,
       );
-      
+
       if (photo != null) {
         setState(() {
           _capturedReturnImages[category] = File(photo.path);
@@ -1942,7 +1994,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
   Future<void> _pickReturnImage(ReturnImageCategory category) async {
     if (_returnImagesAlreadyUploaded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Return images are already uploaded and cannot be modified')),
+        const SnackBar(
+            content: Text(
+                'Return images are already uploaded and cannot be modified')),
       );
       return;
     }
@@ -1952,7 +2006,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         source: ImageSource.gallery,
         imageQuality: 80,
       );
-      
+
       if (image != null) {
         setState(() {
           _capturedReturnImages[category] = File(image.path);
@@ -1969,11 +2023,13 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
   void _deleteReturnImage(ReturnImageCategory category) {
     if (_returnImagesAlreadyUploaded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Return images are already uploaded and cannot be modified')),
+        const SnackBar(
+            content: Text(
+                'Return images are already uploaded and cannot be modified')),
       );
       return;
     }
-    
+
     setState(() {
       _capturedReturnImages[category] = null;
     });
@@ -1988,7 +2044,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
     if (!_allReturnImagesUploaded) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please capture all mandatory return images')),
+        const SnackBar(
+            content: Text('Please capture all mandatory return images')),
       );
       return false;
     }
@@ -1999,7 +2056,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
     try {
       print("pppppppppppppppppppppppppppppppppppppppppppppppp${widget.id}");
-      var uri = Uri.parse('http://194.164.148.244:4062/api/staff/carreturnimages/${widget.id}');
+      var uri = Uri.parse(
+          'http://194.164.148.244:4062/api/staff/carreturnimages/${widget.id}');
       var request = http.MultipartRequest('POST', uri);
 
       // Add all captured return images to the request with category names in order
@@ -2008,7 +2066,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           var multipartFile = await http.MultipartFile.fromPath(
             'carReturnImages',
             _capturedReturnImages[category]!.path,
-            filename: '${category.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
+            filename:
+                '${category.name}_${DateTime.now().millisecondsSinceEpoch}.jpg',
           );
           request.files.add(multipartFile);
         }
@@ -2034,22 +2093,25 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Return images uploaded successfully')),
         );
-        
+
         // Mark images as uploaded
         setState(() {
           _returnImagesAlreadyUploaded = true;
           // Convert captured images to uploaded images
           for (var category in ReturnImageCategory.values) {
             if (_capturedReturnImages[category] != null) {
-              _uploadedReturnImages[category] = _capturedReturnImages[category]!.path; // This would be replaced with actual server URL
+              _uploadedReturnImages[category] = _capturedReturnImages[category]!
+                  .path; // This would be replaced with actual server URL
             }
           }
         });
-        
+
         return true;
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to upload images. Status: ${response.statusCode}')),
+          SnackBar(
+              content: Text(
+                  'Failed to upload images. Status: ${response.statusCode}')),
         );
         return false;
       }
@@ -2075,8 +2137,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
   }
 
   Future<void> _verifyOtp() async {
-    String enteredOtp = _otpControllers.map((controller) => controller.text).join();
-    
+    String enteredOtp =
+        _otpControllers.map((controller) => controller.text).join();
+
     // Validate OTP length
     if (enteredOtp.length != 4) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -2109,7 +2172,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
       // Make API call to verify return OTP
       final response = await http.post(
-        Uri.parse('http://194.164.148.244:4062/api/staff/verify-return-otp/${widget.id}'),
+        Uri.parse(
+            'http://194.164.148.244:4062/api/staff/verify-return-otp/${widget.id}'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization header if needed
@@ -2122,7 +2186,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
       Navigator.pop(context); // Close loading dialog
       print('Return OTP verification status: ${response.body}');
-      
+
       if (response.statusCode == 200) {
         // OTP verification successful
         final responseData = json.decode(response.body);
@@ -2132,21 +2196,20 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         if (depositPdfPath != null) {
           String fullPdfUrl = 'http://194.164.148.244:4062$depositPdfPath';
           print('PDF URL: $fullPdfUrl');
-          
+
           // Download PDF before navigation
           await _downloadPdfToDownloads(fullPdfUrl, widget.id);
         }
-        
+
         setState(() {
           showOtpOverlay = false;
         });
-        
+
         // Navigate to home screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MainLayout()),
         );
-        
       } else if (response.statusCode == 400) {
         // Invalid OTP
         final errorData = json.decode(response.body);
@@ -2161,7 +2224,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       } else {
         // Other errors
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Verification failed. Status code: ${response.statusCode}')),
+          SnackBar(
+              content: Text(
+                  'Verification failed. Status code: ${response.statusCode}')),
         );
       }
     } catch (e) {
@@ -2178,13 +2243,13 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     final isCaptured = _capturedReturnImages[category] != null;
     final isUploaded = _uploadedReturnImages[category] != null;
     final hasImage = isCaptured || isUploaded;
-    
+
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: hasImage 
-              ? (isUploaded ? Colors.blue : Colors.green) 
+          color: hasImage
+              ? (isUploaded ? Colors.blue : Colors.green)
               : Colors.grey.shade300,
           width: hasImage ? 2 : 1,
         ),
@@ -2196,8 +2261,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: hasImage 
-                  ? (isUploaded ? Colors.blue.shade50 : Colors.green.shade50) 
+              color: hasImage
+                  ? (isUploaded ? Colors.blue.shade50 : Colors.green.shade50)
                   : Colors.grey.shade50,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
@@ -2207,15 +2272,15 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
             child: Row(
               children: [
                 Icon(
-                  isUploaded 
+                  isUploaded
                       ? Icons.cloud_done
-                      : hasImage 
-                          ? Icons.check_circle 
+                      : hasImage
+                          ? Icons.check_circle
                           : Icons.radio_button_unchecked,
-                  color: isUploaded 
-                      ? Colors.blue 
-                      : hasImage 
-                          ? Colors.green 
+                  color: isUploaded
+                      ? Colors.blue
+                      : hasImage
+                          ? Colors.green
                           : Colors.grey,
                   size: 20,
                 ),
@@ -2228,10 +2293,10 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                         category.displayName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: isUploaded 
-                              ? Colors.blue.shade700 
-                              : hasImage 
-                                  ? Colors.green.shade700 
+                          color: isUploaded
+                              ? Colors.blue.shade700
+                              : hasImage
+                                  ? Colors.green.shade700
                                   : Colors.grey.shade700,
                           fontSize: 13,
                         ),
@@ -2273,12 +2338,14 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                 if (isUploaded && _uploadedReturnImages[category] != null)
                   GestureDetector(
                     onTap: () => _showReturnImageFullScreen(
-                      imageUrl: _uploadedReturnImages[category]!.startsWith('http') 
-                          ? _uploadedReturnImages[category] 
-                          : null,
-                      imageFile: !_uploadedReturnImages[category]!.startsWith('http') 
-                          ? File(_uploadedReturnImages[category]!) 
-                          : null,
+                      imageUrl:
+                          _uploadedReturnImages[category]!.startsWith('http')
+                              ? _uploadedReturnImages[category]
+                              : null,
+                      imageFile:
+                          !_uploadedReturnImages[category]!.startsWith('http')
+                              ? File(_uploadedReturnImages[category]!)
+                              : null,
                       title: category.displayName,
                     ),
                     child: Container(
@@ -2288,9 +2355,12 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                           bottomRight: Radius.circular(12),
                         ),
                         image: DecorationImage(
-                          image: _uploadedReturnImages[category]!.startsWith('http')
+                          image: _uploadedReturnImages[category]!
+                                  .startsWith('http')
                               ? NetworkImage(_uploadedReturnImages[category]!)
-                              : FileImage(File(_uploadedReturnImages[category]!)) as ImageProvider,
+                              : FileImage(
+                                      File(_uploadedReturnImages[category]!))
+                                  as ImageProvider,
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -2360,14 +2430,14 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                     children: [
                       Expanded(
                         child: GestureDetector(
-                          onTap: _returnImagesAlreadyUploaded 
-                              ? null 
+                          onTap: _returnImagesAlreadyUploaded
+                              ? null
                               : () => _takeReturnPhoto(category),
                           child: Container(
                             height: 150,
                             decoration: BoxDecoration(
-                              color: _returnImagesAlreadyUploaded 
-                                  ? Colors.grey.shade300 
+                              color: _returnImagesAlreadyUploaded
+                                  ? Colors.grey.shade300
                                   : Colors.grey.shade200,
                               borderRadius: const BorderRadius.only(
                                 bottomLeft: Radius.circular(12),
@@ -2377,22 +2447,22 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  _returnImagesAlreadyUploaded 
-                                      ? Icons.lock 
+                                  _returnImagesAlreadyUploaded
+                                      ? Icons.lock
                                       : Icons.camera_alt,
                                   size: 30,
-                                  color: _returnImagesAlreadyUploaded 
-                                      ? Colors.grey.shade500 
+                                  color: _returnImagesAlreadyUploaded
+                                      ? Colors.grey.shade500
                                       : Colors.grey.shade600,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  _returnImagesAlreadyUploaded 
-                                      ? 'Locked' 
+                                  _returnImagesAlreadyUploaded
+                                      ? 'Locked'
                                       : 'Camera',
                                   style: TextStyle(
-                                    color: _returnImagesAlreadyUploaded 
-                                        ? Colors.grey.shade500 
+                                    color: _returnImagesAlreadyUploaded
+                                        ? Colors.grey.shade500
                                         : Colors.grey.shade600,
                                     fontSize: 12,
                                   ),
@@ -2409,14 +2479,14 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                       ),
                       Expanded(
                         child: GestureDetector(
-                          onTap: _returnImagesAlreadyUploaded 
-                              ? null 
+                          onTap: _returnImagesAlreadyUploaded
+                              ? null
                               : () => _pickReturnImage(category),
                           child: Container(
                             height: 150,
                             decoration: BoxDecoration(
-                              color: _returnImagesAlreadyUploaded 
-                                  ? Colors.grey.shade300 
+                              color: _returnImagesAlreadyUploaded
+                                  ? Colors.grey.shade300
                                   : Colors.grey.shade200,
                               borderRadius: const BorderRadius.only(
                                 bottomRight: Radius.circular(12),
@@ -2426,22 +2496,22 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  _returnImagesAlreadyUploaded 
-                                      ? Icons.lock 
+                                  _returnImagesAlreadyUploaded
+                                      ? Icons.lock
                                       : Icons.file_upload_outlined,
                                   size: 30,
-                                  color: _returnImagesAlreadyUploaded 
-                                      ? Colors.grey.shade500 
+                                  color: _returnImagesAlreadyUploaded
+                                      ? Colors.grey.shade500
                                       : Colors.grey.shade600,
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  _returnImagesAlreadyUploaded 
-                                      ? 'Locked' 
+                                  _returnImagesAlreadyUploaded
+                                      ? 'Locked'
                                       : 'Gallery',
                                   style: TextStyle(
-                                    color: _returnImagesAlreadyUploaded 
-                                        ? Colors.grey.shade500 
+                                    color: _returnImagesAlreadyUploaded
+                                        ? Colors.grey.shade500
                                         : Colors.grey.shade600,
                                     fontSize: 12,
                                   ),
@@ -2490,32 +2560,35 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       bool hasPermission = await _requestStoragePermission();
       if (!hasPermission) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Storage permission denied. Cannot download PDF.')),
+          const SnackBar(
+              content: Text('Storage permission denied. Cannot download PDF.')),
         );
         return;
       }
 
       // Create Dio instance for downloading
       Dio dio = Dio();
-      
-      String fileName = 'deposit_receipt_${bookingId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
+
+      String fileName =
+          'deposit_receipt_${bookingId}_${DateTime.now().millisecondsSinceEpoch}.pdf';
       String filePath;
-      
+
       if (Platform.isAndroid) {
         // For Android - save to public Downloads directory
         filePath = '/storage/emulated/0/Download/$fileName';
-        
+
         // Alternative paths to try if the first one fails
         List<String> possiblePaths = [
           '/storage/emulated/0/Download/$fileName',
           '/sdcard/Download/$fileName',
           '/storage/sdcard0/Download/$fileName',
         ];
-        
+
         // Try to create the Downloads directory if it doesn't exist
         for (String path in possiblePaths) {
           try {
-            Directory downloadsDir = Directory(path.substring(0, path.lastIndexOf('/')));
+            Directory downloadsDir =
+                Directory(path.substring(0, path.lastIndexOf('/')));
             if (!await downloadsDir.exists()) {
               await downloadsDir.create(recursive: true);
             }
@@ -2567,7 +2640,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       // Verify the file was downloaded successfully
       File downloadedFile = File(filePath);
       bool fileExists = await downloadedFile.exists();
-      
+
       if (!fileExists) {
         throw Exception('File was not created at expected location');
       }
@@ -2595,15 +2668,14 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           ),
         ),
       );
-
     } catch (e) {
       // Hide download progress if showing
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
-      
+
       print('Error downloading PDF: $e');
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Download failed: ${e.toString()}'),
@@ -2662,9 +2734,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       int sdkInt = androidInfo.version.sdkInt;
-      
+
       print('Android SDK version: $sdkInt');
-      
+
       if (sdkInt >= 33) {
         // Android 13+ (API 33+) - Scoped storage, no special permission needed for Downloads
         return true;
@@ -2674,7 +2746,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         if (status.isDenied) {
           status = await Permission.manageExternalStorage.request();
         }
-        
+
         if (status.isDenied) {
           // Fallback to regular storage permission
           var storageStatus = await Permission.storage.request();
@@ -2744,6 +2816,10 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
           final booking = bookingProvider.currentBooking;
 
+          if (booking != null) {
+            _parseReturnDateTime(booking);
+          }
+
           return Stack(
             children: [
               // Main Content
@@ -2787,10 +2863,10 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                         ),
                       ),
                       SizedBox(height: 30),
-                      
+
                       // Car Details Card
                       _buildCarDetailsCard(booking, screenWidth),
-                      
+
                       SizedBox(height: 30),
                       const SizedBox(height: 10),
                       const Text(
@@ -2806,7 +2882,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                       _buildPickupPhotosGrid(booking),
 
                       const SizedBox(height: 30),
-                      
+
                       // Header with instructions button for return images
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -2836,28 +2912,27 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                         margin: const EdgeInsets.symmetric(vertical: 16),
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: _returnImagesAlreadyUploaded 
-                              ? Colors.green.shade50 
+                          color: _returnImagesAlreadyUploaded
+                              ? Colors.green.shade50
                               : Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(8),
                           border: Border.all(
-                            color: _returnImagesAlreadyUploaded 
-                                ? Colors.green.shade200 
-                                : Colors.blue.shade200
-                          ),
+                              color: _returnImagesAlreadyUploaded
+                                  ? Colors.green.shade200
+                                  : Colors.blue.shade200),
                         ),
                         child: Row(
                           children: [
                             Icon(
-                              _returnImagesAlreadyUploaded 
-                                  ? Icons.cloud_done 
-                                  : _allReturnImagesUploaded 
-                                      ? Icons.check_circle 
+                              _returnImagesAlreadyUploaded
+                                  ? Icons.cloud_done
+                                  : _allReturnImagesUploaded
+                                      ? Icons.check_circle
                                       : Icons.camera_alt,
-                              color: _returnImagesAlreadyUploaded 
-                                  ? Colors.green 
-                                  : _allReturnImagesUploaded 
-                                      ? Colors.green 
+                              color: _returnImagesAlreadyUploaded
+                                  ? Colors.green
+                                  : _allReturnImagesUploaded
+                                      ? Colors.green
                                       : Colors.blue,
                             ),
                             const SizedBox(width: 8),
@@ -2869,10 +2944,10 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                                         ? 'All return images captured! Ready to proceed.'
                                         : 'Progress: ${_capturedReturnImages.values.where((img) => img != null).length}/${ReturnImageCategory.values.length} return images captured',
                                 style: TextStyle(
-                                  color: _returnImagesAlreadyUploaded 
-                                      ? Colors.green.shade700 
-                                      : _allReturnImagesUploaded 
-                                          ? Colors.green.shade700 
+                                  color: _returnImagesAlreadyUploaded
+                                      ? Colors.green.shade700
+                                      : _allReturnImagesUploaded
+                                          ? Colors.green.shade700
                                           : Colors.blue.shade700,
                                   fontWeight: FontWeight.w500,
                                 ),
@@ -2894,14 +2969,27 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
                       const SizedBox(height: 25),
 
+                                          DelayHandlingSection(
+                      bookingId: widget.id,
+                      delayPerHour: booking?.car?.delayPerHour,
+                      delayPerDay: booking?.car?.delayPerDay,
+                      returnDate: returnDate,
+                      returnTime: returnTime,
+                      hasReturnDetails: false,
+                    ),
+
+                    const SizedBox(height: 25),
+
                       // Next button - only enabled when all return images are captured or already uploaded
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (_isUploading || !_allReturnImagesUploaded) ? null : _showOtpVerification,
+                          onPressed: (_isUploading || !_allReturnImagesUploaded)
+                              ? null
+                              : _showOtpVerification,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: _allReturnImagesUploaded 
-                                ? const Color(0xFF120698) 
+                            backgroundColor: _allReturnImagesUploaded
+                                ? const Color(0xFF120698)
                                 : Colors.grey.shade400,
                             padding: const EdgeInsets.symmetric(vertical: 14),
                             shape: RoundedRectangleBorder(
@@ -2909,12 +2997,13 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                             ),
                           ),
                           child: _isUploading
-                              ? const CircularProgressIndicator(color: Colors.white)
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white)
                               : Text(
                                   _returnImagesAlreadyUploaded
                                       ? 'Proceed to OTP Verification'
-                                      : _allReturnImagesUploaded 
-                                          ? 'Proceed' 
+                                      : _allReturnImagesUploaded
+                                          ? 'Proceed'
                                           : 'Capture All Return Images First',
                                   style: const TextStyle(
                                     color: Colors.white,
@@ -3045,7 +3134,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
   Widget _buildPickupPhotosGrid(booking) {
     final pickupImages = booking?.carImagesBeforePickup ?? [];
-    
+
     if (pickupImages.isEmpty) {
       return Container(
         height: 150,
@@ -3057,7 +3146,8 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(Icons.image_not_supported, size: 50, color: Colors.grey.shade500),
+              Icon(Icons.image_not_supported,
+                  size: 50, color: Colors.grey.shade500),
               const SizedBox(height: 8),
               Text(
                 'No pickup photos available',
@@ -3083,9 +3173,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
         final image = pickupImages[index];
         return GestureDetector(
           onTap: () => _showPickupImageFullScreen(
-            image.url ?? '', 
-            'Pickup Photo ${index + 1}'
-          ),
+              image.url ?? '', 'Pickup Photo ${index + 1}'),
           child: Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(12),

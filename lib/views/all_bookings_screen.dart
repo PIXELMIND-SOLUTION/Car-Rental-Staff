@@ -40,7 +40,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     _generateDateOptions();
 
     // Load initial data (active bookings without date filter)
@@ -52,7 +52,13 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         setState(() {
-          _currentStatus = _tabController.index == 0 ? 'active' : 'completed';
+                   if (_tabController.index == 0) {
+            _currentStatus = 'active';
+          } else if (_tabController.index == 1) {
+            _currentStatus = 'completed';
+          } else {
+            _currentStatus = 'cancelled';
+          }
         });
         _fetchBookings();
       }
@@ -467,58 +473,74 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
             // SizedBox(height: screenHeight * 0.02),
 
             // TabBar for Pickup/Return tabs
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: paddingValue),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  padding: EdgeInsets.zero,
-                  tabAlignment: TabAlignment.start,
-                  tabs: [
-                    Tab(
-                      child: SizedBox(
-                        width: screenWidth * 0.4,
-                        height: screenHeight * 0.04,
-                        child: Center(
-                          child: Text(
-                            "Pickup",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenWidth * 0.045,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                    Tab(
-                      child: SizedBox(
-                        width: screenWidth * 0.4,
-                        height: screenHeight * 0.04,
-                        child: Center(
-                          child: Text(
-                            "Return",
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: screenWidth * 0.045,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                  labelColor: Colors.white,
-                  unselectedLabelColor: const Color(0XFF1808C5),
-                  indicator: BoxDecoration(
-                    color: const Color(0XFF1808C5),
-                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
-                  ),
-                  indicatorSize: TabBarIndicatorSize.label,
-                  dividerColor: Colors.transparent,
+  // TabBar for Ongoing/Finished/Cancelled tabs
+Padding(
+  padding: EdgeInsets.symmetric(horizontal: paddingValue),
+  child: Align(
+    alignment: Alignment.centerLeft,
+    child: TabBar(
+      controller: _tabController,
+      isScrollable: true,
+      padding: EdgeInsets.zero,
+      tabAlignment: TabAlignment.start,
+      tabs: [
+        Tab(
+          child: SizedBox(
+            width: screenWidth * 0.28,
+            height: screenHeight * 0.04,
+            child: Center(
+              child: Text(
+                "Ongoing",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.038,
                 ),
               ),
             ),
+          ),
+        ),
+        Tab(
+          child: SizedBox(
+            width: screenWidth * 0.28,
+            height: screenHeight * 0.04,
+            child: Center(
+              child: Text(
+                "Finished",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.038,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Tab(
+          child: SizedBox(
+            width: screenWidth * 0.28,
+            height: screenHeight * 0.04,
+            child: Center(
+              child: Text(
+                "Cancelled",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: screenWidth * 0.038,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+      labelColor: Colors.white,
+      unselectedLabelColor: const Color(0XFF1808C5),
+      indicator: BoxDecoration(
+        color: const Color(0XFF1808C5),
+        borderRadius: BorderRadius.circular(screenWidth * 0.02),
+      ),
+      indicatorSize: TabBarIndicatorSize.label,
+      dividerColor: Colors.transparent,
+    ),
+  ),
+),
 
             // Search bar
             Padding(
@@ -748,41 +770,92 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                     );
                   }
 
-                  return TabBarView(
-                    controller: _tabController,
-                    physics: const NeverScrollableScrollPhysics(),
-                    children: [
-                      // Active bookings tab with RefreshIndicator
-                      RefreshIndicator(
-                        onRefresh: _onRefresh,
-                        color: const Color(0XFF1808C5),
-                        backgroundColor: Colors.white,
-                        child: _buildBookingList(
-                          context,
-                          bookingProvider.bookings,
-                          "No active bookings found",
-                          paddingValue,
-                          screenWidth,
-                          screenHeight,
-                        ),
-                      ),
+                  // return TabBarView(
+                  //   controller: _tabController,
+                  //   physics: const NeverScrollableScrollPhysics(),
+                  //   children: [
+                  //     // Active bookings tab with RefreshIndicator
+                  //     RefreshIndicator(
+                  //       onRefresh: _onRefresh,
+                  //       color: const Color(0XFF1808C5),
+                  //       backgroundColor: Colors.white,
+                  //       child: _buildBookingList(
+                  //         context,
+                  //         bookingProvider.bookings,
+                  //         "No active bookings found",
+                  //         paddingValue,
+                  //         screenWidth,
+                  //         screenHeight,
+                  //       ),
+                  //     ),
 
-                      // Completed bookings tab with RefreshIndicator
-                      RefreshIndicator(
-                        onRefresh: _onRefresh,
-                        color: const Color(0XFF1808C5),
-                        backgroundColor: Colors.white,
-                        child: _buildBookingList(
-                          context,
-                          bookingProvider.bookings,
-                          "No completed bookings found",
-                          paddingValue,
-                          screenWidth,
-                          screenHeight,
-                        ),
-                      ),
-                    ],
-                  );
+                  //     // Completed bookings tab with RefreshIndicator
+                  //     RefreshIndicator(
+                  //       onRefresh: _onRefresh,
+                  //       color: const Color(0XFF1808C5),
+                  //       backgroundColor: Colors.white,
+                  //       child: _buildBookingList(
+                  //         context,
+                  //         bookingProvider.bookings,
+                  //         "No completed bookings found",
+                  //         paddingValue,
+                  //         screenWidth,
+                  //         screenHeight,
+                  //       ),
+                  //     ),
+                  //   ],
+                  // );
+
+                  return TabBarView(
+  controller: _tabController,
+  physics: const NeverScrollableScrollPhysics(),
+  children: [
+    // Active bookings tab with RefreshIndicator
+    RefreshIndicator(
+      onRefresh: _onRefresh,
+      color: const Color(0XFF1808C5),
+      backgroundColor: Colors.white,
+      child: _buildBookingList(
+        context,
+        bookingProvider.bookings,
+        "No active bookings found",
+        paddingValue,
+        screenWidth,
+        screenHeight,
+      ),
+    ),
+
+    // Completed bookings tab with RefreshIndicator
+    RefreshIndicator(
+      onRefresh: _onRefresh,
+      color: const Color(0XFF1808C5),
+      backgroundColor: Colors.white,
+      child: _buildBookingList(
+        context,
+        bookingProvider.bookings,
+        "No completed bookings found",
+        paddingValue,
+        screenWidth,
+        screenHeight,
+      ),
+    ),
+
+    // Cancelled bookings tab with RefreshIndicator
+    RefreshIndicator(
+      onRefresh: _onRefresh,
+      color: const Color(0XFF1808C5),
+      backgroundColor: Colors.white,
+      child: _buildBookingList(
+        context,
+        bookingProvider.bookings,
+        "No cancelled bookings found",
+        paddingValue,
+        screenWidth,
+        screenHeight,
+      ),
+    ),
+  ],
+);
                 },
               ),
             ),
@@ -878,7 +951,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
   }) {
     return GestureDetector(
       onTap: () {
-        if (booking.status == "active")
+        if (booking.status == "active"){
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -886,6 +959,17 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                   CarPickupDetailsScreen(bookingId: booking.id),
             ),
           );
+      }else if (booking.status == "completed") {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('This booking has been Finished')),
+    );
+  } else if (booking.status == "cancelled") {
+    // Handle cancelled booking tap if needed
+    // Show cancelled booking details or message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('This booking has been cancelled')),
+    );
+  }
       },
       child: Container(
         width: double.infinity,
@@ -923,18 +1007,25 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                       // Right side: ID and download icon
                       Row(
                         children: [
-                          Text(
-                            booking.status == "completed"
-                                ? "Completed"
-                                : "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
-                            style: TextStyle(
-                              fontSize: screenWidth * 0.03,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.red.shade400,
-                            ),
-                          ),
+Text(
+  booking.status == "completed"
+      ? "Completed"
+      : booking.status == "cancelled"
+          ? "Cancelled"
+          : "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
+  style: TextStyle(
+    fontSize: screenWidth * 0.03,
+    fontWeight: FontWeight.bold,
+    color: booking.status == "completed"
+        ? Colors.green.shade400  // Green for completed
+        : booking.status == "cancelled"
+            ? Colors.orange.shade400  // Orange for cancelled
+            : Colors.red.shade400,     // Red for active
+  ),
+),
                           const SizedBox(
                               width: 8), // spacing between text and icon
+                              if(booking.status != 'cancelled')
                           GestureDetector(
                             onTap: () async {
                               print(

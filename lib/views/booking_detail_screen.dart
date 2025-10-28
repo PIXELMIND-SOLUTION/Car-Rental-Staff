@@ -962,82 +962,82 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                               ),
 
                               // Delay information - only show editable if no return details
-                              if (!hasReturnDetails) ...[
-                                const Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    'Delay Information (Optional)',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                ),
-                                Row(
-                                  children: [
-                                    Expanded(
-                                      child: _buildDateTimeField(
-                                        icon: Icons.timelapse_outlined,
-                                        label: 'Delay time',
-                                        value: delayTime?.format(context) ??
-                                            'Select time',
-                                        onTap: () =>
-                                            _selectTime(context, false),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: _buildDateTimeField(
-                                        icon: Icons.date_range_outlined,
-                                        label: 'Delay date',
-                                        value: delayDate != null
-                                            ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
-                                            : 'Select date',
-                                        onTap: () =>
-                                            _selectDate(context, false),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ] else if (hasDelay) ...[
-                                // Show delay info as read-only if return details exist and has delay
-                                const Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    'Delay Information',
-                                    style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.orange,
-                                    ),
-                                  ),
-                                ),
-                                Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Text(
-                                    'Delay Time: ${booking?.returnDetails[0]['delayTime']} hr',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: const Color.fromARGB(255, 0, 0, 0),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding:
-                                      EdgeInsets.symmetric(horizontal: 16.0),
-                                  child: Text(
-                                    'Delay charges applied',
-                                    style: TextStyle(
-                                      fontSize: 14,
-                                      color: Color.fromARGB(255, 0, 0, 0),
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                              // if (!hasReturnDetails) ...[
+                              //   const Padding(
+                              //     padding: EdgeInsets.all(16.0),
+                              //     child: Text(
+                              //       'Delay Information (Optional)',
+                              //       style: TextStyle(
+                              //         fontSize: 16,
+                              //         fontWeight: FontWeight.bold,
+                              //         color: Colors.orange,
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   Row(
+                              //     children: [
+                              //       Expanded(
+                              //         child: _buildDateTimeField(
+                              //           icon: Icons.timelapse_outlined,
+                              //           label: 'Delay time',
+                              //           value: delayTime?.format(context) ??
+                              //               'Select time',
+                              //           onTap: () =>
+                              //               _selectTime(context, false),
+                              //         ),
+                              //       ),
+                              //       const SizedBox(width: 10),
+                              //       Expanded(
+                              //         child: _buildDateTimeField(
+                              //           icon: Icons.date_range_outlined,
+                              //           label: 'Delay date',
+                              //           value: delayDate != null
+                              //               ? "${delayDate!.day}/${delayDate!.month}/${delayDate!.year}"
+                              //               : 'Select date',
+                              //           onTap: () =>
+                              //               _selectDate(context, false),
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ] else if (hasDelay) ...[
+                              //   // Show delay info as read-only if return details exist and has delay
+                              //   const Padding(
+                              //     padding: EdgeInsets.all(16.0),
+                              //     child: Text(
+                              //       'Delay Information',
+                              //       style: TextStyle(
+                              //         fontSize: 16,
+                              //         fontWeight: FontWeight.bold,
+                              //         color: Colors.orange,
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   Padding(
+                              //     padding:
+                              //         EdgeInsets.symmetric(horizontal: 16.0),
+                              //     child: Text(
+                              //       'Delay Time: ${booking?.returnDetails[0]['delayTime']} hr',
+                              //       style: TextStyle(
+                              //         fontSize: 14,
+                              //         color: const Color.fromARGB(255, 0, 0, 0),
+                              //         fontWeight: FontWeight.w500,
+                              //       ),
+                              //     ),
+                              //   ),
+                              //   const Padding(
+                              //     padding:
+                              //         EdgeInsets.symmetric(horizontal: 16.0),
+                              //     child: Text(
+                              //       'Delay charges applied',
+                              //       style: TextStyle(
+                              //         fontSize: 14,
+                              //         color: Color.fromARGB(255, 0, 0, 0),
+                              //         fontWeight: FontWeight.w500,
+                              //       ),
+                              //     ),
+                              //   ),
+                              // ],
                             ],
                           )
                         : const SizedBox(),
