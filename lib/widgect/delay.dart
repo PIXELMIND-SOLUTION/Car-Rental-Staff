@@ -56,19 +56,31 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
 
       if (currentDateTime.isAfter(returnDateTime)) {
         final difference = currentDateTime.difference(returnDateTime);
-        final totalHours = difference.inHours;
+        var totalHours = difference.inHours;
         final totalDays = difference.inDays;
         final remainingHours = totalHours - (totalDays * 24);
 
         double amount = 0;
 
         if (totalDays == 0) {
+          if(totalHours == 0){
+            totalHours = 1;
+          }
           amount = totalHours * (widget.delayPerHour ?? 100).toDouble();
+                    print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;$totalHours");
+                                        print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;${widget.delayPerHour }");
+
+
+          print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl;$amount");
         } else if (totalDays >= 2 && remainingHours == 0) {
           amount = totalDays * (widget.delayPerDay ?? 1000).toDouble();
+                    print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj2;$amount");
+
         } else {
           amount = (totalDays * (widget.delayPerDay ?? 1000).toDouble()) +
               (remainingHours * (widget.delayPerHour ?? 100).toDouble());
+                        print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj3;$amount");
+
         }
 
         setState(() {

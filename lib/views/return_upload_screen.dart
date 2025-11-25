@@ -1810,7 +1810,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                         'Photography Instructions',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 18,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -1880,7 +1880,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                             Row(
                               children: [
                                 Icon(Icons.warning, color: Colors.red),
-                                SizedBox(width: 8),
+                                SizedBox(width: 5),
                                 Text(
                                   'Return Documentation Tips:',
                                   style: TextStyle(
@@ -2169,6 +2169,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       } else {
         print('OTP is not an Integer');
       }
+      print('Return otp timing checking start');
 
       // Make API call to verify return OTP
       final response = await http.post(
@@ -2183,11 +2184,16 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           'returnOTP': enteredOtp,
         }),
       );
+      print('Return otp timing checking start 1');
 
       Navigator.pop(context); // Close loading dialog
       print('Return OTP verification status: ${response.body}');
+            print('Return otp timing checking start 2');
+
 
       if (response.statusCode == 200) {
+                    print('Return otp timing checking start 3');
+
         // OTP verification successful
         final responseData = json.decode(response.body);
         print('Return OTP verification successful: $responseData');
@@ -2200,6 +2206,9 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
           // Download PDF before navigation
           await _downloadPdfToDownloads(fullPdfUrl, widget.id);
         }
+
+                            print('Return otp timing checking start 4');
+
 
         setState(() {
           showOtpOverlay = false;
@@ -2829,7 +2838,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      SizedBox(height: 50),
+                      const SizedBox(height: 50),
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Row(
@@ -2862,12 +2871,12 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
                           ],
                         ),
                       ),
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
 
                       // Car Details Card
                       _buildCarDetailsCard(booking, screenWidth),
 
-                      SizedBox(height: 30),
+                      const SizedBox(height: 30),
                       const SizedBox(height: 10),
                       const Text(
                         'Pickup Photos',
@@ -2969,16 +2978,16 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
                       const SizedBox(height: 25),
 
-                                          DelayHandlingSection(
-                      bookingId: widget.id,
-                      delayPerHour: booking?.car?.delayPerHour,
-                      delayPerDay: booking?.car?.delayPerDay,
-                      returnDate: returnDate,
-                      returnTime: returnTime,
-                      hasReturnDetails: false,
-                    ),
+                      DelayHandlingSection(
+                        bookingId: widget.id,
+                        delayPerHour: booking?.car?.delayPerHour,
+                        delayPerDay: booking?.car?.delayPerDay,
+                        returnDate: returnDate,
+                        returnTime: returnTime,
+                        hasReturnDetails: false,
+                      ),
 
-                    const SizedBox(height: 25),
+                      const SizedBox(height: 25),
 
                       // Next button - only enabled when all return images are captured or already uploaded
                       SizedBox(

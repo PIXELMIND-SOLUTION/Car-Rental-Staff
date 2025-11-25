@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/booking_detail_screen.dart';
@@ -52,7 +51,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         setState(() {
-                   if (_tabController.index == 0) {
+          if (_tabController.index == 0) {
             _currentStatus = 'active';
           } else if (_tabController.index == 1) {
             _currentStatus = 'completed';
@@ -417,20 +416,20 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
     return SafeArea(
       child: Scaffold(
         appBar: AppBar(
-    backgroundColor: Colors.white,
-    elevation: 0,
-    centerTitle: true,
-    automaticallyImplyLeading: false, // Removes the default back arrow
-    title: Text(
-      "Bookings",
-      style: TextStyle(
-        color: Colors.black,
-        fontSize: screenWidth * 0.055,
-        fontWeight: FontWeight.w800,
-      ),
-      overflow: TextOverflow.ellipsis,
-    ),
-  ),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          centerTitle: true,
+          automaticallyImplyLeading: false, // Removes the default back arrow
+          title: Text(
+            "Bookings",
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: screenWidth * 0.055,
+              fontWeight: FontWeight.w800,
+            ),
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
         body: Column(
           children: [
             SizedBox(height: screenHeight * 0.03),
@@ -473,74 +472,74 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
             // SizedBox(height: screenHeight * 0.02),
 
             // TabBar for Pickup/Return tabs
-  // TabBar for Ongoing/Finished/Cancelled tabs
-Padding(
-  padding: EdgeInsets.symmetric(horizontal: paddingValue),
-  child: Align(
-    alignment: Alignment.centerLeft,
-    child: TabBar(
-      controller: _tabController,
-      isScrollable: true,
-      padding: EdgeInsets.zero,
-      tabAlignment: TabAlignment.start,
-      tabs: [
-        Tab(
-          child: SizedBox(
-            width: screenWidth * 0.28,
-            height: screenHeight * 0.04,
-            child: Center(
-              child: Text(
-                "Ongoing",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.038,
+            // TabBar for Ongoing/Finished/Cancelled tabs
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: paddingValue),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  padding: EdgeInsets.zero,
+                  tabAlignment: TabAlignment.start,
+                  tabs: [
+                    Tab(
+                      child: SizedBox(
+                        width: screenWidth * 0.28,
+                        height: screenHeight * 0.04,
+                        child: Center(
+                          child: Text(
+                            "Ongoing",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.038,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: SizedBox(
+                        width: screenWidth * 0.28,
+                        height: screenHeight * 0.04,
+                        child: Center(
+                          child: Text(
+                            "Finished",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.038,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Tab(
+                      child: SizedBox(
+                        width: screenWidth * 0.28,
+                        height: screenHeight * 0.04,
+                        child: Center(
+                          child: Text(
+                            "Cancelled",
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: screenWidth * 0.038,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                  labelColor: Colors.white,
+                  unselectedLabelColor: const Color(0XFF1808C5),
+                  indicator: BoxDecoration(
+                    color: const Color(0XFF1808C5),
+                    borderRadius: BorderRadius.circular(screenWidth * 0.02),
+                  ),
+                  indicatorSize: TabBarIndicatorSize.label,
+                  dividerColor: Colors.transparent,
                 ),
               ),
             ),
-          ),
-        ),
-        Tab(
-          child: SizedBox(
-            width: screenWidth * 0.28,
-            height: screenHeight * 0.04,
-            child: Center(
-              child: Text(
-                "Finished",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.038,
-                ),
-              ),
-            ),
-          ),
-        ),
-        Tab(
-          child: SizedBox(
-            width: screenWidth * 0.28,
-            height: screenHeight * 0.04,
-            child: Center(
-              child: Text(
-                "Cancelled",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: screenWidth * 0.038,
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
-      labelColor: Colors.white,
-      unselectedLabelColor: const Color(0XFF1808C5),
-      indicator: BoxDecoration(
-        color: const Color(0XFF1808C5),
-        borderRadius: BorderRadius.circular(screenWidth * 0.02),
-      ),
-      indicatorSize: TabBarIndicatorSize.label,
-      dividerColor: Colors.transparent,
-    ),
-  ),
-),
 
             // Search bar
             Padding(
@@ -807,55 +806,55 @@ Padding(
                   // );
 
                   return TabBarView(
-  controller: _tabController,
-  physics: const NeverScrollableScrollPhysics(),
-  children: [
-    // Active bookings tab with RefreshIndicator
-    RefreshIndicator(
-      onRefresh: _onRefresh,
-      color: const Color(0XFF1808C5),
-      backgroundColor: Colors.white,
-      child: _buildBookingList(
-        context,
-        bookingProvider.bookings,
-        "No active bookings found",
-        paddingValue,
-        screenWidth,
-        screenHeight,
-      ),
-    ),
+                    controller: _tabController,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      // Active bookings tab with RefreshIndicator
+                      RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        color: const Color(0XFF1808C5),
+                        backgroundColor: Colors.white,
+                        child: _buildBookingList(
+                          context,
+                          bookingProvider.bookings,
+                          "No active bookings found",
+                          paddingValue,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
 
-    // Completed bookings tab with RefreshIndicator
-    RefreshIndicator(
-      onRefresh: _onRefresh,
-      color: const Color(0XFF1808C5),
-      backgroundColor: Colors.white,
-      child: _buildBookingList(
-        context,
-        bookingProvider.bookings,
-        "No completed bookings found",
-        paddingValue,
-        screenWidth,
-        screenHeight,
-      ),
-    ),
+                      // Completed bookings tab with RefreshIndicator
+                      RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        color: const Color(0XFF1808C5),
+                        backgroundColor: Colors.white,
+                        child: _buildBookingList(
+                          context,
+                          bookingProvider.bookings,
+                          "No completed bookings found",
+                          paddingValue,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
 
-    // Cancelled bookings tab with RefreshIndicator
-    RefreshIndicator(
-      onRefresh: _onRefresh,
-      color: const Color(0XFF1808C5),
-      backgroundColor: Colors.white,
-      child: _buildBookingList(
-        context,
-        bookingProvider.bookings,
-        "No cancelled bookings found",
-        paddingValue,
-        screenWidth,
-        screenHeight,
-      ),
-    ),
-  ],
-);
+                      // Cancelled bookings tab with RefreshIndicator
+                      RefreshIndicator(
+                        onRefresh: _onRefresh,
+                        color: const Color(0XFF1808C5),
+                        backgroundColor: Colors.white,
+                        child: _buildBookingList(
+                          context,
+                          bookingProvider.bookings,
+                          "No cancelled bookings found",
+                          paddingValue,
+                          screenWidth,
+                          screenHeight,
+                        ),
+                      ),
+                    ],
+                  );
                 },
               ),
             ),
@@ -951,7 +950,7 @@ Padding(
   }) {
     return GestureDetector(
       onTap: () {
-        if (booking.status == "active"){
+        if (booking.status == "active") {
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -959,17 +958,17 @@ Padding(
                   CarPickupDetailsScreen(bookingId: booking.id),
             ),
           );
-      }else if (booking.status == "completed") {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('This booking has been Finished')),
-    );
-  } else if (booking.status == "cancelled") {
-    // Handle cancelled booking tap if needed
-    // Show cancelled booking details or message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('This booking has been cancelled')),
-    );
-  }
+        } else if (booking.status == "completed") {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('This booking has been Finished')),
+          );
+        } else if (booking.status == "cancelled") {
+          // Handle cancelled booking tap if needed
+          // Show cancelled booking details or message
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('This booking has been cancelled')),
+          );
+        }
       },
       child: Container(
         width: double.infinity,
@@ -1007,53 +1006,56 @@ Padding(
                       // Right side: ID and download icon
                       Row(
                         children: [
-Text(
-  booking.status == "completed"
-      ? "Completed"
-      : booking.status == "cancelled"
-          ? "Cancelled"
-          : "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
-  style: TextStyle(
-    fontSize: screenWidth * 0.03,
-    fontWeight: FontWeight.bold,
-    color: booking.status == "completed"
-        ? Colors.green.shade400  // Green for completed
-        : booking.status == "cancelled"
-            ? Colors.orange.shade400  // Orange for cancelled
-            : Colors.red.shade400,     // Red for active
-  ),
-),
-                          const SizedBox(
-                              width: 8), // spacing between text and icon
-                              if(booking.status != 'cancelled')
-                          GestureDetector(
-                            onTap: () async {
-                              print(
-                                  'hhhhhhhhhhhhhhhhhhhhhhhhhh${booking.depositPDF}');
-                              if (booking.depositPDF != null && booking.status == "active") {
-                                String fullPdfUrl =
-                                    'http://194.164.148.244:4062${booking.depositPDF}';
-                                print('PDF URL: $fullPdfUrl');
-
-                                // Download PDF before navigation
-                                await _downloadPdfToDownloads(
-                                    fullPdfUrl, booking.id);
-                              }else if(booking.finalBookingPDF != null && booking.status == "completed"){
-                                String fullPdfUrl =
-                                    'http://194.164.148.244:4062${booking.finalBookingPDF}';
-                                print('PDF URL: $fullPdfUrl');
-
-                                // Download PDF before navigation
-                                await _downloadPdfToDownloads(
-                                    fullPdfUrl, booking.id);
-                              }
-                            },
-                            child: const Icon(
-                              Icons.file_download_outlined,
-                              color: Colors.green,
-                              size: 24,
+                          Text(
+                            booking.status == "completed"
+                                ? "Completed"
+                                : booking.status == "cancelled"
+                                    ? "Cancelled"
+                                    : "ID: ${booking.id.length > 4 ? booking.id.substring(booking.id.length - 4) : booking.id}",
+                            style: TextStyle(
+                              fontSize: screenWidth * 0.03,
+                              fontWeight: FontWeight.bold,
+                              color: booking.status == "completed"
+                                  ? Colors.green.shade400 // Green for completed
+                                  : booking.status == "cancelled"
+                                      ? Colors.orange
+                                          .shade400 // Orange for cancelled
+                                      : Colors.red.shade400, // Red for active
                             ),
                           ),
+                          const SizedBox(
+                              width: 8), // spacing between text and icon
+                          if (booking.status != 'cancelled')
+                            GestureDetector(
+                              onTap: () async {
+                                print(
+                                    'hhhhhhhhhhhhhhhhhhhhhhhhhh${booking.depositPDF}');
+                                if (booking.depositPDF != null &&
+                                    booking.status == "active") {
+                                  String fullPdfUrl =
+                                      'http://194.164.148.244:4062${booking.depositPDF}';
+                                  print('PDF URL: $fullPdfUrl');
+
+                                  // Download PDF before navigation
+                                  await _downloadPdfToDownloads(
+                                      fullPdfUrl, booking.id);
+                                } else if (booking.finalBookingPDF != null &&
+                                    booking.status == "completed") {
+                                  String fullPdfUrl =
+                                      'http://194.164.148.244:4062${booking.finalBookingPDF}';
+                                  print('PDF URL: $fullPdfUrl');
+
+                                  // Download PDF before navigation
+                                  await _downloadPdfToDownloads(
+                                      fullPdfUrl, booking.id);
+                                }
+                              },
+                              child: const Icon(
+                                Icons.file_download_outlined,
+                                color: Colors.green,
+                                size: 24,
+                              ),
+                            ),
                         ],
                       ),
                     ],
@@ -1074,19 +1076,21 @@ Text(
                                   color: Colors.black87,
                                 ),
                                 SizedBox(width: screenWidth * 0.02),
-       Text(
-  (booking.car?.model ?? "Unknown").substring(
-    0,
-    (booking.car?.model ?? "Unknown").length > 19
-        ? 19
-        : (booking.car?.model ?? "Unknown").length,
-  ),
-  style: TextStyle(
-    fontSize: screenWidth * 0.035,
-    color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.9),
-  ),
-),
-
+                                Text(
+                                  (booking.car?.model ?? "Unknown").substring(
+                                    0,
+                                    (booking.car?.model ?? "Unknown").length >
+                                            19
+                                        ? 19
+                                        : (booking.car?.model ?? "Unknown")
+                                            .length,
+                                  ),
+                                  style: TextStyle(
+                                    fontSize: screenWidth * 0.035,
+                                    color: const Color.fromARGB(255, 0, 0, 0)
+                                        .withOpacity(0.9),
+                                  ),
+                                ),
                               ],
                             ),
                             SizedBox(height: screenHeight * 0.012),
