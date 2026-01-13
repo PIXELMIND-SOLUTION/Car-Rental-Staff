@@ -295,7 +295,7 @@
 //     print("Uploading documents for user: $userId");
 
 //     // Replace with your actual base URL
-//     const String baseUrl = 'http://194.164.148.244:4062/api/staff';
+//     const String baseUrl = 'http://82.29.162.67:4062/api/staff';
 //     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
 //     final request = http.MultipartRequest('POST', uri);
 
@@ -1648,7 +1648,7 @@
 //   }) async {
 //     print("Uploading documents for user: $userId");
 
-//     const String baseUrl = 'http://194.164.148.244:4062/api/staff';
+//     const String baseUrl = 'http://82.29.162.67:4062/api/staff';
 //     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
 //     final request = http.MultipartRequest('POST', uri);
 
@@ -2756,6 +2756,10 @@ class _BookingScreenState extends State<BookingScreen> {
   bool _isUploading = false;
   bool _isValidating = false;
   bool _isCombining = false;
+
+  bool _customerUploaded = false;
+bool _uploadingCustomer = false;
+
   
   // Front and back files for each document
   File? _aadharFrontFile;
@@ -2769,6 +2773,11 @@ class _BookingScreenState extends State<BookingScreen> {
   
   final ImagePicker _picker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
+
+  final TextEditingController _customerNameCtrl = TextEditingController();
+final TextEditingController _customerMobileCtrl = TextEditingController();
+File? _customerImage;
+
   
   // Track which documents were uploaded by staff
   Set<String> _staffUploadedDocs = {};
@@ -3132,7 +3141,7 @@ class _BookingScreenState extends State<BookingScreen> {
   }) async {
     print("Uploading documents for user: $userId");
 
-    const String baseUrl = 'http://194.164.148.244:4062/api/staff';
+    const String baseUrl = 'http://82.29.162.67:4062/api/staff';
     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
     final request = http.MultipartRequest('POST', uri);
 
@@ -3213,11 +3222,12 @@ class _BookingScreenState extends State<BookingScreen> {
   void _navigateToDocumentUploadScreen(String documentType) {
     final provider = context.read<SingleBookingProvider>();
     final booking = provider.currentBooking;
-    
-    if (booking == null || booking.userId?.id == null) {
-      _showErrorSnackBar('Booking data not available');
-      return;
-    }
+    debugPrint('booking.id: ${booking?.id}');
+    debugPrint('booking.userId is null: ${booking?.userId == null}');
+if (booking == null || booking.userId == null || booking.userId!.id.isEmpty) {
+  _showErrorSnackBar('Booking data not available');
+  return;
+}
 
     Navigator.push(
       context,
@@ -3275,6 +3285,76 @@ class _BookingScreenState extends State<BookingScreen> {
       );
     }
   }
+
+
+  Future<void> _pickCustomerImage() async {
+  final XFile? image = await ImagePicker().pickImage(
+    source: ImageSource.camera, // 📸 CAMERA ONLY
+    imageQuality: 80,
+  );
+
+  if (image != null) {
+    setState(() {
+      _customerImage = File(image.path);
+    });
+  }
+}
+
+
+Future<void> _uploadCustomerDetails() async {
+  if (_customerNameCtrl.text.isEmpty ||
+      _customerMobileCtrl.text.length != 10 ||
+      _customerImage == null) {
+    _showErrorSnackBar('Please fill all customer details');
+    return;
+  }
+
+  setState(() => _uploadingCustomer = true);
+
+  try {
+    final uri = Uri.parse(
+      'http://82.29.162.67:4062/api/staff/upload-customerdetails/${widget.bookingId}',
+    );
+
+    final request = http.MultipartRequest('POST', uri);
+
+    // TEXT FIELDS
+    request.fields['name'] = _customerNameCtrl.text.trim();
+    request.fields['mobile'] = _customerMobileCtrl.text.trim();
+
+    // IMAGE FILE
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'customerImage',
+        _customerImage!.path,
+        contentType: MediaType('image', 'jpeg'),
+      ),
+    );
+
+    final streamedResponse = await request.send();
+    final response = await http.Response.fromStream(streamedResponse);
+
+    print('Customer upload status: ${response.statusCode}');
+    print('Customer upload body: ${response.body}');
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      setState(() {
+        _customerUploaded = true; // ✅ ENABLE PROCEED BUTTON
+      });
+
+      _showSuccessSnackBar('Customer details uploaded successfully');
+    } else {
+      throw Exception(response.body);
+    }
+  } catch (e) {
+    _showErrorSnackBar('Failed to upload customer details');
+    print('Customer upload error: $e');
+  } finally {
+    setState(() => _uploadingCustomer = false);
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -3438,6 +3518,89 @@ class _BookingScreenState extends State<BookingScreen> {
                           const SizedBox(height: 20),
 
                           const Text(
+  'Customer Details Upload',
+  style: TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.bold,
+  ),
+),
+const SizedBox(height: 12),
+
+Card(
+  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+  child: Padding(
+    padding: const EdgeInsets.all(16),
+    child: Column(
+      children: [
+        TextField(
+          controller: _customerNameCtrl,
+          decoration: const InputDecoration(
+            labelText: 'Customer Name',
+            border: OutlineInputBorder(),
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        TextField(
+          controller: _customerMobileCtrl,
+          keyboardType: TextInputType.phone,
+          maxLength: 10,
+          decoration: const InputDecoration(
+            labelText: 'Mobile Number',
+            border: OutlineInputBorder(),
+            counterText: '',
+          ),
+        ),
+        const SizedBox(height: 12),
+
+        GestureDetector(
+          onTap: _pickCustomerImage,
+          child: Container(
+            height: 160,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _customerImage != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(11),
+                    child: Image.file(
+                      _customerImage!,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : const Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.camera_alt, size: 40),
+                      SizedBox(height: 8),
+                      Text('Capture Customer Photo'),
+                    ],
+                  ),
+          ),
+        ),
+
+        const SizedBox(height: 16),
+
+        ElevatedButton(
+          onPressed: _uploadingCustomer ? null : _uploadCustomerDetails,
+          child: _uploadingCustomer
+              ? const SizedBox(
+                  height: 20,
+                  width: 20,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : const Text('Upload Customer Details'),
+        ),
+      ],
+    ),
+  ),
+),
+const SizedBox(height: 24),
+
+
+                          const Text(
                             'Uploaded Documents',
                             style: TextStyle(
                               color: Colors.black,
@@ -3491,9 +3654,11 @@ class _BookingScreenState extends State<BookingScreen> {
         padding: const EdgeInsets.all(16),
         color: Colors.white,
         child: ElevatedButton(
-          onPressed: _handleProceed,
+          onPressed: _customerUploaded ? _handleProceed : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.indigo.shade700,
+            backgroundColor: _customerUploaded
+      ? Colors.indigo.shade700
+      : Colors.grey,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -3591,6 +3756,31 @@ class _BookingScreenState extends State<BookingScreen> {
                   ),
                 ),
               ),
+
+              // ✏️ Show pencil icon if document already uploaded
+if (hasDocument)
+  Positioned(
+    top: 12,
+    right: 12,
+    child: GestureDetector(
+      onTap: () {
+        _navigateToDocumentUploadScreen(documentType);
+      },
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.7),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.edit, // ✏️ Pencil icon
+          color: Colors.white,
+          size: 20,
+        ),
+      ),
+    ),
+  ),
+
             
             if (hasDocument || localCombinedImage != null)
               Positioned(
@@ -4024,7 +4214,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   }) async {
     print("Uploading documents for user: $userId");
 
-    const String baseUrl = 'http://194.164.148.244:4062/api/staff';
+    const String baseUrl = 'http://82.29.162.67:4062/api/staff';
     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
     final request = http.MultipartRequest('POST', uri);
 

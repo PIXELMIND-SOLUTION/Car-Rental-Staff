@@ -376,7 +376,7 @@
 
 //     try {
 //       var uri = Uri.parse(
-//           'http://194.164.148.244:4062/api/staff/carimagesbeforepickup/$bookingId');
+//           'http://82.29.162.67:4062/api/staff/carimagesbeforepickup/$bookingId');
 //       var request = http.MultipartRequest('POST', uri);
 
 //       // Add all captured images to the request with category names in order
@@ -1004,7 +1004,7 @@
 //       // Make API call to verify OTP
 //       final response = await http.post(
 //         Uri.parse(
-//             'http://194.164.148.244:4062/api/staff/verify-otp/$bookingId'),
+//             'http://82.29.162.67:4062/api/staff/verify-otp/$bookingId'),
 //         headers: {
 //           'Content-Type': 'application/json',
 //           // Add authorization header if needed
@@ -1812,7 +1812,7 @@ class _CarDetailsState extends State<CarDetails> {
 
     try {
       var uri = Uri.parse(
-          'http://194.164.148.244:4062/api/staff/carimagesbeforepickup/$bookingId');
+          'http://82.29.162.67:4062/api/staff/carimagesbeforepickup/$bookingId');
       var request = http.MultipartRequest('POST', uri);
 
       // Add all captured images to the request with category names in order
@@ -2469,7 +2469,7 @@ class _CarDetailsState extends State<CarDetails> {
       // Make API call to verify OTP
       final response = await http.post(
         Uri.parse(
-            'http://194.164.148.244:4062/api/staff/verify-otp/$bookingId'),
+            'http://82.29.162.67:4062/api/staff/verify-otp/$bookingId'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization header if needed

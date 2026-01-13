@@ -178,7 +178,7 @@
 //     try {
 //       // Replace this URL with your actual API endpoint
 //       final String apiUrl =
-//           'http://194.164.148.244:4062/api/staff/uploaddeposite/${widget.id}';
+//           'http://82.29.162.67:4062/api/staff/uploaddeposite/${widget.id}';
 
 //       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 
@@ -1061,7 +1061,7 @@ class _PickupDetailsScreenState extends State<PickupDetailsScreen> {
     try {
       // Replace this URL with your actual API endpoint
       final String apiUrl =
-          'http://194.164.148.244:4062/api/staff/uploaddeposite/${widget.id}';
+          'http://82.29.162.67:4062/api/staff/uploaddeposite/${widget.id}';
 
       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 

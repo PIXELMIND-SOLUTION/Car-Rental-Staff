@@ -481,7 +481,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://194.164.148.244:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
+            'http://82.29.162.67:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
       );
 
       request.files.add(
@@ -536,7 +536,7 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
           "kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$hasReturnDetails");
       if (!hasReturnDetails) {
         final url =
-            'http://194.164.148.244:4062/api/staff/sendreturnotp/${widget.bookingId}';
+            'http://82.29.162.67:4062/api/staff/sendreturnotp/${widget.bookingId}';
 
         int delayTimeHours = 0;
         int delayDays = 0;
@@ -614,6 +614,141 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
       );
     }
   }
+
+
+  /// 🔴 OPTIONAL: Update balance amount status section
+Widget _buildBalanceStatusSection() {
+  return Card(
+    elevation: 1,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+      side: BorderSide(color: Colors.grey.shade300),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Balance Amount Status (Optional)',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            'Mark balance amount as settled if customer has paid.',
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.grey.shade600,
+            ),
+          ),
+          const SizedBox(height: 16),
+          SizedBox(
+            width: double.infinity,
+            height: 45,
+            child: OutlinedButton.icon(
+              icon: const Icon(Icons.check_circle_outline),
+              label: const Text(
+                'Update Balance Status',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.green,
+                side: const BorderSide(color: Colors.green),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              onPressed: _showBalanceConfirmationDialog,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+
+void _showBalanceConfirmationDialog() {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      title: const Text('Confirm Action'),
+      content: const Text(
+        'Are you sure you want to mark the balance amount as paid?',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+          onPressed: () {
+            Navigator.pop(context);
+            _updateBalanceAmountStatus();
+          },
+          child: const Text('Confirm'),
+        ),
+      ],
+    ),
+  );
+}
+
+
+Future<void> _updateBalanceAmountStatus() async {
+  if (widget.bookingId == null) return;
+
+  try {
+    final response = await http.put(
+      Uri.parse(
+        'http://82.29.162.67:4062/api/staff/replacedpaymentstatus/${widget.bookingId}',
+      ),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode({
+        "staffPaymentStatus": "paid",
+      }),
+    );
+
+    print("kkkkkkkkkkkkkkkkkkkkkkk${response.body}");
+
+    if (response.statusCode == 200) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Balance amount marked as paid'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Failed to update status (${response.statusCode})',
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -717,6 +852,12 @@ class _CarPickupDetailsScreenState extends State<CarPickupDetailsScreen> {
                   const SizedBox(height: 30),
                   _buildCarDetailsCard(booking, screenWidth),
                   const SizedBox(height: 30),
+
+if ((booking?.carReplacementHistory?.staffPaymentDue ?? 0) > 0) ...[
+  _buildBalanceStatusSection(),
+  const SizedBox(height: 30),
+],
+
 
                   // Pickup Section
                   _buildCollapsibleSection(

@@ -258,7 +258,7 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://194.164.148.244:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
+            'http://82.29.162.67:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
       );
 
       request.files.add(

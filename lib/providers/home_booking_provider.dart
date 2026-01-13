@@ -63,7 +63,7 @@ class HomeBookingProvider with ChangeNotifier {
 
     try {
       final response = await http.get(
-        Uri.parse('http://194.164.148.244:4062/api/staff/staticsbookings'),
+        Uri.parse('http://82.29.162.67:4062/api/staff/staticsbookings'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization headers if needed

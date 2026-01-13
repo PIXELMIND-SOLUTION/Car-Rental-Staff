@@ -9,7 +9,7 @@ import 'package:http_parser/http_parser.dart';
 
 
 class UserService {
-  final String baseUrl = 'http://194.164.148.244:4062/api';
+  final String baseUrl = 'http://82.29.162.67:4062/api';
 
   Future<List<UserModel>> fetchUser(String id) async {
     final response = await http.get(Uri.parse('$baseUrl/users/get-user/$id'));

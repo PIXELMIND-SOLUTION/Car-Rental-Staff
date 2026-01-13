@@ -362,7 +362,7 @@
 
 //     try {
 //       print("pppppppppppppppppppppppppppppppppppppppppppppppp${widget.id}");
-//       var uri = Uri.parse('http://194.164.148.244:4062/api/staff/carreturnimages/${widget.id}');
+//       var uri = Uri.parse('http://82.29.162.67:4062/api/staff/carreturnimages/${widget.id}');
 //       var request = http.MultipartRequest('POST', uri);
 
 //       // Add all captured return images to the request with category names in order
@@ -472,7 +472,7 @@
 
 //       // Make API call to verify return OTP
 //       final response = await http.post(
-//         Uri.parse('http://194.164.148.244:4062/api/staff/verify-return-otp/${widget.id}'),
+//         Uri.parse('http://82.29.162.67:4062/api/staff/verify-return-otp/${widget.id}'),
 //         headers: {
 //           'Content-Type': 'application/json',
 //           // Add authorization header if needed
@@ -2057,7 +2057,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     try {
       print("pppppppppppppppppppppppppppppppppppppppppppppppp${widget.id}");
       var uri = Uri.parse(
-          'http://194.164.148.244:4062/api/staff/carreturnimages/${widget.id}');
+          'http://82.29.162.67:4062/api/staff/carreturnimages/${widget.id}');
       var request = http.MultipartRequest('POST', uri);
 
       // Add all captured return images to the request with category names in order
@@ -2174,7 +2174,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       // Make API call to verify return OTP
       final response = await http.post(
         Uri.parse(
-            'http://194.164.148.244:4062/api/staff/verify-return-otp/${widget.id}'),
+            'http://82.29.162.67:4062/api/staff/verify-return-otp/${widget.id}'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization header if needed
@@ -2619,27 +2619,27 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       print('Attempting to save PDF to: $filePath');
 
       // Show downloading progress
-      _showDownloadProgress();
+      // _showDownloadProgress();
 
       // Download the file
-      await dio.download(
-        pdfUrl,
-        filePath,
-        options: Options(
-          receiveTimeout: const Duration(minutes: 5),
-          sendTimeout: const Duration(minutes: 5),
-          headers: {
-            'Accept': 'application/pdf',
-            'User-Agent': 'Mozilla/5.0 (Android; Mobile)',
-          },
-        ),
-        onReceiveProgress: (received, total) {
-          if (total != -1) {
-            double progress = received / total;
-            print('Download progress: ${(progress * 100).toStringAsFixed(0)}%');
-          }
-        },
-      );
+      // await dio.download(
+      //   pdfUrl,
+      //   filePath,
+      //   options: Options(
+      //     receiveTimeout: const Duration(minutes: 5),
+      //     sendTimeout: const Duration(minutes: 5),
+      //     headers: {
+      //       'Accept': 'application/pdf',
+      //       'User-Agent': 'Mozilla/5.0 (Android; Mobile)',
+      //     },
+      //   ),
+      //   onReceiveProgress: (received, total) {
+      //     if (total != -1) {
+      //       double progress = received / total;
+      //       print('Download progress: ${(progress * 100).toStringAsFixed(0)}%');
+      //     }
+      //   },
+      // );
 
       // Hide download progress
       if (Navigator.of(context).canPop()) {
@@ -2647,36 +2647,36 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       }
 
       // Verify the file was downloaded successfully
-      File downloadedFile = File(filePath);
-      bool fileExists = await downloadedFile.exists();
+      // File downloadedFile = File(filePath);
+      // bool fileExists = await downloadedFile.exists();
 
-      if (!fileExists) {
-        throw Exception('File was not created at expected location');
-      }
+      // if (!fileExists) {
+      //   throw Exception('File was not created at expected location');
+      // }
 
-      int fileSize = await downloadedFile.length();
-      if (fileSize == 0) {
-        throw Exception('Downloaded file is empty');
-      }
+      // int fileSize = await downloadedFile.length();
+      // if (fileSize == 0) {
+      //   throw Exception('Downloaded file is empty');
+      // }
 
-      print('File downloaded successfully: $filePath (Size: $fileSize bytes)');
+      // print('File downloaded successfully: $filePath (Size: $fileSize bytes)');
 
-      // For Android, add the file to MediaStore so it appears in file managers
-      if (Platform.isAndroid) {
-        await _addToMediaStore(filePath, fileName);
-      }
+      // // For Android, add the file to MediaStore so it appears in file managers
+      // if (Platform.isAndroid) {
+      //   await _addToMediaStore(filePath, fileName);
+      // }
 
-      // Show success message
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('PDF saved to Downloads'),
-          duration: const Duration(seconds: 6),
-          action: SnackBarAction(
-            label: 'Show Location',
-            onPressed: () => _showFileLocation(fileName),
-          ),
-        ),
-      );
+      // // Show success message
+      // ScaffoldMessenger.of(context).showSnackBar(
+      //   SnackBar(
+      //     content: Text('PDF saved to Downloads'),
+      //     duration: const Duration(seconds: 6),
+      //     action: SnackBarAction(
+      //       label: 'Show Location',
+      //       onPressed: () => _showFileLocation(fileName),
+      //     ),
+      //   ),
+      // );
     } catch (e) {
       // Hide download progress if showing
       if (Navigator.of(context).canPop()) {

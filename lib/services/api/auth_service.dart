@@ -6,7 +6,7 @@
 // import 'package:http/http.dart' as http;
 
 // class AuthService {
-//   final String baseUrl = 'http://194.164.148.244:4062/api';
+//   final String baseUrl = 'http://82.29.162.67:4062/api';
 
 //   Future<UserModel?> login(String mobile) async {
 //     try {
@@ -57,7 +57,7 @@ import 'package:car_rental_staff_app/utils/storage_helper.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = 'http://194.164.148.244:4062/api';
+  final String baseUrl = 'http://82.29.162.67:4062/api';
 
   Future<UserModel?> login(String mobile) async {
     try {

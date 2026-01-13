@@ -8,7 +8,7 @@ import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:http/http.dart' as http;
 
 class SingleBookingService {
-  static const String baseUrl = 'http://194.164.148.244:4062/api';
+  static const String baseUrl = 'http://82.29.162.67:4062/';
 
   Future<BookingResponse?> getSingleBooking(String bookingId) async {
 

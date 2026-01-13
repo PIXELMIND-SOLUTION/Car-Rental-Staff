@@ -37,7 +37,7 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class BookingService {
-  final String baseUrl = "http://194.164.148.244:4062/api";
+  final String baseUrl = "http://82.29.162.67:4062/api";
 
   // Future<List<Booking>> fetchTodayBookings() async {
   //   try {
