@@ -1033,8 +1033,8 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                                 if (booking.depositPDF != null &&
                                     booking.status == "active") {
                                   String fullPdfUrl =
-                                      'http://194.164.148.244:4062${booking.depositPDF}';
-                                  print('PDF URL: $fullPdfUrl');
+                                      'http://82.29.162.67:4062${booking.depositPDF}';
+                                  print('PDF URLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL: $fullPdfUrl');
 
                                   // Download PDF before navigation
                                   await _downloadPdfToDownloads(
@@ -1042,7 +1042,7 @@ class _AllBookingsScreenState extends State<AllBookingsScreen>
                                 } else if (booking.finalBookingPDF != null &&
                                     booking.status == "completed") {
                                   String fullPdfUrl =
-                                      'http://194.164.148.244:4062${booking.finalBookingPDF}';
+                                      'http://82.29.162.67:4062${booking.finalBookingPDF}';
                                   print('PDF URL: $fullPdfUrl');
 
                                   // Download PDF before navigation

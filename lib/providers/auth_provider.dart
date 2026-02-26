@@ -124,7 +124,7 @@ class AuthProvider with ChangeNotifier {
     print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$profileImage");
 
     if (profileImage != null) {
-      _localImageUrl = 'http://194.164.148.244:4062$profileImage';
+      _localImageUrl = 'http://82.29.162.67:4062$profileImage';
     } else {
       _localImageUrl =
           'https://avatar.iran.liara.run/public/boy?username=Ash';

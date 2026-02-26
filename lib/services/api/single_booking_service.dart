@@ -8,7 +8,7 @@ import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:http/http.dart' as http;
 
 class SingleBookingService {
-  static const String baseUrl = 'http://82.29.162.67:4062/';
+  static const String baseUrl = 'http://82.29.162.67:4062/api';
 
   Future<BookingResponse?> getSingleBooking(String bookingId) async {
 
@@ -39,6 +39,7 @@ class SingleBookingService {
   }
 
   Future<List<Booking>?> getAllBookings() async {
+    print("lllllllllllllldsglkfgkjskldgjdsklgjdsgjdslgjdsgjdsgjdsgj111111111111111");
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/staff/activebookings'),
@@ -46,6 +47,7 @@ class SingleBookingService {
           'Content-Type': 'application/json',
         },
       );
+            print("Response Bodyyyyyyyyyyyyyyyyyyyyyy: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
@@ -84,6 +86,11 @@ class SingleBookingService {
           'Content-Type': 'application/json',
         },
       );
+
+      print("Response uri: $uri");
+            print("Response Body: ${response.body}");
+
+
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);

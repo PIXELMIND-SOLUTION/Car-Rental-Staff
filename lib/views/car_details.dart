@@ -2490,7 +2490,7 @@ class _CarDetailsState extends State<CarDetails> {
         // Extract deposit PDF URL from response
         String? depositPdfPath = responseData['depositPDF'];
         if (depositPdfPath != null) {
-          String fullPdfUrl = 'http://194.164.148.244:4062$depositPdfPath';
+          String fullPdfUrl = 'http://82.29.162.67:4062$depositPdfPath';
           print('PDF URL: $fullPdfUrl');
 
           // Download PDF before navigation
