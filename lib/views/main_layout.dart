@@ -142,6 +142,7 @@
 // Fixed MainLayout with proper back button handling
 
 import 'package:car_rental_staff_app/views/all_bookings_screen.dart';
+import 'package:car_rental_staff_app/views/car_list_screen.dart';
 import 'package:car_rental_staff_app/views/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:car_rental_staff_app/views/home_screen.dart';
@@ -161,6 +162,8 @@ class _MainLayoutState extends State<MainLayout> {
     const HomeScreen(),
     const AllBookingsScreen(),
     const ProfileScreen(),
+        const CarStatusScreen(),
+
   ];
 
   void _onItemTapped(int index) {
@@ -222,6 +225,7 @@ class _MainLayoutState extends State<MainLayout> {
                 screenHeight: screenHeight,
                 textScaleFactor: textScaleFactor,
               ),
+
               _buildNavItem(
                 icon: Icons.category,
                 label: 'Bookings',
@@ -234,6 +238,14 @@ class _MainLayoutState extends State<MainLayout> {
                 icon: Icons.person,
                 label: 'Profile',
                 index: 2,
+                screenWidth: screenWidth,
+                screenHeight: screenHeight,
+                textScaleFactor: textScaleFactor,
+              ),
+                                          _buildNavItem(
+                icon: Icons.car_rental,
+                label: 'Cars',
+                index: 3,
                 screenWidth: screenWidth,
                 screenHeight: screenHeight,
                 textScaleFactor: textScaleFactor,
