@@ -1,30 +1,27 @@
-
-
-
 // import 'dart:convert';
 // import 'package:car_rental_staff_app/models/user_model.dart';
 // import 'package:http/http.dart' as http;
 
 // class AuthService {
-//   final String baseUrl = 'http://82.29.162.67:4062/api';
+//   final String baseUrl = 'https://varahibackend.varahiselfdrivecars.com/api';
 
 //   Future<UserModel?> login(String mobile) async {
 //     try {
 //       print("Mobile Number: $mobile");
-      
+
 //       final response = await http.post(
 //         Uri.parse('$baseUrl/staff/login'),
 //         headers: {'Content-Type': 'application/json'},
 //         body: jsonEncode({'mobile': mobile}),
 //       );
-      
+
 //       print('Status Code: ${response.statusCode}');
 //       print('Response Body: ${response.body}');
 
 //       if (response.statusCode == 200) {
 //         final data = jsonDecode(response.body);
 //         print("Full Response Data: $data");
-        
+
 //         // Check if the response has the expected structure
 //         if (data != null && data['staff'] != null) {
 //           print("Using data['staff'] structure");
@@ -45,19 +42,13 @@
 //   }
 // }
 
-
-
-
-
-
-
 import 'dart:convert';
 import 'package:car_rental_staff_app/models/user_model.dart';
 import 'package:car_rental_staff_app/utils/storage_helper.dart';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = 'http://82.29.162.67:4062/api';
+  final String baseUrl = 'https://varahibackend.varahiselfdrivecars.com/api';
 
   Future<UserModel?> login(String mobile) async {
     try {
@@ -102,15 +93,17 @@ class AuthService {
     try {
       print('🔄 Starting OTP verification...');
       print('📱 OTP Code: $otp');
-      
-      final response = await http.post(
+
+      final response = await http
+          .post(
         Uri.parse('$baseUrl/staff/verify-staff-otp'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: jsonEncode({'otp': otp}),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 30),
         onTimeout: () {
           throw Exception('Request timeout - Server took too long to respond');
@@ -130,18 +123,18 @@ class AuthService {
       if (response.statusCode == 200) {
         final staffData = responseData['staff'];
         final token = responseData['token'];
-        
+
         if (staffData != null) {
           final userModel = UserModel.fromJson(staffData);
-          
+
           // Save token if available
           if (token != null) {
             await StorageHelper.saveToken(token);
           }
-          
+
           // Clear temporary mobile number
           await StorageHelper.clearTempMobile();
-          
+
           return {
             'success': true,
             'user': userModel,
@@ -155,20 +148,13 @@ class AuthService {
           };
         }
       } else {
-        final errorMessage = responseData['message'] ?? 
-                           responseData['error'] ?? 
-                           'Invalid OTP';
-        return {
-          'success': false,
-          'message': errorMessage
-        };
+        final errorMessage =
+            responseData['message'] ?? responseData['error'] ?? 'Invalid OTP';
+        return {'success': false, 'message': errorMessage};
       }
     } catch (e) {
       print('OTP Verification Error: $e');
-      return {
-        'success': false,
-        'message': e.toString()
-      };
+      return {'success': false, 'message': e.toString()};
     }
   }
 
@@ -176,7 +162,7 @@ class AuthService {
     try {
       // Get mobile from storage if not provided
       mobile ??= await StorageHelper.getTempMobile();
-      
+
       if (mobile == null) {
         return {
           'success': false,
@@ -196,10 +182,7 @@ class AuthService {
       print('Resend OTP Response: ${response.body}');
 
       if (response.statusCode == 200) {
-        return {
-          'success': true,
-          'message': 'OTP sent successfully'
-        };
+        return {'success': true, 'message': 'OTP sent successfully'};
       } else {
         final responseData = jsonDecode(response.body);
         return {
@@ -209,10 +192,7 @@ class AuthService {
       }
     } catch (e) {
       print('Resend OTP Error: $e');
-      return {
-        'success': false,
-        'message': 'Network error. Please try again.'
-      };
+      return {'success': false, 'message': 'Network error. Please try again.'};
     }
   }
 }

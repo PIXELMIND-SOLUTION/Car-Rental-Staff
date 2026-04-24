@@ -63,24 +63,22 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
         double amount = 0;
 
         if (totalDays == 0) {
-          if(totalHours == 0){
+          if (totalHours == 0) {
             totalHours = 1;
           }
           amount = totalHours * (widget.delayPerHour ?? 100).toDouble();
-                    print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;$totalHours");
-                                        print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;${widget.delayPerHour }");
-
+          print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;$totalHours");
+          print(
+              "sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl000;${widget.delayPerHour}");
 
           print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfjl;$amount");
         } else if (totalDays >= 2 && remainingHours == 0) {
           amount = totalDays * (widget.delayPerDay ?? 1000).toDouble();
-                    print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj2;$amount");
-
+          print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj2;$amount");
         } else {
           amount = (totalDays * (widget.delayPerDay ?? 1000).toDouble()) +
               (remainingHours * (widget.delayPerHour ?? 100).toDouble());
-                        print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj3;$amount");
-
+          print("sfjlfldskfjkfdkjfklfjlfjljfjflfjdfj3;$amount");
         }
 
         setState(() {
@@ -258,7 +256,7 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
       var request = http.MultipartRequest(
         'POST',
         Uri.parse(
-            'http://82.29.162.67:4062/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
+            'https://varahibackend.varahiselfdrivecars.com/api/staff/upload-delaypaymentproof/${widget.bookingId}'),
       );
 
       request.files.add(
@@ -523,12 +521,18 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
 
   @override
   Widget build(BuildContext context) {
-    print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.bookingId}");
-        print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.delayPerDay}");
-            print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.delayPerHour}");
-                print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.hasReturnDetails}");
-                    print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.returnDate}");
-                        print("kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.returnTime}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.bookingId}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.delayPerDay}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.delayPerHour}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.hasReturnDetails}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.returnDate}");
+    print(
+        "kkkkkkkkkkkkkkkkkkkkkgggggggggggggggggggggffffffffffffffffffffff${widget.returnTime}");
     if (widget.hasReturnDetails) {
       // If return details already exist, don't show delay section
       return const SizedBox();
@@ -548,7 +552,7 @@ class _DelayHandlingSectionState extends State<DelayHandlingSection> {
             ),
           ),
         ),
-        
+
         // Delay date and time selection
         Row(
           children: [

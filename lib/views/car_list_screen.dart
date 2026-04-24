@@ -30,15 +30,16 @@ class CarStatusScreen extends StatefulWidget {
   State<CarStatusScreen> createState() => _CarStatusScreenState();
 }
 
-class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProviderStateMixin {
+class _CarStatusScreenState extends State<CarStatusScreen>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
+
   // Date and time selection
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now().add(const Duration(days: 1));
   TimeOfDay fromTime = TimeOfDay.now();
   TimeOfDay toTime = TimeOfDay.now();
-  
+
   // Search and data
   String searchQuery = '';
   Map<String, dynamic>? availableData;
@@ -46,7 +47,7 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
   bool isLoadingAvailable = false;
   bool isLoadingBooked = false;
   bool isRefreshing = false;
-  
+
   final TextEditingController searchController = TextEditingController();
 
   // Store expanded state for booking history
@@ -88,18 +89,18 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
 
     try {
       final url = Uri.parse(
-        'http://82.29.162.67:4062/api/car/carsbystatus?status=available&startDate=${_formatDate(startDate)}&endDate=${_formatDate(endDate)}&fromTime=${_formatTime(fromTime)}&toTime=${_formatTime(toTime)}'
-      );
-      
+          'https://varahibackend.varahiselfdrivecars.com/api/car/carsbystatus?status=available&startDate=${_formatDate(startDate)}&endDate=${_formatDate(endDate)}&fromTime=${_formatTime(fromTime)}&toTime=${_formatTime(toTime)}');
+
       final response = await http.get(url).timeout(const Duration(seconds: 10));
-      
+
       if (response.statusCode == 200) {
         setState(() {
           availableData = json.decode(response.body);
           // Initialize expanded state for new cars
           if (availableData != null && availableData!['cars'] != null) {
             for (var car in availableData!['cars']) {
-              if (car['bookedStatus'] != null && (car['bookedStatus'] as List).isNotEmpty) {
+              if (car['bookedStatus'] != null &&
+                  (car['bookedStatus'] as List).isNotEmpty) {
                 expandedHistory[car['_id']] = false;
               }
             }
@@ -124,18 +125,18 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
 
     try {
       final url = Uri.parse(
-        'http://82.29.162.67:4062/api/car/carsbystatus?status=booked&startDate=${_formatDate(startDate)}&endDate=${_formatDate(endDate)}&fromTime=${_formatTime(fromTime)}&toTime=${_formatTime(toTime)}'
-      );
-      
+          'https://varahibackend.varahiselfdrivecars.com/api/car/carsbystatus?status=booked&startDate=${_formatDate(startDate)}&endDate=${_formatDate(endDate)}&fromTime=${_formatTime(fromTime)}&toTime=${_formatTime(toTime)}');
+
       final response = await http.get(url).timeout(const Duration(seconds: 10));
-      
+
       if (response.statusCode == 200) {
         setState(() {
           bookedData = json.decode(response.body);
           // Initialize expanded state for new cars
           if (bookedData != null && bookedData!['cars'] != null) {
             for (var car in bookedData!['cars']) {
-              if (car['bookedStatus'] != null && (car['bookedStatus'] as List).isNotEmpty) {
+              if (car['bookedStatus'] != null &&
+                  (car['bookedStatus'] as List).isNotEmpty) {
                 expandedHistory[car['_id']] = false;
               }
             }
@@ -159,7 +160,8 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
 
   String _formatTime(TimeOfDay time) {
     final now = DateTime.now();
-    final dateTime = DateTime(now.year, now.month, now.day, time.hour, time.minute);
+    final dateTime =
+        DateTime(now.year, now.month, now.day, time.hour, time.minute);
     return DateFormat('hh:mma').format(dateTime).toUpperCase();
   }
 
@@ -245,10 +247,10 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
 
   List<dynamic> _getFilteredCars(Map<String, dynamic>? data) {
     if (data == null || !data.containsKey('cars')) return [];
-    
+
     final cars = data['cars'] as List;
     if (searchQuery.isEmpty) return cars;
-    
+
     return cars.where((car) {
       final carName = (car['carName'] as String? ?? '').toLowerCase();
       final carId = (car['_id'] as String? ?? '').toLowerCase();
@@ -294,7 +296,8 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
                 const SizedBox(height: 16),
                 Text(
                   'Booking History - $carName',
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 16),
                 Expanded(
@@ -397,7 +400,7 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
               ],
             ),
           ),
-          
+
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(12),
@@ -429,7 +432,7 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
               },
             ),
           ),
-          
+
           // Tab Content
           Expanded(
             child: TabBarView(
@@ -515,7 +518,8 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.green[100],
                     borderRadius: BorderRadius.circular(16),
@@ -528,17 +532,19 @@ class _CarStatusScreenState extends State<CarStatusScreen> with SingleTickerProv
               ],
             ),
           ),
-Expanded(
-  child: filteredCars.isEmpty
-      ? const Center(child: Text('No cars available'))
-      : ListView.separated(
-          itemCount: filteredCars.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 16), // Increased gap
-          itemBuilder: (context, index) {
-            return _buildCarCard(filteredCars[index], isAvailable: true);
-          },
-        ),
-),
+          Expanded(
+            child: filteredCars.isEmpty
+                ? const Center(child: Text('No cars available'))
+                : ListView.separated(
+                    itemCount: filteredCars.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 16), // Increased gap
+                    itemBuilder: (context, index) {
+                      return _buildCarCard(filteredCars[index],
+                          isAvailable: true);
+                    },
+                  ),
+          ),
         ],
       ),
     );
@@ -566,7 +572,8 @@ Expanded(
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: Colors.red[100],
                     borderRadius: BorderRadius.circular(16),
@@ -579,17 +586,19 @@ Expanded(
               ],
             ),
           ),
-Expanded(
-  child: filteredCars.isEmpty
-      ? const Center(child: Text('No booked cars'))
-      : ListView.separated(
-          itemCount: filteredCars.length,
-          separatorBuilder: (context, index) => const SizedBox(height: 32), // Increased gap
-          itemBuilder: (context, index) {
-            return _buildCarCard(filteredCars[index], isAvailable: false);
-          },
-        ),
-),
+          Expanded(
+            child: filteredCars.isEmpty
+                ? const Center(child: Text('No booked cars'))
+                : ListView.separated(
+                    itemCount: filteredCars.length,
+                    separatorBuilder: (context, index) =>
+                        const SizedBox(height: 32), // Increased gap
+                    itemBuilder: (context, index) {
+                      return _buildCarCard(filteredCars[index],
+                          isAvailable: false);
+                    },
+                  ),
+          ),
         ],
       ),
     );
@@ -600,10 +609,11 @@ Expanded(
     final location = car['location'] ?? 'Unknown';
     final coordinates = car['branch']?['location']?['coordinates'] ?? [];
     final carId = car['_id'] ?? '';
-    final hasHistory = car['bookedStatus'] != null && (car['bookedStatus'] as List).isNotEmpty;
+    final hasHistory =
+        car['bookedStatus'] != null && (car['bookedStatus'] as List).isNotEmpty;
     final isExpanded = expandedHistory[carId] ?? false;
     final bookingHistory = car['bookedStatus'] as List? ?? [];
-    
+
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       elevation: 2,
@@ -633,7 +643,8 @@ Expanded(
                             width: 160,
                             height: 120,
                             color: Colors.grey[300],
-                            child: const Icon(Icons.broken_image, color: Colors.grey),
+                            child: const Icon(Icons.broken_image,
+                                color: Colors.grey),
                           );
                         },
                       ),
@@ -642,38 +653,45 @@ Expanded(
                 },
               ),
             ),
-          
+
           ListTile(
             title: Row(
               children: [
                 Expanded(
                   child: Text(
                     '${car['carName'] ?? 'Unknown'}',
-                    style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                    style: const TextStyle(
+                        fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                 ),
                 if (car['isPremium'] == true)
                   Container(
                     margin: const EdgeInsets.only(right: 8),
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.amber,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: const Text(
                       'PREMIUM',
-                      style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+                      style:
+                          TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                   ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: isAvailable ? Colors.green : Colors.red,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Text(
                     isAvailable ? 'Available' : 'Booked',
-                    style: const TextStyle(fontSize: 10, color: Colors.white, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 10,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -682,9 +700,12 @@ Expanded(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 4),
-                Text('ID: ${car['_id'] ?? 'N/A'}', style: const TextStyle(fontSize: 12)),
-                Text('Model: ${car['model'] ?? 'N/A'}', style: const TextStyle(fontSize: 12)),
-                Text('Number: ${car['vehicleNumber'] ?? 'N/A'}', style: const TextStyle(fontSize: 12)),
+                Text('ID: ${car['_id'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 12)),
+                Text('Model: ${car['model'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 12)),
+                Text('Number: ${car['vehicleNumber'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 12)),
                 const SizedBox(height: 4),
                 Row(
                   children: [
@@ -693,7 +714,9 @@ Expanded(
                     Expanded(
                       child: Text(
                         '$branchName - $location',
-                        style: TextStyle(fontSize: 12, color: const Color.fromARGB(255, 0, 0, 0)),
+                        style: TextStyle(
+                            fontSize: 12,
+                            color: const Color.fromARGB(255, 0, 0, 0)),
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -704,33 +727,38 @@ Expanded(
                     padding: const EdgeInsets.only(top: 2),
                     child: Text(
                       '📍 ${coordinates[1]?.toStringAsFixed(4) ?? ''}, ${coordinates[0]?.toStringAsFixed(4) ?? ''}',
-                      style: TextStyle(fontSize: 10, color: const Color.fromARGB(255, 0, 0, 0)),
+                      style: TextStyle(
+                          fontSize: 10,
+                          color: const Color.fromARGB(255, 0, 0, 0)),
                     ),
                   ),
               ],
             ),
           ),
-          
+
           // Car Details
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _buildDetailChip(Icons.calendar_today, '${car['year'] ?? 'N/A'}'),
+                _buildDetailChip(
+                    Icons.calendar_today, '${car['year'] ?? 'N/A'}'),
                 _buildDetailChip(Icons.local_gas_station, car['fuel'] ?? 'N/A'),
-                _buildDetailChip(Icons.event_seat, '${car['seats'] ?? 'N/A'} Seats'),
+                _buildDetailChip(
+                    Icons.event_seat, '${car['seats'] ?? 'N/A'} Seats'),
                 _buildDetailChip(Icons.settings, car['type'] ?? 'N/A'),
               ],
             ),
           ),
-          
+
           // Price Info
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               // color: isAvailable ? const Color.fromARGB(255, 236, 236, 236) : Colors.red[50],
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(12)),
+              borderRadius:
+                  const BorderRadius.vertical(bottom: Radius.circular(12)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -742,24 +770,31 @@ Expanded(
                       '₹${car['pricePerHour'] ?? 'N/A'}/hour',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: isAvailable ? const Color.fromARGB(255, 0, 0, 0) : Colors.red[800],
+                        color: isAvailable
+                            ? const Color.fromARGB(255, 0, 0, 0)
+                            : Colors.red[800],
                       ),
                     ),
                     Text(
                       '₹${car['pricePerDay'] ?? 'N/A'}/day',
                       style: TextStyle(
                         fontSize: 12,
-                        color: isAvailable ? const Color.fromARGB(255, 0, 0, 0) : Colors.red[600],
+                        color: isAvailable
+                            ? const Color.fromARGB(255, 0, 0, 0)
+                            : Colors.red[600],
                       ),
                     ),
                   ],
                 ),
-                if (car['depositOptions'] != null && (car['depositOptions'] as List).isNotEmpty)
+                if (car['depositOptions'] != null &&
+                    (car['depositOptions'] as List).isNotEmpty)
                   Row(
-                    children: (car['depositOptions'] as List).take(2).map((option) {
+                    children:
+                        (car['depositOptions'] as List).take(2).map((option) {
                       return Container(
                         margin: const EdgeInsets.symmetric(horizontal: 2),
-                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(12),
@@ -775,14 +810,15 @@ Expanded(
               ],
             ),
           ),
-          
+
           // Booking History Section
           if (hasHistory)
             Column(
               children: [
                 const Divider(),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -796,11 +832,13 @@ Expanded(
                       Row(
                         children: [
                           TextButton.icon(
-                            onPressed: () => _showFullHistory(bookingHistory, car['carName'] ?? 'Car'),
+                            onPressed: () => _showFullHistory(
+                                bookingHistory, car['carName'] ?? 'Car'),
                             icon: const Icon(Icons.open_in_full, size: 16),
                             label: const Text('View All'),
                             style: TextButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(horizontal: 8),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8),
                               minimumSize: Size.zero,
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
@@ -821,7 +859,8 @@ Expanded(
                 ),
                 if (isExpanded)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                     child: Container(
                       constraints: const BoxConstraints(maxHeight: 200),
                       child: ListView.builder(

@@ -1,17 +1,12 @@
-
-
-
-
-
 import 'dart:convert';
 import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:http/http.dart' as http;
 
 class SingleBookingService {
-  static const String baseUrl = 'http://82.29.162.67:4062/api';
+  static const String baseUrl =
+      'https://varahibackend.varahiselfdrivecars.com/api';
 
   Future<BookingResponse?> getSingleBooking(String bookingId) async {
-
     print('llllllllllllllllllllllllllllll$bookingId');
     try {
       final response = await http.get(
@@ -21,12 +16,13 @@ class SingleBookingService {
         },
       );
 
-      print('oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo${response.statusCode}');
-
+      print(
+          'oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo${response.statusCode}');
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
-                    print('oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo${data}');
+        print(
+            'oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo${data}');
 
         return BookingResponse.fromJson(data);
       } else {
@@ -39,7 +35,8 @@ class SingleBookingService {
   }
 
   Future<List<Booking>?> getAllBookings() async {
-    print("lllllllllllllldsglkfgkjskldgjdsklgjdsgjdslgjdsgjdsgjdsgj111111111111111");
+    print(
+        "lllllllllllllldsglkfgkjskldgjdsklgjdsgjdslgjdsgjdsgjdsgj111111111111111");
     try {
       final response = await http.get(
         Uri.parse('$baseUrl/staff/activebookings'),
@@ -47,12 +44,13 @@ class SingleBookingService {
           'Content-Type': 'application/json',
         },
       );
-            print("Response Bodyyyyyyyyyyyyyyyyyyyyyy: ${response.body}");
+      print("Response Bodyyyyyyyyyyyyyyyyyyyyyy: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> bookingsJson = data['bookings'] ?? [];
-                print("llllllllllllllllllllllllllllllllllllllllllllll${data['bookings']}");
+        print(
+            "llllllllllllllllllllllllllllllllllllllllllllll${data['bookings']}");
 
         return bookingsJson.map((json) => Booking.fromJson(json)).toList();
       } else {
@@ -65,9 +63,10 @@ class SingleBookingService {
   }
 
   // New method for fetching bookings with status and optional date
-  Future<List<Booking>?> getBookingsWithStatusAndDate(String status, {String? date}) async {
+  Future<List<Booking>?> getBookingsWithStatusAndDate(String status,
+      {String? date}) async {
     print('ssssssssssssssssssssssssssssssss$status');
-        print('ssssssssssssssssssssssssssssssss$date');
+    print('ssssssssssssssssssssssssssssssss$date');
 
     try {
       // Construct query parameters - only add date if provided
@@ -88,14 +87,13 @@ class SingleBookingService {
       );
 
       print("Response uri: $uri");
-            print("Response Body: ${response.body}");
-
-
+      print("Response Body: ${response.body}");
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
         final List<dynamic> bookingsJson = data['bookings'] ?? [];
-                        print("llllllllllllllllllllllllllllllllllllllllllllll${data['bookings']}");
+        print(
+            "llllllllllllllllllllllllllllllllllllllllllllll${data['bookings']}");
 
         return bookingsJson.map((json) => Booking.fromJson(json)).toList();
       } else {

@@ -1,4 +1,3 @@
-
 // import 'dart:typed_data';
 
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
@@ -376,7 +375,7 @@
 
 //     try {
 //       var uri = Uri.parse(
-//           'http://82.29.162.67:4062/api/staff/carimagesbeforepickup/$bookingId');
+//           'https://varahibackend.varahiselfdrivecars.com/api/staff/carimagesbeforepickup/$bookingId');
 //       var request = http.MultipartRequest('POST', uri);
 
 //       // Add all captured images to the request with category names in order
@@ -1004,7 +1003,7 @@
 //       // Make API call to verify OTP
 //       final response = await http.post(
 //         Uri.parse(
-//             'http://82.29.162.67:4062/api/staff/verify-otp/$bookingId'),
+//             'https://varahibackend.varahiselfdrivecars.com/api/staff/verify-otp/$bookingId'),
 //         headers: {
 //           'Content-Type': 'application/json',
 //           // Add authorization header if needed
@@ -1391,24 +1390,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'dart:typed_data';
 
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
@@ -1539,13 +1520,13 @@ class _CarDetailsState extends State<CarDetails> {
     required String title,
   }) {
     ImageProvider? imageProvider;
-    
+
     if (imageFile != null) {
       imageProvider = FileImage(imageFile);
     } else if (imageUrl != null && imageUrl.isNotEmpty) {
       imageProvider = NetworkImage(imageUrl);
     }
-    
+
     if (imageProvider == null) return;
 
     Navigator.of(context).push(
@@ -1812,7 +1793,7 @@ class _CarDetailsState extends State<CarDetails> {
 
     try {
       var uri = Uri.parse(
-          'http://82.29.162.67:4062/api/staff/carimagesbeforepickup/$bookingId');
+          'https://varahibackend.varahiselfdrivecars.com/api/staff/carimagesbeforepickup/$bookingId');
       var request = http.MultipartRequest('POST', uri);
 
       // Add all captured images to the request with category names in order
@@ -2271,8 +2252,10 @@ class _CarDetailsState extends State<CarDetails> {
                       left: 12,
                       child: GestureDetector(
                         onTap: () => _showImageFullScreen(
-                          imageFile: isCaptured ? _capturedImages[category] : null,
-                          imageUrl: isUploaded ? _uploadedImages[category] : null,
+                          imageFile:
+                              isCaptured ? _capturedImages[category] : null,
+                          imageUrl:
+                              isUploaded ? _uploadedImages[category] : null,
                           title: category.displayName,
                         ),
                         child: Container(
@@ -2322,7 +2305,6 @@ class _CarDetailsState extends State<CarDetails> {
     );
   }
 
-  
   // Rest of the existing methods remain the same...
   Widget _buildOtpVerificationCard(BuildContext context, booking) {
     return Container(
@@ -2469,7 +2451,7 @@ class _CarDetailsState extends State<CarDetails> {
       // Make API call to verify OTP
       final response = await http.post(
         Uri.parse(
-            'http://82.29.162.67:4062/api/staff/verify-otp/$bookingId'),
+            'https://varahibackend.varahiselfdrivecars.com/api/staff/verify-otp/$bookingId'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization header if needed
@@ -2490,7 +2472,8 @@ class _CarDetailsState extends State<CarDetails> {
         // Extract deposit PDF URL from response
         String? depositPdfPath = responseData['depositPDF'];
         if (depositPdfPath != null) {
-          String fullPdfUrl = 'http://82.29.162.67:4062$depositPdfPath';
+          String fullPdfUrl =
+              'https://varahibackend.varahiselfdrivecars.com$depositPdfPath';
           print('PDF URL: $fullPdfUrl');
 
           // Download PDF before navigation

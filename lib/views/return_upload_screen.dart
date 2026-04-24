@@ -362,7 +362,7 @@
 
 //     try {
 //       print("pppppppppppppppppppppppppppppppppppppppppppppppp${widget.id}");
-//       var uri = Uri.parse('http://82.29.162.67:4062/api/staff/carreturnimages/${widget.id}');
+//       var uri = Uri.parse('https://varahibackend.varahiselfdrivecars.com/api/staff/carreturnimages/${widget.id}');
 //       var request = http.MultipartRequest('POST', uri);
 
 //       // Add all captured return images to the request with category names in order
@@ -472,7 +472,7 @@
 
 //       // Make API call to verify return OTP
 //       final response = await http.post(
-//         Uri.parse('http://82.29.162.67:4062/api/staff/verify-return-otp/${widget.id}'),
+//         Uri.parse('https://varahibackend.varahiselfdrivecars.com/api/staff/verify-return-otp/${widget.id}'),
 //         headers: {
 //           'Content-Type': 'application/json',
 //           // Add authorization header if needed
@@ -2057,7 +2057,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
     try {
       print("pppppppppppppppppppppppppppppppppppppppppppppppp${widget.id}");
       var uri = Uri.parse(
-          'http://82.29.162.67:4062/api/staff/carreturnimages/${widget.id}');
+          'https://varahibackend.varahiselfdrivecars.com/api/staff/carreturnimages/${widget.id}');
       var request = http.MultipartRequest('POST', uri);
 
       // Add all captured return images to the request with category names in order
@@ -2174,7 +2174,7 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
       // Make API call to verify return OTP
       final response = await http.post(
         Uri.parse(
-            'http://82.29.162.67:4062/api/staff/verify-return-otp/${widget.id}'),
+            'https://varahibackend.varahiselfdrivecars.com/api/staff/verify-return-otp/${widget.id}'),
         headers: {
           'Content-Type': 'application/json',
           // Add authorization header if needed
@@ -2188,11 +2188,10 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
       Navigator.pop(context); // Close loading dialog
       print('Return OTP verification status: ${response.body}');
-            print('Return otp timing checking start 2');
-
+      print('Return otp timing checking start 2');
 
       if (response.statusCode == 200) {
-                    print('Return otp timing checking start 3');
+        print('Return otp timing checking start 3');
 
         // OTP verification successful
         final responseData = json.decode(response.body);
@@ -2200,15 +2199,15 @@ class _ReturnUploadScreenState extends State<ReturnUploadScreen> {
 
         String? depositPdfPath = responseData['depositPDF'];
         if (depositPdfPath != null) {
-          String fullPdfUrl = 'http://82.29.162.67:4062$depositPdfPath';
+          String fullPdfUrl =
+              'https://varahibackend.varahiselfdrivecars.com$depositPdfPath';
           print('PDF URL: $fullPdfUrl');
 
           // Download PDF before navigation
           await _downloadPdfToDownloads(fullPdfUrl, widget.id);
         }
 
-                            print('Return otp timing checking start 4');
-
+        print('Return otp timing checking start 4');
 
         setState(() {
           showOtpOverlay = false;

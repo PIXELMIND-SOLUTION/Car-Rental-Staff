@@ -178,7 +178,7 @@
 //     try {
 //       // Replace this URL with your actual API endpoint
 //       final String apiUrl =
-//           'http://82.29.162.67:4062/api/staff/uploaddeposite/${widget.id}';
+//           'https://varahibackend.varahiselfdrivecars.com/api/staff/uploaddeposite/${widget.id}';
 
 //       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 
@@ -834,26 +834,6 @@
 //   }
 // }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import 'package:car_rental_staff_app/controllers/auth_controller.dart';
 import 'package:car_rental_staff_app/models/single_booking_model.dart';
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
@@ -957,13 +937,13 @@ class _PickupDetailsScreenState extends State<PickupDetailsScreen> {
     required String title,
   }) {
     ImageProvider? imageProvider;
-    
+
     if (imageFile != null) {
       imageProvider = FileImage(imageFile);
     } else if (imageUrl != null && imageUrl.isNotEmpty) {
       imageProvider = NetworkImage(imageUrl);
     }
-    
+
     if (imageProvider == null) return;
 
     Navigator.of(context).push(
@@ -1061,7 +1041,7 @@ class _PickupDetailsScreenState extends State<PickupDetailsScreen> {
     try {
       // Replace this URL with your actual API endpoint
       final String apiUrl =
-          'http://82.29.162.67:4062/api/staff/uploaddeposite/${widget.id}';
+          'https://varahibackend.varahiselfdrivecars.com/api/staff/uploaddeposite/${widget.id}';
 
       var request = http.MultipartRequest('POST', Uri.parse(apiUrl));
 
@@ -1568,7 +1548,9 @@ class _PickupDetailsScreenState extends State<PickupDetailsScreen> {
     }
 
     return GestureDetector(
-      onTap: hasImage ? onImageView : onTap, // If image exists, show full screen, otherwise show picker
+      onTap: hasImage
+          ? onImageView
+          : onTap, // If image exists, show full screen, otherwise show picker
       child: Container(
         width: double.infinity,
         height: 206,

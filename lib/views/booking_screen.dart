@@ -1,4 +1,3 @@
-
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 // import 'package:car_rental_staff_app/views/pickup_details_screen.dart';
 // import 'package:flutter/material.dart';
@@ -24,11 +23,11 @@
 //   File? _selectedAadharFile;
 //   File? _selectedLicenseFile;
 //   final ImagePicker _picker = ImagePicker();
-  
+
 //   // Keep track of locally uploaded images before API response
 //   String? _localAadharImagePath;
 //   String? _localLicenseImagePath;
-  
+
 //   // Track which documents were uploaded by staff
 //   Set<String> _staffUploadedDocs = {};
 
@@ -52,13 +51,13 @@
 //     required String title,
 //   }) {
 //     ImageProvider? imageProvider;
-    
+
 //     if (imageFile != null) {
 //       imageProvider = FileImage(imageFile);
 //     } else if (imageUrl != null && imageUrl.isNotEmpty) {
 //       imageProvider = NetworkImage(imageUrl);
 //     }
-    
+
 //     if (imageProvider == null) return;
 
 //     Navigator.of(context).push(
@@ -105,7 +104,7 @@
 //           maxWidth: 1920,
 //           maxHeight: 1920,
 //         );
-        
+
 //         if (image != null) {
 //           setState(() {
 //             if (documentType == 'aadhar') {
@@ -116,14 +115,14 @@
 //               _localLicenseImagePath = image.path; // Store local path
 //             }
 //           });
-          
+
 //           _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} selected successfully');
-          
+
 //           // If this is an edit operation, upload immediately
 //           if (isEdit) {
 //             final provider = context.read<SingleBookingProvider>();
 //             final booking = provider.currentBooking;
-            
+
 //             if (booking != null && booking.userId?.id != null) {
 //               _showUploadConfirmationDialog(booking.userId!.id, documentType);
 //             }
@@ -198,9 +197,9 @@
 
 //       // Refresh the booking data after successful upload
 //       await context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
-      
+
 //       _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} updated successfully!');
-      
+
 //       // Keep the local image path until API response comes back with new URL
 //       // Don't clear immediately - let the API response URL take precedence
 //       setState(() {
@@ -225,7 +224,7 @@
 //           });
 //         }
 //       });
-      
+
 //     } catch (e) {
 //       _showErrorSnackBar('Failed to update document: $e');
 //     } finally {
@@ -234,7 +233,6 @@
 //       });
 //     }
 //   }
-
 
 //   Future<void> _uploadMissingDocuments(String userId) async {
 //     if (_selectedAadharFile == null && _selectedLicenseFile == null) {
@@ -256,9 +254,9 @@
 
 //       // Refresh the booking data after successful upload
 //       await context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
-      
+
 //       _showSuccessSnackBar('Documents uploaded successfully!');
-      
+
 //       // Mark uploaded documents as staff uploaded
 //       setState(() {
 //         if (_selectedAadharFile != null) {
@@ -268,7 +266,7 @@
 //           _staffUploadedDocs.add('license');
 //         }
 //       });
-      
+
 //       // Clear selected files and local paths after successful upload
 //       setState(() {
 //         _selectedAadharFile = null;
@@ -276,7 +274,7 @@
 //         _localAadharImagePath = null;
 //         _localLicenseImagePath = null;
 //       });
-      
+
 //     } catch (e) {
 //       _showErrorSnackBar('Failed to upload documents: $e');
 //     } finally {
@@ -295,7 +293,7 @@
 //     print("Uploading documents for user: $userId");
 
 //     // Replace with your actual base URL
-//     const String baseUrl = 'http://82.29.162.67:4062/api/staff';
+//     const String baseUrl = 'https://varahibackend.varahiselfdrivecars.com/api/staff';
 //     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
 //     final request = http.MultipartRequest('POST', uri);
 
@@ -412,7 +410,7 @@
 //                     ),
 //                   )).toList(),
 //                   const SizedBox(height: 20),
-                  
+
 //                   // Document upload section
 //                   if (missingDocs.contains('Aadhar Card')) ...[
 //                     const Text('Upload Aadhar Card:', style: TextStyle(fontWeight: FontWeight.bold)),
@@ -446,7 +444,7 @@
 //                     ),
 //                     const SizedBox(height: 15),
 //                   ],
-                  
+
 //                   if (missingDocs.contains('Driving License')) ...[
 //                     const Text('Upload Driving License:', style: TextStyle(fontWeight: FontWeight.bold)),
 //                     const SizedBox(height: 8),
@@ -529,17 +527,17 @@
 
 //     // Check for missing documents - check both null and empty URL
 //     List<String> missingDocs = [];
-    
+
 //     print('Checking Aadhar: ${booking.userId?.documents?.aadharCard}');
 //     print('Checking License: ${booking.userId?.documents?.drivingLicense}');
-    
-//     if (booking.userId?.documents?.aadharCard == null || 
+
+//     if (booking.userId?.documents?.aadharCard == null ||
 //         booking.userId?.documents?.aadharCard?.url == null ||
 //         booking.userId!.documents!.aadharCard!.url!.isEmpty) {
 //       missingDocs.add('Aadhar Card');
 //     }
-    
-//     if (booking.userId?.documents?.drivingLicense == null || 
+
+//     if (booking.userId?.documents?.drivingLicense == null ||
 //         booking.userId?.documents?.drivingLicense?.url == null ||
 //         booking.userId!.documents!.drivingLicense!.url!.isEmpty) {
 //       missingDocs.add('Driving License');
@@ -822,7 +820,7 @@
 //     // Determine which image to show - priority: API URL > local image > placeholder
 //     String? displayImagePath;
 //     bool isNetworkImage = false;
-    
+
 //     if (imageUrl != null && imageUrl.isNotEmpty) {
 //       displayImagePath = imageUrl;
 //       isNetworkImage = true;
@@ -830,13 +828,13 @@
 //       displayImagePath = localImagePath;
 //       isNetworkImage = false;
 //     }
-    
+
 //     bool isMissing = displayImagePath == null;
 //     bool hasDocument = !isMissing;
-    
+
 //     // Check if this document was uploaded by staff (should have edit option)
 //     bool isStaffUploaded = _staffUploadedDocs.contains(documentType);
-    
+
 //     return GestureDetector(
 //       onTap: () {
 //         if (hasDocument) {
@@ -858,7 +856,7 @@
 //           borderRadius: BorderRadius.circular(12),
 //           image: displayImagePath != null
 //               ? DecorationImage(
-//                   image: isNetworkImage 
+//                   image: isNetworkImage
 //                       ? NetworkImage(displayImagePath) as ImageProvider
 //                       : FileImage(File(displayImagePath)),
 //                   fit: BoxFit.cover,
@@ -899,7 +897,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             // Full screen view icon when image exists
 //             if (hasDocument)
 //               Positioned(
@@ -926,7 +924,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             // Edit icon for documents uploaded by staff
 //             if (hasDocument && isStaffUploaded)
 //               Positioned(
@@ -980,7 +978,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             // Gradient overlay at bottom
 //             Positioned(
 //               bottom: 0,
@@ -1121,8 +1119,8 @@
 //   factory DocumentInfo.fromJson(Map<String, dynamic> json) {
 //     return DocumentInfo(
 //       url: json['url'] ?? '',
-//       uploadedAt: json['uploadedAt'] != null 
-//           ? DateTime.parse(json['uploadedAt']) 
+//       uploadedAt: json['uploadedAt'] != null
+//           ? DateTime.parse(json['uploadedAt'])
 //           : DateTime.now(),
 //       status: json['status'] ?? 'unknown',
 //     );
@@ -1148,11 +1146,11 @@
 //     }
 
 //     return UploadedDocuments(
-//       aadharCard: json['aadharCard'] != null 
-//           ? DocumentInfo.fromJson(json['aadharCard']) 
+//       aadharCard: json['aadharCard'] != null
+//           ? DocumentInfo.fromJson(json['aadharCard'])
 //           : null,
-//       drivingLicense: json['drivingLicense'] != null 
-//           ? DocumentInfo.fromJson(json['drivingLicense']) 
+//       drivingLicense: json['drivingLicense'] != null
+//           ? DocumentInfo.fromJson(json['drivingLicense'])
 //           : null,
 //     );
 //   }
@@ -1161,17 +1159,6 @@
 //   bool get hasAllDocuments => aadharCard != null && drivingLicense != null;
 
 // }
-
-
-
-
-
-
-
-
-
-
-
 
 // import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 // import 'package:car_rental_staff_app/views/pickup_details_screen.dart';
@@ -1198,20 +1185,20 @@
 // class _BookingScreenState extends State<BookingScreen> {
 //   bool _isUploading = false;
 //   bool _isValidating = false;
-  
+
 //   // Front and back files for each document
 //   File? _aadharFrontFile;
 //   File? _aadharBackFile;
 //   File? _licenseFrontFile;
 //   File? _licenseBackFile;
-  
+
 //   final ImagePicker _picker = ImagePicker();
 //   final TextRecognizer _textRecognizer = TextRecognizer();
-  
+
 //   // Keep track of locally uploaded images before API response
 //   String? _localAadharImagePath;
 //   String? _localLicenseImagePath;
-  
+
 //   // Track which documents were uploaded by staff
 //   Set<String> _staffUploadedDocs = {};
 
@@ -1233,7 +1220,7 @@
 //   // Aadhaar validation
 //   bool _isValidAadhaarDocument(String text) {
 //     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
 //     final aadhaarKeywords = [
 //       'aadhaar',
 //       'aadhar',
@@ -1242,19 +1229,19 @@
 //       'unique identification authority of india',
 //       'uidai',
 //     ];
-    
+
 //     final aadhaarNumberPattern = RegExp(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b');
-    
+
 //     bool hasKeyword = aadhaarKeywords.any((keyword) => cleanText.contains(keyword));
 //     bool hasAadhaarNumber = aadhaarNumberPattern.hasMatch(text);
-    
+
 //     return hasKeyword || hasAadhaarNumber;
 //   }
 
 //   // Driving License validation
 //   bool _isValidLicenseDocument(String text) {
 //     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
 //     final licenseKeywords = [
 //       'driving licence',
 //       'driving license',
@@ -1265,15 +1252,15 @@
 //       'वाहन',
 //       'परिवहन',
 //     ];
-    
+
 //     final dlNumberPatterns = [
 //       RegExp(r'\b[A-Z]{2}[0-9]{2}[A-Z0-9]{11,13}\b'),
 //       RegExp(r'\b[A-Z]{2}-?[0-9]{2}-?[0-9]{4}-?[0-9]{7}\b'),
 //     ];
-    
+
 //     bool hasKeyword = licenseKeywords.any((keyword) => cleanText.contains(keyword));
 //     bool hasValidPattern = dlNumberPatterns.any((pattern) => pattern.hasMatch(text));
-    
+
 //     return hasKeyword || hasValidPattern;
 //   }
 
@@ -1282,11 +1269,11 @@
 //     try {
 //       final bytes = imageFile.readAsBytesSync();
 //       final image = img.decodeImage(bytes);
-      
+
 //       if (image == null) return false;
 //       if (image.width < 300 || image.height < 200) return false;
 //       if (bytes.length < 10000 || bytes.length > 10000000) return false;
-      
+
 //       return true;
 //     } catch (e) {
 //       return false;
@@ -1296,21 +1283,21 @@
 //   Future<bool> _validateDocument(File imageFile, bool isAadhar) async {
 //     try {
 //       setState(() => _isValidating = true);
-      
+
 //       if (!_isValidImageQuality(imageFile)) {
 //         _showValidationError('Image quality is too low. Please upload a clear photo.');
 //         return false;
 //       }
-      
+
 //       final inputImage = InputImage.fromFile(imageFile);
 //       final recognizedText = await _textRecognizer.processImage(inputImage);
 //       final extractedText = recognizedText.text;
-      
+
 //       if (extractedText.isEmpty) {
 //         _showValidationError('No text found in image. Please upload a clear document photo.');
 //         return false;
 //       }
-      
+
 //       bool isValid = false;
 //       if (isAadhar) {
 //         isValid = _isValidAadhaarDocument(extractedText);
@@ -1323,7 +1310,7 @@
 //           _showValidationError('This doesn\'t appear to be a driving license. Please upload a valid driving license.');
 //         }
 //       }
-      
+
 //       return isValid;
 //     } catch (e) {
 //       _showValidationError('Document validation failed. Please try again.');
@@ -1356,27 +1343,27 @@
 //     try {
 //       final frontBytes = await frontImage.readAsBytes();
 //       final backBytes = await backImage.readAsBytes();
-      
+
 //       final frontImg = img.decodeImage(frontBytes)!;
 //       final backImg = img.decodeImage(backBytes)!;
-      
+
 //       final maxWidth = frontImg.width > backImg.width ? frontImg.width : backImg.width;
 //       final resizedFront = img.copyResize(frontImg, width: maxWidth);
 //       final resizedBack = img.copyResize(backImg, width: maxWidth);
-      
+
 //       final combinedHeight = resizedFront.height + resizedBack.height + 20;
 //       final combinedImg = img.Image(width: maxWidth, height: combinedHeight, numChannels: 3);
-      
+
 //       img.fill(combinedImg, color: img.ColorRgb8(255, 255, 255));
 //       img.compositeImage(combinedImg, resizedFront, dstX: 0, dstY: 0);
 //       img.compositeImage(combinedImg, resizedBack, dstX: 0, dstY: resizedFront.height + 20);
-      
+
 //       final combinedBytes = img.encodeJpg(combinedImg, quality: 85);
-      
+
 //       final tempDir = Directory.systemTemp;
 //       final combinedFile = File('${tempDir.path}/${documentType}_combined_${DateTime.now().millisecondsSinceEpoch}.jpg');
 //       await combinedFile.writeAsBytes(combinedBytes);
-      
+
 //       return combinedFile;
 //     } catch (e) {
 //       throw Exception('Failed to combine images: $e');
@@ -1389,13 +1376,13 @@
 //     required String title,
 //   }) {
 //     ImageProvider? imageProvider;
-    
+
 //     if (imageFile != null) {
 //       imageProvider = FileImage(imageFile);
 //     } else if (imageUrl != null && imageUrl.isNotEmpty) {
 //       imageProvider = NetworkImage(imageUrl);
 //     }
-    
+
 //     if (imageProvider == null) return;
 
 //     Navigator.of(context).push(
@@ -1441,18 +1428,18 @@
 //           maxWidth: 1920,
 //           maxHeight: 1920,
 //         );
-        
+
 //         if (image != null) {
 //           final imageFile = File(image.path);
 //           bool isValid = false;
-          
+
 //           // Skip validation for back side of license
 //           if (documentType == 'license' && side == 'back') {
 //             isValid = true;
 //           } else {
 //             isValid = await _validateDocument(imageFile, documentType == 'aadhar');
 //           }
-          
+
 //           if (isValid) {
 //             setState(() {
 //               if (documentType == 'aadhar' && side == 'front') {
@@ -1465,13 +1452,13 @@
 //                 _licenseBackFile = imageFile;
 //               }
 //             });
-            
+
 //             _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} $side side selected successfully');
-            
+
 //             if (isEdit) {
 //               final provider = context.read<SingleBookingProvider>();
 //               final booking = provider.currentBooking;
-              
+
 //               if (booking != null && booking.userId?.id != null) {
 //                 _showUploadConfirmationDialog(booking.userId!.id, documentType);
 //               }
@@ -1526,7 +1513,7 @@
 
 //     try {
 //       File? combinedFile;
-      
+
 //       if (documentType == 'aadhar') {
 //         if (_aadharFrontFile == null || _aadharBackFile == null) {
 //           _showErrorSnackBar('Please upload both front and back sides of Aadhar Card');
@@ -1548,9 +1535,9 @@
 //       );
 
 //       await context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
-      
+
 //       _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} updated successfully!');
-      
+
 //       setState(() {
 //         if (documentType == 'aadhar') {
 //           _aadharFrontFile = null;
@@ -1572,7 +1559,7 @@
 //           });
 //         }
 //       });
-      
+
 //     } catch (e) {
 //       _showErrorSnackBar('Failed to update document: $e');
 //     } finally {
@@ -1585,7 +1572,7 @@
 //   Future<void> _uploadMissingDocuments(String userId) async {
 //     bool hasCompleteAadhar = _aadharFrontFile != null && _aadharBackFile != null;
 //     bool hasCompleteLicense = _licenseFrontFile != null && _licenseBackFile != null;
-    
+
 //     if (!hasCompleteAadhar && !hasCompleteLicense) {
 //       _showErrorSnackBar('Please upload both front and back sides of at least one document');
 //       return;
@@ -1598,11 +1585,11 @@
 //     try {
 //       File? combinedAadhar;
 //       File? combinedLicense;
-      
+
 //       if (hasCompleteAadhar) {
 //         combinedAadhar = await _combineImages(_aadharFrontFile!, _aadharBackFile!, 'aadhar');
 //       }
-      
+
 //       if (hasCompleteLicense) {
 //         combinedLicense = await _combineImages(_licenseFrontFile!, _licenseBackFile!, 'license');
 //       }
@@ -1614,9 +1601,9 @@
 //       );
 
 //       await context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
-      
+
 //       _showSuccessSnackBar('Documents uploaded successfully!');
-      
+
 //       setState(() {
 //         if (hasCompleteAadhar) {
 //           _staffUploadedDocs.add('aadhar');
@@ -1631,7 +1618,7 @@
 //         _localAadharImagePath = null;
 //         _localLicenseImagePath = null;
 //       });
-      
+
 //     } catch (e) {
 //       _showErrorSnackBar('Failed to upload documents: $e');
 //     } finally {
@@ -1648,7 +1635,7 @@
 //   }) async {
 //     print("Uploading documents for user: $userId");
 
-//     const String baseUrl = 'http://82.29.162.67:4062/api/staff';
+//     const String baseUrl = 'https://varahibackend.varahiselfdrivecars.com/api/staff';
 //     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
 //     final request = http.MultipartRequest('POST', uri);
 
@@ -1737,7 +1724,7 @@
 //           builder: (context, setDialogState) {
 //             bool hasCompleteAadhar = _aadharFrontFile != null && _aadharBackFile != null;
 //             bool hasCompleteLicense = _licenseFrontFile != null && _licenseBackFile != null;
-            
+
 //             return AlertDialog(
 //               title: const Text('Missing Documents'),
 //               content: SingleChildScrollView(
@@ -1767,11 +1754,11 @@
 //                       ),
 //                     )).toList(),
 //                     const SizedBox(height: 20),
-                    
+
 //                     if (missingDocs.contains('Aadhar Card')) ...[
 //                       const Text('Upload Aadhar Card:', style: TextStyle(fontWeight: FontWeight.bold)),
 //                       const SizedBox(height: 8),
-                      
+
 //                       Row(
 //                         children: [
 //                           Expanded(
@@ -1795,11 +1782,11 @@
 //                       ),
 //                       const SizedBox(height: 15),
 //                     ],
-                    
+
 //                     if (missingDocs.contains('Driving License')) ...[
 //                       const Text('Upload Driving License:', style: TextStyle(fontWeight: FontWeight.bold)),
 //                       const SizedBox(height: 8),
-                      
+
 //                       Row(
 //                         children: [
 //                           Expanded(
@@ -1823,7 +1810,7 @@
 //                       ),
 //                       const SizedBox(height: 15),
 //                     ],
-                    
+
 //                     if (_isValidating)
 //                       Container(
 //                         padding: const EdgeInsets.all(12),
@@ -1994,17 +1981,17 @@
 //     }
 
 //     List<String> missingDocs = [];
-    
+
 //     print('Checking Aadhar: ${booking.userId?.documents?.aadharCard}');
 //     print('Checking License: ${booking.userId?.documents?.drivingLicense}');
-    
-//     if (booking.userId?.documents?.aadharCard == null || 
+
+//     if (booking.userId?.documents?.aadharCard == null ||
 //         booking.userId?.documents?.aadharCard?.url == null ||
 //         booking.userId!.documents!.aadharCard!.url!.isEmpty) {
 //       missingDocs.add('Aadhar Card');
 //     }
-    
-//     if (booking.userId?.documents?.drivingLicense == null || 
+
+//     if (booking.userId?.documents?.drivingLicense == null ||
 //         booking.userId?.documents?.drivingLicense?.url == null ||
 //         booking.userId!.documents!.drivingLicense!.url!.isEmpty) {
 //       missingDocs.add('Driving License');
@@ -2275,7 +2262,7 @@
 //   }) {
 //     String? displayImagePath;
 //     bool isNetworkImage = false;
-    
+
 //     if (imageUrl != null && imageUrl.isNotEmpty) {
 //       displayImagePath = imageUrl;
 //       isNetworkImage = true;
@@ -2283,11 +2270,11 @@
 //       displayImagePath = localImagePath;
 //       isNetworkImage = false;
 //     }
-    
+
 //     bool isMissing = displayImagePath == null;
 //     bool hasDocument = !isMissing;
 //     bool isStaffUploaded = _staffUploadedDocs.contains(documentType);
-    
+
 //     return GestureDetector(
 //       onTap: () {
 //         if (hasDocument) {
@@ -2307,7 +2294,7 @@
 //           borderRadius: BorderRadius.circular(12),
 //           image: displayImagePath != null
 //               ? DecorationImage(
-//                   image: isNetworkImage 
+//                   image: isNetworkImage
 //                       ? NetworkImage(displayImagePath) as ImageProvider
 //                       : FileImage(File(displayImagePath)),
 //                   fit: BoxFit.cover,
@@ -2347,7 +2334,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             if (hasDocument)
 //               Positioned(
 //                 top: 12,
@@ -2373,7 +2360,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             if (hasDocument && isStaffUploaded)
 //               Positioned(
 //                 top: 12,
@@ -2425,7 +2412,7 @@
 //                   ),
 //                 ),
 //               ),
-            
+
 //             Positioned(
 //               bottom: 0,
 //               left: 0,
@@ -2532,7 +2519,7 @@
 //                   ),
 //                 ),
 //                 const SizedBox(height: 24),
-                
+
 //                 ListTile(
 //                   leading: Container(
 //                     padding: const EdgeInsets.all(8),
@@ -2553,9 +2540,9 @@
 //                     _pickImage(documentType, 'front', isEdit: isEdit);
 //                   },
 //                 ),
-                
+
 //                 const Divider(),
-                
+
 //                 ListTile(
 //                   leading: Container(
 //                     padding: const EdgeInsets.all(8),
@@ -2576,7 +2563,7 @@
 //                     _pickImage(documentType, 'back', isEdit: isEdit);
 //                   },
 //                 ),
-                
+
 //                 const SizedBox(height: 16),
 //               ],
 //             ),
@@ -2661,8 +2648,8 @@
 //   factory DocumentInfo.fromJson(Map<String, dynamic> json) {
 //     return DocumentInfo(
 //       url: json['url'] ?? '',
-//       uploadedAt: json['uploadedAt'] != null 
-//           ? DateTime.parse(json['uploadedAt']) 
+//       uploadedAt: json['uploadedAt'] != null
+//           ? DateTime.parse(json['uploadedAt'])
 //           : DateTime.now(),
 //       status: json['status'] ?? 'unknown',
 //     );
@@ -2688,11 +2675,11 @@
 //     }
 
 //     return UploadedDocuments(
-//       aadharCard: json['aadharCard'] != null 
-//           ? DocumentInfo.fromJson(json['aadharCard']) 
+//       aadharCard: json['aadharCard'] != null
+//           ? DocumentInfo.fromJson(json['aadharCard'])
 //           : null,
-//       drivingLicense: json['drivingLicense'] != null 
-//           ? DocumentInfo.fromJson(json['drivingLicense']) 
+//       drivingLicense: json['drivingLicense'] != null
+//           ? DocumentInfo.fromJson(json['drivingLicense'])
 //           : null,
 //     );
 //   }
@@ -2700,35 +2687,6 @@
 //   bool get hasAnyDocuments => aadharCard != null || drivingLicense != null;
 //   bool get hasAllDocuments => aadharCard != null && drivingLicense != null;
 // }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import 'package:car_rental_staff_app/providers/single_booking_provider.dart';
 import 'package:car_rental_staff_app/views/pickup_details_screen.dart';
@@ -2758,27 +2716,25 @@ class _BookingScreenState extends State<BookingScreen> {
   bool _isCombining = false;
 
   bool _customerUploaded = false;
-bool _uploadingCustomer = false;
+  bool _uploadingCustomer = false;
 
-  
   // Front and back files for each document
   File? _aadharFrontFile;
   File? _aadharBackFile;
   File? _licenseFrontFile;
   File? _licenseBackFile;
-  
+
   // Combined images
   File? _aadharCombinedFile;
   File? _licenseCombinedFile;
-  
+
   final ImagePicker _picker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
 
   final TextEditingController _customerNameCtrl = TextEditingController();
-final TextEditingController _customerMobileCtrl = TextEditingController();
-File? _customerImage;
+  final TextEditingController _customerMobileCtrl = TextEditingController();
+  File? _customerImage;
 
-  
   // Track which documents were uploaded by staff
   Set<String> _staffUploadedDocs = {};
 
@@ -2787,7 +2743,9 @@ File? _customerImage;
     super.initState();
     print('Booking ID: ${widget.bookingId}');
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
+      context
+          .read<SingleBookingProvider>()
+          .fetchSingleBooking(widget.bookingId);
     });
   }
 
@@ -2800,7 +2758,7 @@ File? _customerImage;
   // Aadhaar validation
   bool _isValidAadhaarDocument(String text) {
     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
     final aadhaarKeywords = [
       'aadhaar',
       'aadhar',
@@ -2809,19 +2767,20 @@ File? _customerImage;
       'unique identification authority of india',
       'uidai',
     ];
-    
+
     final aadhaarNumberPattern = RegExp(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b');
-    
-    bool hasKeyword = aadhaarKeywords.any((keyword) => cleanText.contains(keyword));
+
+    bool hasKeyword =
+        aadhaarKeywords.any((keyword) => cleanText.contains(keyword));
     bool hasAadhaarNumber = aadhaarNumberPattern.hasMatch(text);
-    
+
     return hasKeyword || hasAadhaarNumber;
   }
 
   // Driving License validation
   bool _isValidLicenseDocument(String text) {
     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
     final licenseKeywords = [
       'driving licence',
       'driving license',
@@ -2832,15 +2791,17 @@ File? _customerImage;
       'वाहन',
       'परिवहन',
     ];
-    
+
     final dlNumberPatterns = [
       RegExp(r'\b[A-Z]{2}[0-9]{2}[A-Z0-9]{11,13}\b'),
       RegExp(r'\b[A-Z]{2}-?[0-9]{2}-?[0-9]{4}-?[0-9]{7}\b'),
     ];
-    
-    bool hasKeyword = licenseKeywords.any((keyword) => cleanText.contains(keyword));
-    bool hasValidPattern = dlNumberPatterns.any((pattern) => pattern.hasMatch(text));
-    
+
+    bool hasKeyword =
+        licenseKeywords.any((keyword) => cleanText.contains(keyword));
+    bool hasValidPattern =
+        dlNumberPatterns.any((pattern) => pattern.hasMatch(text));
+
     return hasKeyword || hasValidPattern;
   }
 
@@ -2849,11 +2810,11 @@ File? _customerImage;
     try {
       final bytes = imageFile.readAsBytesSync();
       final image = img.decodeImage(bytes);
-      
+
       if (image == null) return false;
       if (image.width < 300 || image.height < 200) return false;
       if (bytes.length < 10000 || bytes.length > 10000000) return false;
-      
+
       return true;
     } catch (e) {
       return false;
@@ -2863,34 +2824,38 @@ File? _customerImage;
   Future<bool> _validateDocument(File imageFile, bool isAadhar) async {
     try {
       setState(() => _isValidating = true);
-      
+
       if (!_isValidImageQuality(imageFile)) {
-        _showValidationError('Image quality is too low. Please upload a clear photo.');
+        _showValidationError(
+            'Image quality is too low. Please upload a clear photo.');
         return false;
       }
-      
+
       final inputImage = InputImage.fromFile(imageFile);
       final recognizedText = await _textRecognizer.processImage(inputImage);
       final extractedText = recognizedText.text;
-      
+
       if (extractedText.isEmpty) {
-        _showValidationError('No text found in image. Please upload a clear document photo.');
+        _showValidationError(
+            'No text found in image. Please upload a clear document photo.');
         return false;
       }
-      
+
       bool isValid = false;
       if (isAadhar) {
         isValid = _isValidAadhaarDocument(extractedText);
         if (!isValid) {
-          _showValidationError('This doesn\'t appear to be an Aadhaar card. Please upload a valid Aadhaar document.');
+          _showValidationError(
+              'This doesn\'t appear to be an Aadhaar card. Please upload a valid Aadhaar document.');
         }
       } else {
         isValid = _isValidLicenseDocument(extractedText);
         if (!isValid) {
-          _showValidationError('This doesn\'t appear to be a driving license. Please upload a valid driving license.');
+          _showValidationError(
+              'This doesn\'t appear to be a driving license. Please upload a valid driving license.');
         }
       }
-      
+
       return isValid;
     } catch (e) {
       _showValidationError('Document validation failed. Please try again.');
@@ -2919,35 +2884,40 @@ File? _customerImage;
   }
 
   // Combine front and back images
-  Future<File> _combineImages(File frontImage, File backImage, String documentType) async {
+  Future<File> _combineImages(
+      File frontImage, File backImage, String documentType) async {
     try {
       setState(() => _isCombining = true);
-      
+
       final frontBytes = await frontImage.readAsBytes();
       final backBytes = await backImage.readAsBytes();
-      
+
       final frontImg = img.decodeImage(frontBytes)!;
       final backImg = img.decodeImage(backBytes)!;
-      
-      final maxWidth = frontImg.width > backImg.width ? frontImg.width : backImg.width;
+
+      final maxWidth =
+          frontImg.width > backImg.width ? frontImg.width : backImg.width;
       final resizedFront = img.copyResize(frontImg, width: maxWidth);
       final resizedBack = img.copyResize(backImg, width: maxWidth);
-      
+
       final combinedHeight = resizedFront.height + resizedBack.height + 20;
-      final combinedImg = img.Image(width: maxWidth, height: combinedHeight, numChannels: 3);
-      
+      final combinedImg =
+          img.Image(width: maxWidth, height: combinedHeight, numChannels: 3);
+
       img.fill(combinedImg, color: img.ColorRgb8(255, 255, 255));
       img.compositeImage(combinedImg, resizedFront, dstX: 0, dstY: 0);
-      img.compositeImage(combinedImg, resizedBack, dstX: 0, dstY: resizedFront.height + 20);
-      
+      img.compositeImage(combinedImg, resizedBack,
+          dstX: 0, dstY: resizedFront.height + 20);
+
       final combinedBytes = img.encodeJpg(combinedImg, quality: 85);
-      
+
       final tempDir = Directory.systemTemp;
-      final combinedFile = File('${tempDir.path}/${documentType}_combined_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final combinedFile = File(
+          '${tempDir.path}/${documentType}_combined_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await combinedFile.writeAsBytes(combinedBytes);
-      
+
       setState(() => _isCombining = false);
-      
+
       return combinedFile;
     } catch (e) {
       setState(() => _isCombining = false);
@@ -2961,13 +2931,13 @@ File? _customerImage;
     required String title,
   }) {
     ImageProvider? imageProvider;
-    
+
     if (imageFile != null) {
       imageProvider = FileImage(imageFile);
     } else if (imageUrl != null && imageUrl.isNotEmpty) {
       imageProvider = NetworkImage(imageUrl);
     }
-    
+
     if (imageProvider == null) return;
 
     Navigator.of(context).push(
@@ -3013,23 +2983,25 @@ File? _customerImage;
           maxWidth: 1920,
           maxHeight: 1920,
         );
-        
+
         if (image != null) {
           final imageFile = File(image.path);
           bool isValid = false;
-          
+
           // Skip validation for back side of license
           if (documentType == 'license' && side == 'back') {
             isValid = true;
           } else {
-            isValid = await _validateDocument(imageFile, documentType == 'aadhar');
+            isValid =
+                await _validateDocument(imageFile, documentType == 'aadhar');
           }
-          
+
           if (isValid) {
             setState(() {
               if (documentType == 'aadhar' && side == 'front') {
                 _aadharFrontFile = imageFile;
-                _aadharCombinedFile = null; // Reset combined when changing images
+                _aadharCombinedFile =
+                    null; // Reset combined when changing images
               } else if (documentType == 'aadhar' && side == 'back') {
                 _aadharBackFile = imageFile;
                 _aadharCombinedFile = null;
@@ -3041,8 +3013,9 @@ File? _customerImage;
                 _licenseCombinedFile = null;
               }
             });
-            
-            _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} $side side selected successfully');
+
+            _showSuccessSnackBar(
+                '${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} $side side selected successfully');
           }
         }
       }
@@ -3054,13 +3027,14 @@ File? _customerImage;
   Future<void> _handleCombineAndUpload(String documentType) async {
     try {
       File? combinedFile;
-      
+
       if (documentType == 'aadhar') {
         if (_aadharFrontFile == null || _aadharBackFile == null) {
           _showErrorSnackBar('Please upload both front and back sides');
           return;
         }
-        combinedFile = await _combineImages(_aadharFrontFile!, _aadharBackFile!, 'aadhar');
+        combinedFile =
+            await _combineImages(_aadharFrontFile!, _aadharBackFile!, 'aadhar');
         setState(() {
           _aadharCombinedFile = combinedFile;
         });
@@ -3069,27 +3043,28 @@ File? _customerImage;
           _showErrorSnackBar('Please upload both front and back sides');
           return;
         }
-        combinedFile = await _combineImages(_licenseFrontFile!, _licenseBackFile!, 'license');
+        combinedFile = await _combineImages(
+            _licenseFrontFile!, _licenseBackFile!, 'license');
         setState(() {
           _licenseCombinedFile = combinedFile;
         });
       }
-      
+
       _showSuccessSnackBar('Images combined successfully! Review and upload.');
-      
     } catch (e) {
       _showErrorSnackBar('Failed to combine images: $e');
     }
   }
 
-  Future<void> _uploadCombinedDocument(String userId, String documentType) async {
+  Future<void> _uploadCombinedDocument(
+      String userId, String documentType) async {
     setState(() {
       _isUploading = true;
     });
 
     try {
       File? combinedFile;
-      
+
       if (documentType == 'aadhar') {
         combinedFile = _aadharCombinedFile;
       } else {
@@ -3107,10 +3082,13 @@ File? _customerImage;
         licenseFile: documentType == 'license' ? combinedFile : null,
       );
 
-      await context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
-      
-      _showSuccessSnackBar('${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} uploaded successfully!');
-      
+      await context
+          .read<SingleBookingProvider>()
+          .fetchSingleBooking(widget.bookingId);
+
+      _showSuccessSnackBar(
+          '${documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} uploaded successfully!');
+
       setState(() {
         if (documentType == 'aadhar') {
           _aadharFrontFile = null;
@@ -3124,7 +3102,6 @@ File? _customerImage;
           _staffUploadedDocs.add('license');
         }
       });
-      
     } catch (e) {
       _showErrorSnackBar('Failed to upload document: $e');
     } finally {
@@ -3141,7 +3118,8 @@ File? _customerImage;
   }) async {
     print("Uploading documents for user: $userId");
 
-    const String baseUrl = 'http://82.29.162.67:4062/api/staff';
+    const String baseUrl =
+        'https://varahibackend.varahiselfdrivecars.com/api/staff';
     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
     final request = http.MultipartRequest('POST', uri);
 
@@ -3224,10 +3202,12 @@ File? _customerImage;
     final booking = provider.currentBooking;
     debugPrint('booking.id: ${booking?.id}');
     debugPrint('booking.userId is null: ${booking?.userId == null}');
-if (booking == null || booking.userId == null || booking.userId!.id.isEmpty) {
-  _showErrorSnackBar('Booking data not available');
-  return;
-}
+    if (booking == null ||
+        booking.userId == null ||
+        booking.userId!.id.isEmpty) {
+      _showErrorSnackBar('Booking data not available');
+      return;
+    }
 
     Navigator.push(
       context,
@@ -3244,7 +3224,9 @@ if (booking == null || booking.userId == null || booking.userId!.id.isEmpty) {
           licenseCombinedFile: _licenseCombinedFile,
           onDocumentsUpdated: () {
             // Reload booking data when returning from upload screen
-            context.read<SingleBookingProvider>().fetchSingleBooking(widget.bookingId);
+            context
+                .read<SingleBookingProvider>()
+                .fetchSingleBooking(widget.bookingId);
           },
         ),
       ),
@@ -3261,21 +3243,22 @@ if (booking == null || booking.userId == null || booking.userId!.id.isEmpty) {
     }
 
     List<String> missingDocs = [];
-    
-    if (booking.userId?.documents?.aadharCard == null || 
+
+    if (booking.userId?.documents?.aadharCard == null ||
         booking.userId?.documents?.aadharCard?.url == null ||
         booking.userId!.documents!.aadharCard!.url!.isEmpty) {
       missingDocs.add('Aadhar Card');
     }
-    
-    if (booking.userId?.documents?.drivingLicense == null || 
+
+    if (booking.userId?.documents?.drivingLicense == null ||
         booking.userId?.documents?.drivingLicense?.url == null ||
         booking.userId!.documents!.drivingLicense!.url!.isEmpty) {
       missingDocs.add('Driving License');
     }
 
     if (missingDocs.isNotEmpty) {
-      _showErrorSnackBar('Please upload all required documents before proceeding');
+      _showErrorSnackBar(
+          'Please upload all required documents before proceeding');
     } else {
       Navigator.pushReplacement(
         context,
@@ -3286,75 +3269,71 @@ if (booking == null || booking.userId == null || booking.userId!.id.isEmpty) {
     }
   }
 
-
   Future<void> _pickCustomerImage() async {
-  final XFile? image = await ImagePicker().pickImage(
-    source: ImageSource.camera, // 📸 CAMERA ONLY
-    imageQuality: 80,
-  );
-
-  if (image != null) {
-    setState(() {
-      _customerImage = File(image.path);
-    });
-  }
-}
-
-
-Future<void> _uploadCustomerDetails() async {
-  if (_customerNameCtrl.text.isEmpty ||
-      _customerMobileCtrl.text.length != 10 ||
-      _customerImage == null) {
-    _showErrorSnackBar('Please fill all customer details');
-    return;
-  }
-
-  setState(() => _uploadingCustomer = true);
-
-  try {
-    final uri = Uri.parse(
-      'http://82.29.162.67:4062/api/staff/upload-customerdetails/${widget.bookingId}',
+    final XFile? image = await ImagePicker().pickImage(
+      source: ImageSource.camera, // 📸 CAMERA ONLY
+      imageQuality: 80,
     );
 
-    final request = http.MultipartRequest('POST', uri);
-
-    // TEXT FIELDS
-    request.fields['name'] = _customerNameCtrl.text.trim();
-    request.fields['mobile'] = _customerMobileCtrl.text.trim();
-
-    // IMAGE FILE
-    request.files.add(
-      await http.MultipartFile.fromPath(
-        'customerImage',
-        _customerImage!.path,
-        contentType: MediaType('image', 'jpeg'),
-      ),
-    );
-
-    final streamedResponse = await request.send();
-    final response = await http.Response.fromStream(streamedResponse);
-
-    print('Customer upload status: ${response.statusCode}');
-    print('Customer upload body: ${response.body}');
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
+    if (image != null) {
       setState(() {
-        _customerUploaded = true; // ✅ ENABLE PROCEED BUTTON
+        _customerImage = File(image.path);
       });
-
-      _showSuccessSnackBar('Customer details uploaded successfully');
-    } else {
-      throw Exception(response.body);
     }
-  } catch (e) {
-    _showErrorSnackBar('Failed to upload customer details');
-    print('Customer upload error: $e');
-  } finally {
-    setState(() => _uploadingCustomer = false);
   }
-}
 
+  Future<void> _uploadCustomerDetails() async {
+    if (_customerNameCtrl.text.isEmpty ||
+        _customerMobileCtrl.text.length != 10 ||
+        _customerImage == null) {
+      _showErrorSnackBar('Please fill all customer details');
+      return;
+    }
 
+    setState(() => _uploadingCustomer = true);
+
+    try {
+      final uri = Uri.parse(
+        'https://varahibackend.varahiselfdrivecars.com/api/staff/upload-customerdetails/${widget.bookingId}',
+      );
+
+      final request = http.MultipartRequest('POST', uri);
+
+      // TEXT FIELDS
+      request.fields['name'] = _customerNameCtrl.text.trim();
+      request.fields['mobile'] = _customerMobileCtrl.text.trim();
+
+      // IMAGE FILE
+      request.files.add(
+        await http.MultipartFile.fromPath(
+          'customerImage',
+          _customerImage!.path,
+          contentType: MediaType('image', 'jpeg'),
+        ),
+      );
+
+      final streamedResponse = await request.send();
+      final response = await http.Response.fromStream(streamedResponse);
+
+      print('Customer upload status: ${response.statusCode}');
+      print('Customer upload body: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        setState(() {
+          _customerUploaded = true; // ✅ ENABLE PROCEED BUTTON
+        });
+
+        _showSuccessSnackBar('Customer details uploaded successfully');
+      } else {
+        throw Exception(response.body);
+      }
+    } catch (e) {
+      _showErrorSnackBar('Failed to upload customer details');
+      print('Customer upload error: $e');
+    } finally {
+      setState(() => _uploadingCustomer = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -3402,7 +3381,6 @@ Future<void> _uploadCustomerDetails() async {
                     ],
                   ),
                 ),
-
                 Expanded(
                   child: SingleChildScrollView(
                     child: Padding(
@@ -3426,7 +3404,8 @@ Future<void> _uploadCustomerDetails() async {
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
                                       Text(
-                                        booking?.car?.vehicleNumber ?? 'TS 05 TD 4544',
+                                        booking?.car?.vehicleNumber ??
+                                            'TS 05 TD 4544',
                                         style: TextStyle(
                                           fontSize: 14,
                                           color: Colors.red.shade700,
@@ -3449,7 +3428,6 @@ Future<void> _uploadCustomerDetails() async {
                                     ],
                                   ),
                                   const SizedBox(height: 12),
-
                                   Row(
                                     children: [
                                       const Icon(Icons.settings,
@@ -3482,7 +3460,6 @@ Future<void> _uploadCustomerDetails() async {
                                     ],
                                   ),
                                   const SizedBox(height: 12),
-
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.end,
                                     children: [
@@ -3514,92 +3491,90 @@ Future<void> _uploadCustomerDetails() async {
                               ),
                             ),
                           ),
-
                           const SizedBox(height: 20),
-
                           const Text(
-  'Customer Details Upload',
-  style: TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.bold,
-  ),
-),
-const SizedBox(height: 12),
-
-Card(
-  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-  child: Padding(
-    padding: const EdgeInsets.all(16),
-    child: Column(
-      children: [
-        TextField(
-          controller: _customerNameCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Customer Name',
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        TextField(
-          controller: _customerMobileCtrl,
-          keyboardType: TextInputType.phone,
-          maxLength: 10,
-          decoration: const InputDecoration(
-            labelText: 'Mobile Number',
-            border: OutlineInputBorder(),
-            counterText: '',
-          ),
-        ),
-        const SizedBox(height: 12),
-
-        GestureDetector(
-          onTap: _pickCustomerImage,
-          child: Container(
-            height: 160,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: _customerImage != null
-                ? ClipRRect(
-                    borderRadius: BorderRadius.circular(11),
-                    child: Image.file(
-                      _customerImage!,
-                      fit: BoxFit.cover,
-                    ),
-                  )
-                : const Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.camera_alt, size: 40),
-                      SizedBox(height: 8),
-                      Text('Capture Customer Photo'),
-                    ],
-                  ),
-          ),
-        ),
-
-        const SizedBox(height: 16),
-
-        ElevatedButton(
-          onPressed: _uploadingCustomer ? null : _uploadCustomerDetails,
-          child: _uploadingCustomer
-              ? const SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Upload Customer Details'),
-        ),
-      ],
-    ),
-  ),
-),
-const SizedBox(height: 24),
-
-
+                            'Customer Details Upload',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Card(
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                children: [
+                                  TextField(
+                                    controller: _customerNameCtrl,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Customer Name',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  TextField(
+                                    controller: _customerMobileCtrl,
+                                    keyboardType: TextInputType.phone,
+                                    maxLength: 10,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Mobile Number',
+                                      border: OutlineInputBorder(),
+                                      counterText: '',
+                                    ),
+                                  ),
+                                  const SizedBox(height: 12),
+                                  GestureDetector(
+                                    onTap: _pickCustomerImage,
+                                    child: Container(
+                                      height: 160,
+                                      width: double.infinity,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: _customerImage != null
+                                          ? ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(11),
+                                              child: Image.file(
+                                                _customerImage!,
+                                                fit: BoxFit.cover,
+                                              ),
+                                            )
+                                          : const Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(Icons.camera_alt,
+                                                    size: 40),
+                                                SizedBox(height: 8),
+                                                Text('Capture Customer Photo'),
+                                              ],
+                                            ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ElevatedButton(
+                                    onPressed: _uploadingCustomer
+                                        ? null
+                                        : _uploadCustomerDetails,
+                                    child: _uploadingCustomer
+                                        ? const SizedBox(
+                                            height: 20,
+                                            width: 20,
+                                            child: CircularProgressIndicator(
+                                                strokeWidth: 2),
+                                          )
+                                        : const Text('Upload Customer Details'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 24),
                           const Text(
                             'Uploaded Documents',
                             style: TextStyle(
@@ -3608,35 +3583,46 @@ const SizedBox(height: 24),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-
                           const SizedBox(height: 12),
-
                           _buildDocumentCard(
                             title: 'Aadhar Card',
-                            status: booking?.userId?.documents?.aadharCard?.status?.toUpperCase() ?? 'NOT UPLOADED',
-                            statusColor: booking?.userId?.documents?.aadharCard?.status == 'verified'
+                            status: booking
+                                    ?.userId?.documents?.aadharCard?.status
+                                    ?.toUpperCase() ??
+                                'NOT UPLOADED',
+                            statusColor: booking?.userId?.documents?.aadharCard
+                                        ?.status ==
+                                    'verified'
                                 ? Colors.green
-                                : booking?.userId?.documents?.aadharCard?.status != null
+                                : booking?.userId?.documents?.aadharCard
+                                            ?.status !=
+                                        null
                                     ? Colors.orange
                                     : Colors.red,
-                            imageUrl: booking?.userId?.documents?.aadharCard?.url,
+                            imageUrl:
+                                booking?.userId?.documents?.aadharCard?.url,
                             documentType: 'aadhar',
                           ),
-
                           const SizedBox(height: 25),
-
                           _buildDocumentCard(
                             title: 'Driving License',
-                            status: booking?.userId?.documents?.drivingLicense?.status?.toUpperCase() ?? 'NOT UPLOADED',
-                            statusColor: booking?.userId?.documents?.drivingLicense?.status == 'verified'
+                            status: booking
+                                    ?.userId?.documents?.drivingLicense?.status
+                                    ?.toUpperCase() ??
+                                'NOT UPLOADED',
+                            statusColor: booking?.userId?.documents
+                                        ?.drivingLicense?.status ==
+                                    'verified'
                                 ? Colors.green
-                                : booking?.userId?.documents?.drivingLicense?.status != null
+                                : booking?.userId?.documents?.drivingLicense
+                                            ?.status !=
+                                        null
                                     ? Colors.orange
                                     : Colors.red,
-                            imageUrl: booking?.userId?.documents?.drivingLicense?.url,
+                            imageUrl:
+                                booking?.userId?.documents?.drivingLicense?.url,
                             documentType: 'license',
                           ),
-
                           const SizedBox(height: 25),
                           const SizedBox(height: 80),
                         ],
@@ -3656,9 +3642,8 @@ const SizedBox(height: 24),
         child: ElevatedButton(
           onPressed: _customerUploaded ? _handleProceed : null,
           style: ElevatedButton.styleFrom(
-            backgroundColor: _customerUploaded
-      ? Colors.indigo.shade700
-      : Colors.grey,
+            backgroundColor:
+                _customerUploaded ? Colors.indigo.shade700 : Colors.grey,
             padding: const EdgeInsets.symmetric(vertical: 16),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
@@ -3686,7 +3671,7 @@ const SizedBox(height: 24),
   }) {
     bool hasDocument = imageUrl != null && imageUrl.isNotEmpty;
     bool isStaffUploaded = _staffUploadedDocs.contains(documentType);
-    
+
     // Check if there's a local combined image ready
     File? localCombinedImage;
     if (documentType == 'aadhar' && _aadharCombinedFile != null) {
@@ -3694,7 +3679,7 @@ const SizedBox(height: 24),
     } else if (documentType == 'license' && _licenseCombinedFile != null) {
       localCombinedImage = _licenseCombinedFile;
     }
-    
+
     return GestureDetector(
       onTap: () {
         if (hasDocument) {
@@ -3757,31 +3742,30 @@ const SizedBox(height: 24),
                 ),
               ),
 
-              // ✏️ Show pencil icon if document already uploaded
-if (hasDocument)
-  Positioned(
-    top: 12,
-    right: 12,
-    child: GestureDetector(
-      onTap: () {
-        _navigateToDocumentUploadScreen(documentType);
-      },
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: Colors.black.withOpacity(0.7),
-          shape: BoxShape.circle,
-        ),
-        child: const Icon(
-          Icons.edit, // ✏️ Pencil icon
-          color: Colors.white,
-          size: 20,
-        ),
-      ),
-    ),
-  ),
+            // ✏️ Show pencil icon if document already uploaded
+            if (hasDocument)
+              Positioned(
+                top: 12,
+                right: 12,
+                child: GestureDetector(
+                  onTap: () {
+                    _navigateToDocumentUploadScreen(documentType);
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.7),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.edit, // ✏️ Pencil icon
+                      color: Colors.white,
+                      size: 20,
+                    ),
+                  ),
+                ),
+              ),
 
-            
             if (hasDocument || localCombinedImage != null)
               Positioned(
                 top: 12,
@@ -3807,7 +3791,7 @@ if (hasDocument)
                   ),
                 ),
               ),
-            
+
             if (hasDocument && isStaffUploaded)
               Positioned(
                 top: 12,
@@ -3823,7 +3807,8 @@ if (hasDocument)
                       color: Colors.white,
                       size: 20,
                     ),
-                    onPressed: () => _navigateToDocumentUploadScreen(documentType),
+                    onPressed: () =>
+                        _navigateToDocumentUploadScreen(documentType),
                     padding: const EdgeInsets.all(8),
                     constraints: const BoxConstraints(
                       minWidth: 36,
@@ -3859,7 +3844,7 @@ if (hasDocument)
                   ),
                 ),
               ),
-            
+
             Positioned(
               bottom: 0,
               left: 0,
@@ -3897,7 +3882,8 @@ if (hasDocument)
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
                       color: statusColor.withOpacity(0.2),
                       borderRadius: BorderRadius.circular(12),
@@ -3956,11 +3942,11 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   late File? _frontFile;
   late File? _backFile;
   late File? _combinedFile;
-  
+
   bool _isUploading = false;
   bool _isCombining = false;
   bool _isValidating = false;
-  
+
   final ImagePicker _picker = ImagePicker();
   final TextRecognizer _textRecognizer = TextRecognizer();
 
@@ -3968,14 +3954,14 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   void initState() {
     super.initState();
     // Initialize with existing files
-    _frontFile = widget.documentType == 'aadhar' 
-        ? widget.aadharFrontFile 
+    _frontFile = widget.documentType == 'aadhar'
+        ? widget.aadharFrontFile
         : widget.licenseFrontFile;
-    _backFile = widget.documentType == 'aadhar' 
-        ? widget.aadharBackFile 
+    _backFile = widget.documentType == 'aadhar'
+        ? widget.aadharBackFile
         : widget.licenseBackFile;
-    _combinedFile = widget.documentType == 'aadhar' 
-        ? widget.aadharCombinedFile 
+    _combinedFile = widget.documentType == 'aadhar'
+        ? widget.aadharCombinedFile
         : widget.licenseCombinedFile;
   }
 
@@ -3988,7 +3974,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   // Aadhaar validation
   bool _isValidAadhaarDocument(String text) {
     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
     final aadhaarKeywords = [
       'aadhaar',
       'aadhar',
@@ -3997,19 +3983,20 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
       'unique identification authority of india',
       'uidai',
     ];
-    
+
     final aadhaarNumberPattern = RegExp(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b');
-    
-    bool hasKeyword = aadhaarKeywords.any((keyword) => cleanText.contains(keyword));
+
+    bool hasKeyword =
+        aadhaarKeywords.any((keyword) => cleanText.contains(keyword));
     bool hasAadhaarNumber = aadhaarNumberPattern.hasMatch(text);
-    
+
     return hasKeyword || hasAadhaarNumber;
   }
 
   // Driving License validation
   bool _isValidLicenseDocument(String text) {
     final cleanText = text.toLowerCase().replaceAll(RegExp(r'\s+'), ' ');
-    
+
     final licenseKeywords = [
       'driving licence',
       'driving license',
@@ -4020,44 +4007,49 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
       'वाहन',
       'परिवहन',
     ];
-    
+
     final dlNumberPatterns = [
       RegExp(r'\b[A-Z]{2}[0-9]{2}[A-Z0-9]{11,13}\b'),
       RegExp(r'\b[A-Z]{2}-?[0-9]{2}-?[0-9]{4}-?[0-9]{7}\b'),
     ];
-    
-    bool hasKeyword = licenseKeywords.any((keyword) => cleanText.contains(keyword));
-    bool hasValidPattern = dlNumberPatterns.any((pattern) => pattern.hasMatch(text));
-    
+
+    bool hasKeyword =
+        licenseKeywords.any((keyword) => cleanText.contains(keyword));
+    bool hasValidPattern =
+        dlNumberPatterns.any((pattern) => pattern.hasMatch(text));
+
     return hasKeyword || hasValidPattern;
   }
 
   Future<bool> _validateDocument(File imageFile, bool isAadhar) async {
     try {
       setState(() => _isValidating = true);
-      
+
       final inputImage = InputImage.fromFile(imageFile);
       final recognizedText = await _textRecognizer.processImage(inputImage);
       final extractedText = recognizedText.text;
-      
+
       if (extractedText.isEmpty) {
-        _showError('No text found in image. Please upload a clear document photo.');
+        _showError(
+            'No text found in image. Please upload a clear document photo.');
         return false;
       }
-      
+
       bool isValid = false;
       if (isAadhar) {
         isValid = _isValidAadhaarDocument(extractedText);
         if (!isValid) {
-          _showError('This doesn\'t appear to be an Aadhaar card. Please upload a valid Aadhaar document.');
+          _showError(
+              'This doesn\'t appear to be an Aadhaar card. Please upload a valid Aadhaar document.');
         }
       } else {
         isValid = _isValidLicenseDocument(extractedText);
         if (!isValid) {
-          _showError('This doesn\'t appear to be a driving license. Please upload a valid driving license.');
+          _showError(
+              'This doesn\'t appear to be a driving license. Please upload a valid driving license.');
         }
       }
-      
+
       return isValid;
     } catch (e) {
       _showError('Document validation failed. Please try again.');
@@ -4100,18 +4092,19 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
           maxWidth: 1920,
           maxHeight: 1920,
         );
-        
+
         if (image != null) {
           final imageFile = File(image.path);
           bool isValid = false;
-          
+
           // Skip validation for back side of license
           if (widget.documentType == 'license' && side == 'back') {
             isValid = true;
           } else {
-            isValid = await _validateDocument(imageFile, widget.documentType == 'aadhar');
+            isValid = await _validateDocument(
+                imageFile, widget.documentType == 'aadhar');
           }
-          
+
           if (isValid) {
             setState(() {
               if (side == 'front') {
@@ -4122,8 +4115,9 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                 _combinedFile = null;
               }
             });
-            
-            _showSuccess('${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} $side side selected successfully');
+
+            _showSuccess(
+                '${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} $side side selected successfully');
           }
         }
       }
@@ -4140,37 +4134,40 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
       }
 
       setState(() => _isCombining = true);
-      
+
       final frontBytes = await _frontFile!.readAsBytes();
       final backBytes = await _backFile!.readAsBytes();
-      
+
       final frontImg = img.decodeImage(frontBytes)!;
       final backImg = img.decodeImage(backBytes)!;
-      
-      final maxWidth = frontImg.width > backImg.width ? frontImg.width : backImg.width;
+
+      final maxWidth =
+          frontImg.width > backImg.width ? frontImg.width : backImg.width;
       final resizedFront = img.copyResize(frontImg, width: maxWidth);
       final resizedBack = img.copyResize(backImg, width: maxWidth);
-      
+
       final combinedHeight = resizedFront.height + resizedBack.height + 20;
-      final combinedImg = img.Image(width: maxWidth, height: combinedHeight, numChannels: 3);
-      
+      final combinedImg =
+          img.Image(width: maxWidth, height: combinedHeight, numChannels: 3);
+
       img.fill(combinedImg, color: img.ColorRgb8(255, 255, 255));
       img.compositeImage(combinedImg, resizedFront, dstX: 0, dstY: 0);
-      img.compositeImage(combinedImg, resizedBack, dstX: 0, dstY: resizedFront.height + 20);
-      
+      img.compositeImage(combinedImg, resizedBack,
+          dstX: 0, dstY: resizedFront.height + 20);
+
       final combinedBytes = img.encodeJpg(combinedImg, quality: 85);
-      
+
       final tempDir = Directory.systemTemp;
-      final combinedFile = File('${tempDir.path}/${widget.documentType}_combined_${DateTime.now().millisecondsSinceEpoch}.jpg');
+      final combinedFile = File(
+          '${tempDir.path}/${widget.documentType}_combined_${DateTime.now().millisecondsSinceEpoch}.jpg');
       await combinedFile.writeAsBytes(combinedBytes);
-      
+
       setState(() {
         _combinedFile = combinedFile;
         _isCombining = false;
       });
-      
+
       _showSuccess('Images combined successfully! Review and upload.');
-      
     } catch (e) {
       setState(() => _isCombining = false);
       _showError('Failed to combine images: $e');
@@ -4194,12 +4191,12 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
 
       // Call the callback to update parent
       widget.onDocumentsUpdated();
-      
-      _showSuccess('${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} uploaded successfully!');
-      
+
+      _showSuccess(
+          '${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'} uploaded successfully!');
+
       // Navigate back
       Navigator.pop(context);
-      
     } catch (e) {
       _showError('Failed to upload document: $e');
     } finally {
@@ -4214,7 +4211,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
   }) async {
     print("Uploading documents for user: $userId");
 
-    const String baseUrl = 'http://82.29.162.67:4062/api/staff';
+    const String baseUrl =
+        'https://varahibackend.varahiselfdrivecars.com/api/staff';
     final uri = Uri.parse('$baseUrl/upload-documents/$userId');
     final request = http.MultipartRequest('POST', uri);
 
@@ -4313,7 +4311,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload ${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'}'),
+        title: Text(
+            'Upload ${widget.documentType == 'aadhar' ? 'Aadhar Card' : 'Driving License'}'),
         backgroundColor: Colors.indigo.shade700,
         foregroundColor: Colors.white,
       ),
@@ -4333,9 +4332,14 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
               child: Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  border: Border.all(color: _frontFile != null ? Colors.green : Colors.grey[300]!),
+                  border: Border.all(
+                      color: _frontFile != null
+                          ? Colors.green
+                          : Colors.grey[300]!),
                   borderRadius: BorderRadius.circular(12),
-                  color: _frontFile != null ? Colors.green.shade50 : Colors.grey[50],
+                  color: _frontFile != null
+                      ? Colors.green.shade50
+                      : Colors.grey[50],
                 ),
                 child: _frontFile != null
                     ? Stack(
@@ -4358,7 +4362,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                                 color: Colors.green,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.check, color: Colors.white, size: 20),
+                              child: const Icon(Icons.check,
+                                  color: Colors.white, size: 20),
                             ),
                           ),
                           Positioned(
@@ -4374,7 +4379,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(Icons.fullscreen, color: Colors.white, size: 24),
+                                child: const Icon(Icons.fullscreen,
+                                    color: Colors.white, size: 24),
                               ),
                             ),
                           ),
@@ -4387,13 +4393,14 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                           const SizedBox(height: 12),
                           Text(
                             'Tap to upload front side',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 16),
                           ),
                         ],
                       ),
               ),
             ),
-            
+
             if (_frontFile != null) ...[
               const SizedBox(height: 12),
               TextButton.icon(
@@ -4404,12 +4411,13 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                   });
                 },
                 icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                label: const Text('Remove Front', style: TextStyle(color: Colors.red, fontSize: 14)),
+                label: const Text('Remove Front',
+                    style: TextStyle(color: Colors.red, fontSize: 14)),
               ),
             ],
-            
+
             const SizedBox(height: 24),
-            
+
             // Back Side
             Text(
               'Back Side',
@@ -4421,9 +4429,13 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
               child: Container(
                 height: 180,
                 decoration: BoxDecoration(
-                  border: Border.all(color: _backFile != null ? Colors.green : Colors.grey[300]!),
+                  border: Border.all(
+                      color:
+                          _backFile != null ? Colors.green : Colors.grey[300]!),
                   borderRadius: BorderRadius.circular(12),
-                  color: _backFile != null ? Colors.green.shade50 : Colors.grey[50],
+                  color: _backFile != null
+                      ? Colors.green.shade50
+                      : Colors.grey[50],
                 ),
                 child: _backFile != null
                     ? Stack(
@@ -4446,7 +4458,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                                 color: Colors.green,
                                 shape: BoxShape.circle,
                               ),
-                              child: const Icon(Icons.check, color: Colors.white, size: 20),
+                              child: const Icon(Icons.check,
+                                  color: Colors.white, size: 20),
                             ),
                           ),
                           Positioned(
@@ -4462,7 +4475,8 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                                   color: Colors.black54,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: const Icon(Icons.fullscreen, color: Colors.white, size: 24),
+                                child: const Icon(Icons.fullscreen,
+                                    color: Colors.white, size: 24),
                               ),
                             ),
                           ),
@@ -4475,13 +4489,14 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                           const SizedBox(height: 12),
                           Text(
                             'Tap to upload back side',
-                            style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                            style: TextStyle(
+                                color: Colors.grey[600], fontSize: 16),
                           ),
                         ],
                       ),
               ),
             ),
-            
+
             if (_backFile != null) ...[
               const SizedBox(height: 12),
               TextButton.icon(
@@ -4492,20 +4507,22 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                   });
                 },
                 icon: const Icon(Icons.delete, size: 18, color: Colors.red),
-                label: const Text('Remove Back', style: TextStyle(color: Colors.red, fontSize: 14)),
+                label: const Text('Remove Back',
+                    style: TextStyle(color: Colors.red, fontSize: 14)),
               ),
             ],
-            
+
             // Combine Button
             if (hasCompleteImages && !hasCombined) ...[
               const SizedBox(height: 32),
               ElevatedButton.icon(
                 onPressed: _isCombining ? null : _combineImages,
-                icon: _isCombining 
+                icon: _isCombining
                     ? const SizedBox(
                         width: 20,
                         height: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+                        child: CircularProgressIndicator(
+                            strokeWidth: 2, color: Colors.white),
                       )
                     : const Icon(Icons.merge_type, size: 24),
                 label: Text(
@@ -4522,7 +4539,7 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                 ),
               ),
             ],
-            
+
             // Combined Image Preview
             if (hasCombined) ...[
               const SizedBox(height: 32),
@@ -4562,11 +4579,11 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                       });
                     },
                     icon: const Icon(Icons.refresh, size: 18),
-                    label: const Text('Recombine Images', style: TextStyle(fontSize: 14)),
+                    label: const Text('Recombine Images',
+                        style: TextStyle(fontSize: 14)),
                   ),
                 ],
               ),
-              
               const SizedBox(height: 32),
               ElevatedButton(
                 onPressed: _isUploading ? null : _uploadDocument,
@@ -4584,16 +4601,18 @@ class _DocumentUploadScreenState extends State<DocumentUploadScreen> {
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text(
                         'Upload Document',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
               ),
             ],
-            
+
             if (_isValidating)
               Container(
                 margin: const EdgeInsets.only(top: 16),
@@ -4700,8 +4719,8 @@ class DocumentInfo {
   factory DocumentInfo.fromJson(Map<String, dynamic> json) {
     return DocumentInfo(
       url: json['url'] ?? '',
-      uploadedAt: json['uploadedAt'] != null 
-          ? DateTime.parse(json['uploadedAt']) 
+      uploadedAt: json['uploadedAt'] != null
+          ? DateTime.parse(json['uploadedAt'])
           : DateTime.now(),
       status: json['status'] ?? 'unknown',
     );
@@ -4727,11 +4746,11 @@ class UploadedDocuments {
     }
 
     return UploadedDocuments(
-      aadharCard: json['aadharCard'] != null 
-          ? DocumentInfo.fromJson(json['aadharCard']) 
+      aadharCard: json['aadharCard'] != null
+          ? DocumentInfo.fromJson(json['aadharCard'])
           : null,
-      drivingLicense: json['drivingLicense'] != null 
-          ? DocumentInfo.fromJson(json['drivingLicense']) 
+      drivingLicense: json['drivingLicense'] != null
+          ? DocumentInfo.fromJson(json['drivingLicense'])
           : null,
     );
   }
