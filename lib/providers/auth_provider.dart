@@ -1,8 +1,3 @@
-
-
-
-
-
 // import 'package:car_rental_staff_app/models/user_model.dart';
 // import 'package:car_rental_staff_app/utils/storage_helper.dart';
 // import 'package:flutter/material.dart';
@@ -63,7 +58,6 @@
 //   notifyListeners();
 // }
 
-
 //   void logout() {
 //     _user = null;
 //     _localImageUrl = null;
@@ -71,15 +65,6 @@
 //     notifyListeners();
 //   }
 // }
-
-
-
-
-
-
-
-
-
 
 import 'package:car_rental_staff_app/models/user_model.dart';
 import 'package:car_rental_staff_app/utils/storage_helper.dart';
@@ -98,8 +83,8 @@ class AuthProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
-  String get localImageUrl => _localImageUrl ??
-      'https://avatar.iran.liara.run/public/boy?username=Ash';
+  String get localImageUrl =>
+      _localImageUrl ?? 'https://avatar.iran.liara.run/public/boy?username=Ash';
 
   // Loading state management
   void setLoading(bool loading) {
@@ -119,15 +104,16 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> loadProfileImage() async {
-    final profileImage = _user?.profileImage ?? await StorageHelper.getProfileImage();
+    final profileImage =
+        _user?.profileImage ?? await StorageHelper.getProfileImage();
 
     print("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk$profileImage");
 
     if (profileImage != null) {
-      _localImageUrl = 'http://82.29.162.67:4062$profileImage';
-    } else {
       _localImageUrl =
-          'https://avatar.iran.liara.run/public/boy?username=Ash';
+          'https://varahibackend.varahiselfdrivecars.com$profileImage';
+    } else {
+      _localImageUrl = 'https://avatar.iran.liara.run/public/boy?username=Ash';
     }
 
     notifyListeners();
@@ -136,7 +122,8 @@ class AuthProvider with ChangeNotifier {
   void setUser(UserModel user) {
     print('Setting user: ${user.toJson()}');
     _user = user;
-    StorageHelper.saveUserId(user.id, user.name, user.mobile, user.email, user.profileImage);
+    StorageHelper.saveUserId(
+        user.id, user.name, user.mobile, user.email, user.profileImage);
     loadProfileImage(); // Load profile image after setting user
     notifyListeners();
   }
@@ -189,16 +176,16 @@ class AuthProvider with ChangeNotifier {
   Future<void> initializeUser() async {
     final userData = await StorageHelper.getUserData();
     final token = await StorageHelper.getToken();
-    
+
     if (userData != null) {
       _user = userData;
       await loadProfileImage();
     }
-    
+
     if (token != null) {
       _token = token;
     }
-    
+
     notifyListeners();
   }
 }
